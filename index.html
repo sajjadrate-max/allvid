@@ -1045,7 +1045,7 @@ html{overscroll-behavior-y:contain}
   const DLI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
   const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
   const cards=items=>items.map((v,i)=>'<div class="vc" data-i="'+i+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" src="'+esc(v.thumb)+'" alt="" referrerpolicy="no-referrer">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+'</button>'+
-    '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div></div>'+
+    '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div></div>'+
     '<button type="button" class="dlb" data-act="dl" aria-label="'+esc(t("downloadBtn"))+'">'+DLI+'</button></div></div>').join("");
   function feed(pre,CATS,mp3,tiktok){
     const cats=$(pre+"Cats"),list=$(pre+"List"),head=$(pre+"Head");
@@ -1086,7 +1086,7 @@ html{overscroll-behavior-y:contain}
       // right there), then the other videos of this list; tapping one plays it in place.
       const pl=$("player"),st=$("plStage");pl.classList.add("yt");
       st.innerHTML='<div class="watch tt"><div class="wv"><video controls autoplay playsinline loop></video></div>'+
-        '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div>'+
+        '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div>'+
         '<div class="wact"><button type="button" class="go" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button></div></div>'+
         '<div class="vgrid wrel" id="wrel"></div></div>';   // one video per row, like YouTube's
       // Played straight from its file (through our API if the CDN refuses).
@@ -1134,7 +1134,7 @@ html{overscroll-behavior-y:contain}
     const pl=$("player"),st=$("plStage");
     $("plTitle").textContent=v.title;pl.classList.add("yt");
     st.innerHTML='<div class="watch"><div class="wv"><iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
-      '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div>'+
+      '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div>'+
       '<div class="wact"><button type="button" class="go" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button><a class="wyt" href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener" aria-label="YouTube">▶</a></div></div>'+
       '<div class="vgrid wrel" id="wrel"><p class="empty2">'+esc(t("loading"))+'</p></div></div>';
     st.scrollTop=0;
@@ -1197,7 +1197,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-n";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-o";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
