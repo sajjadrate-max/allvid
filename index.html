@@ -250,6 +250,19 @@ a.site.on{border-color:var(--accent)}
 @media (min-width:520px){.vgrid.tall{grid-template-columns:repeat(3,1fr)}}
 .player .stage video{max-height:70vh}
 .player .ytopen{display:block;text-align:center;color:#fff;opacity:.8;margin-top:12px;font-size:.9rem;text-decoration:underline}
+.player.yt{background:var(--bg)}
+.player.yt .top{background:#000}
+.player.yt .stage{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.watch{max-width:760px;margin:0 auto}
+.watch .wv{position:sticky;top:0;z-index:2;background:#000}
+.watch .wv iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+.watch .winfo{padding:12px 16px 4px;color:var(--fg)}
+.watch .wt{font-weight:700;font-size:1.05rem;line-height:1.45}
+.watch .ws{color:var(--muted);font-size:.85rem;margin-top:2px}
+.watch .wact{display:flex;align-items:center;gap:12px;margin-top:12px}
+.watch .wact .go{flex:1;margin:0}
+.watch .wyt{flex:none;width:48px;height:48px;border-radius:999px;border:1.5px solid var(--line);display:grid;place-items:center;color:#f00;font-size:1.2rem;text-decoration:none;background:var(--surface)}
+.watch .wrel{padding:16px 16px 40px}
 </style>
 </head>
 <body>
@@ -774,7 +787,7 @@ a.site.on{border-color:var(--accent)}
       m.onerror=()=>{if(r.local&&r.direct&&m.src.indexOf(r.direct)!==0&&m.src.indexOf(r.src)!==0){m.src=r.direct;}else if(!NATIVE&&r.direct&&m.src.indexOf(r.direct)===0&&r.src){m.src=r.src;}else{$("plStage").innerHTML='<p style="color:#fff;text-align:center;padding:20px">'+esc(t("cantPlay"))+'</p>';}};
       m.src=u;$("player").hidden=false;NAV.push("player");
     }
-    function hidePlayer(){const m=$("plStage").firstChild;if(m&&m.pause)m.pause();$("plStage").innerHTML="";$("player").hidden=true;}
+    function hidePlayer(){const m=$("plStage").firstChild;if(m&&m.pause)m.pause();$("plStage").innerHTML="";$("player").hidden=true;$("player").classList.remove("yt");}
     function closePlayer(){if(!$("player").hidden)NAV.pop("player",hidePlayer);}
     $("plClose").onclick=closePlayer;
     document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("player").hidden)closePlayer();});
@@ -1029,6 +1042,9 @@ a.site.on{border-color:var(--accent)}
     if(name==="tiktok")TK.start();
   }
   const DLI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+  const cards=items=>items.map((v,i)=>'<div class="vc" data-i="'+i+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" src="'+esc(v.thumb)+'" alt="" referrerpolicy="no-referrer">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+'</button>'+
+    '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div></div>'+
+    '<button type="button" class="dlb" data-act="dl" aria-label="'+esc(t("downloadBtn"))+'">'+DLI+'</button></div></div>').join("");
   function feed(pre,CATS,mp3,tiktok){
     const cats=$(pre+"Cats"),list=$(pre+"List"),head=$(pre+"Head");
     let seq=0,loaded=false;
@@ -1042,9 +1058,7 @@ a.site.on{border-color:var(--accent)}
       }
       if(my!==seq)return;
       if(!items.length){list.innerHTML='<p class="empty2">'+esc(t("noResults"))+'</p>';return;}
-      list.innerHTML=items.map((v,i)=>'<div class="vc" data-i="'+i+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" src="'+esc(v.thumb)+'" alt="" referrerpolicy="no-referrer">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+'</button>'+
-        '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div></div>'+
-        '<button type="button" class="dlb" data-act="dl" aria-label="'+esc(t("downloadBtn"))+'">'+DLI+'</button></div></div>').join("");
+      list.innerHTML=cards(items);
       list._items=items;
     }
     function pick(i){[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));load(CATS[i][1],CATS[i][0]);}
@@ -1052,14 +1066,11 @@ a.site.on{border-color:var(--accent)}
     function download(v){if(mp3)nextPref="mp3";link.value=v.link||"https://youtu.be/"+v.id;mark();last="";analyze();}
     function watch(v){
       $("plTitle").textContent=v.title;
-      if(tiktok){   // TikTok videos play straight from their file (through our API if the CDN refuses)
-        $("plStage").innerHTML='<video controls autoplay playsinline loop></video><button type="button" class="go ytdl" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button>';
-        const m=$("plStage").firstChild;m.onerror=()=>{if(m.dataset.p)return;m.dataset.p=1;m.src=abs("/api/download?file="+encodeURIComponent(v.play)+"&name=tiktok.mp4");};m.src=v.play;
-      // YouTube's player refuses to start without a Referer (the page sends none, for the CDNs),
-      // so this frame sends the site's address; "Open in YouTube" for videos that block embedding.
-      }else $("plStage").innerHTML='<iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'+
-        '<a class="ytopen" href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener">▶ YouTube</a>'+
-        '<button type="button" class="go ytdl" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button>';
+      if(!tiktok){watchYT(v,mp3);return;}
+      $("player").classList.remove("yt");
+      // TikTok videos play straight from their file (through our API if the CDN refuses).
+      $("plStage").innerHTML='<video controls autoplay playsinline loop></video><button type="button" class="go ytdl" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button>';
+      const m=$("plStage").firstChild;m.onerror=()=>{if(m.dataset.p)return;m.dataset.p=1;m.src=abs("/api/download?file="+encodeURIComponent(v.play)+"&name=tiktok.mp4");};m.src=v.play;
       $("player").hidden=false;NAV.push("player");
       $("ytdl").onclick=()=>{NAV.pop("player",DL.hidePlayer);setTimeout(()=>download(v),50);};
     }
@@ -1073,6 +1084,37 @@ a.site.on{border-color:var(--accent)}
       search(q){loaded=true;[...cats.children].forEach(b=>b.setAttribute("aria-pressed","false"));load(q,t("results")+": "+q);}
     };
   }
+  // YouTube's player refuses to start without a Referer (the page sends none, for the CDNs),
+  // so its frame sends the site's address; ▶ opens YouTube for videos that block embedding.
+  // YouTube watch page: player on top, title and Download under it, then related videos
+  // (YouTube's own "up next" list); tapping one plays it here.
+  let relSeq=0;
+  function watchYT(v,mp3){
+    const pl=$("player"),st=$("plStage");
+    $("plTitle").textContent=v.title;pl.classList.add("yt");
+    st.innerHTML='<div class="watch"><div class="wv"><iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
+      '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div>'+
+      '<div class="wact"><button type="button" class="go" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button><a class="wyt" href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener" aria-label="YouTube">▶</a></div></div>'+
+      '<div class="vgrid wrel" id="wrel"><p class="empty2">'+esc(t("loading"))+'</p></div></div>';
+    st.scrollTop=0;
+    if(pl.hidden){pl.hidden=false;NAV.push("player");}
+    $("ytdl").onclick=()=>{NAV.pop("player",DL.hidePlayer);setTimeout(()=>{if(mp3)nextPref="mp3";link.value="https://youtu.be/"+v.id;mark();last="";analyze();},50);};
+    const rel=$("wrel"),my=++relSeq;
+    (async()=>{
+      let items=[];
+      for(const b of BASES){
+        try{const r=await fetch(b+"/api/download?related="+v.id+"&q="+encodeURIComponent(v.title||""));const j=await r.json();if(j.items){items=j.items;break;}}catch(e){}
+      }
+      if(my!==relSeq||!document.body.contains(rel))return;
+      rel.innerHTML=items.length?cards(items):'<p class="empty2">'+esc(t("noResults"))+'</p>';
+      rel.onclick=e=>{
+        const b=e.target.closest("[data-act]");if(!b)return;
+        const w=items[+b.closest(".vc").dataset.i];if(!w)return;
+        if(b.dataset.act==="dl"){NAV.pop("player",DL.hidePlayer);setTimeout(()=>{if(mp3)nextPref="mp3";link.value="https://youtu.be/"+w.id;mark();last="";analyze();},50);}
+        else watchYT(w,mp3);
+      };
+    })();
+  }
   const YT=feed("yt",[["🔥 Trending","trending pakistan today"],["📰 News","pakistan news today"],["🕌 Naat","naat sharif"],["📺 Drama","pakistani drama latest episode"],["😂 Comedy","funny videos"],["🏏 Cricket","cricket highlights"],["🍳 Food","pakistani food recipe"],["🎓 Islamic","islamic bayan"]]);
   const TK=feed("tk",[["🔥 Trending",""],["😂 Funny","funny pakistan"],["🎵 Songs","urdu songs"],["🕌 Islamic","islamic bayan"],["🏏 Cricket","cricket"],["🍳 Food","food recipe"],["💪 Motivation","motivation urdu"],["💄 Beauty","makeup tutorial"]],false,true);
   const MU=feed("mu",[["🎵 New","new songs 2026"],["🕌 Naat","naat sharif"],["🎤 Qawwali","qawwali"],["💔 Sad","sad songs urdu"],["🎶 Punjabi","punjabi songs"],["🌙 Ghazal","ghazal"],["🇮🇳 Bollywood","bollywood songs"],["🎧 Pashto","pashto songs"]],true);
@@ -1084,7 +1126,7 @@ a.site.on{border-color:var(--accent)}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-c";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-d";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

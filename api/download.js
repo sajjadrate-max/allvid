@@ -6,7 +6,7 @@
 // (MP3 and enlarged copies are made by api/convert.js.)
 
 import { Readable } from 'node:stream';
-import { UserError, allowedMedia, mediaHeaders, resolve, addSizes, ytJob, ytSearch, tiktokFeed } from '../lib/resolve.js';
+import { UserError, allowedMedia, mediaHeaders, resolve, addSizes, ytJob, ytSearch, tiktokFeed, ytRelated } from '../lib/resolve.js';
 
 export const config = { maxDuration: 60 };
 
@@ -52,6 +52,11 @@ export default async function handler(req, res) {
     if (req.method === 'GET' && req.query && req.query.tt !== undefined) {
       const out = await tiktokFeed(req.query.tt);
       res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=3600');
+      res.status(200).json(out); return;
+    }
+    if (req.method === 'GET' && req.query && req.query.related) {
+      const out = await ytRelated(req.query.related, req.query.q);
+      res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=3600');
       res.status(200).json(out); return;
     }
     if (req.method === 'GET' && req.query && req.query.search) {
