@@ -111,6 +111,10 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 [data-view][hidden]{display:none}
 .files h2{font-family:var(--display);font-size:1.5rem;line-height:2.2;margin:0}
 .empty{color:var(--muted);text-align:center;padding:40px 10px}
+.files-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gear{background:none;border:0;padding:8px;color:var(--muted);border-radius:999px;cursor:pointer}
+.gear[aria-expanded="true"]{color:var(--accent);background:var(--surface)}
+.par[hidden]{display:none}
 .par{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.92rem;color:var(--muted)}
 .par-opts{display:flex;gap:6px}
 .par-opts button{min-width:38px;padding:5px 10px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line);color:var(--fg);font-weight:600;font-size:.9rem}
@@ -213,8 +217,9 @@ html[dir="ltr"] .fi .mt{text-align:left}
 </div>
 
 <section class="wrap files" data-view="files" id="filesView" hidden>
-  <h2 data-i18n="tabFiles">میری فائلیں</h2>
-  <div class="par"><span data-i18n="atOnce">ایک وقت میں ڈاؤن لوڈ</span>
+  <div class="files-head"><h2 data-i18n="tabFiles">میری فائلیں</h2>
+    <button type="button" class="gear" id="parBtn" aria-expanded="false" aria-controls="parBox"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
+  <div class="par" id="parBox" hidden><span data-i18n="atOnce">ایک وقت میں ڈاؤن لوڈ</span>
     <div class="par-opts" id="parOpts"><button type="button" data-n="1">1</button><button type="button" data-n="2">2</button><button type="button" data-n="3">3</button><button type="button" data-n="4">4</button><button type="button" data-n="5">5</button><button type="button" data-n="99" data-i18n="allAtOnce">سب</button></div>
   </div>
   <ul class="fl" id="fileList"></ul>
@@ -567,7 +572,10 @@ html[dir="ltr"] .fi .mt{text-align:left}
       if(NATIVE)recs.forEach(r=>{if(r.status==="busy")poll(r);});   // DownloadManager kept going
       recs.forEach(r=>{if(r.status!=="fail")makeThumb(r);});   // older entries without a kept picture
     })();
-    const parOpts=$("parOpts");
+    const parOpts=$("parOpts"),parBtn=$("parBtn");
+    // The "downloads at once" setting stays tucked behind the gear button.
+    parBtn.setAttribute("aria-label",t("atOnce"));
+    parBtn.onclick=()=>{const open=$("parBox").hidden;$("parBox").hidden=!open;parBtn.setAttribute("aria-expanded",String(open));};
     function markPar(){parOpts.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.n===parLimit())));}
     parOpts.onclick=e=>{const b=e.target.closest("button");if(!b)return;try{localStorage.setItem("vdlPar",b.dataset.n);}catch(x){}markPar();pump();};
     markPar();
