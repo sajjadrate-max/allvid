@@ -1120,7 +1120,7 @@ html{overscroll-behavior-y:contain}
       st.innerHTML='<div class="watch tt"><div class="wv"><video controls autoplay playsinline loop></video></div>'+
         '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div>'+
         '<div class="wact"><button type="button" class="go" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button></div></div>'+
-        '<div class="vgrid tall wrel" id="wrel"></div></div>';
+        '<div class="vgrid wrel" id="wrel"></div></div>';   // one video per row, like YouTube's
       // Played straight from its file (through our API if the CDN refuses).
       const m=st.querySelector("video");m.onerror=()=>{if(m.dataset.p)return;m.dataset.p=1;m.src=abs("/api/download?file="+encodeURIComponent(v.play)+"&name=tiktok.mp4");};m.src=v.play;
       st.scrollTop=0;
@@ -1218,7 +1218,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-l";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-m";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
