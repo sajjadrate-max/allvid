@@ -594,7 +594,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
   function showErr(k,detail){
     msg.innerHTML='<div class="status err">'+esc(ERR[k]||ERR["fetch.fail"])+(detail||k&&!ERR[k]?'<br><small dir="ltr" style="opacity:.75;font-family:var(--mono)">'+esc((ERR[k]?"":k+" ")+(detail||""))+'</small>':'')+'</div>';
   }
-  let last="",busy=false;
+  let last="",busy=false,autoShare=false;
   async function analyze(){
     const url=findUrl(link.value);
     if(!url){msg.innerHTML='<div class="status err">'+esc(t("needLink"))+'</div>';link.focus();return;}
@@ -619,6 +619,8 @@ html[dir="ltr"] .fi .mt{text-align:left}
       if(!j){showErr("no.api","page:"+location.host+" "+code.trim());return;}
       if(!j.items){showErr(j.error,j.detail);return;}
       render(j);
+      // Opened from another app's Share button: download the best version straight away.
+      if(autoShare){autoShare=false;const b=$("dl");if(b)b.click();}
     }catch(e){showErr("net",String(e&&e.message||e));}
     finally{busy=false;go.disabled=false;go.textContent="⬇ Download";}
   }
@@ -640,7 +642,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
   (function(){
     const q=new URLSearchParams(location.search);
     const u=findUrl([q.get("url"),q.get("text"),q.get("title")].filter(Boolean).join(" "));
-    if(u){link.value=u;mark();history.replaceState(null,"",location.pathname);maybeAuto();}
+    if(u){link.value=u;mark();history.replaceState({vdl:"home"},"",location.pathname);autoShare=true;maybeAuto();}
   })();
 
   // --- Install as app ---
