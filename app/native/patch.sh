@@ -33,4 +33,7 @@ for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
   rm -f "$RES/mipmap-$d/ic_launcher_foreground.png"
 done
 rm -rf "$RES/mipmap-anydpi-v26"
+# Each build gets a higher version number, so Android accepts it as an update.
+sed -i "s/versionCode 1$/versionCode ${GITHUB_RUN_NUMBER:-1}/; s/versionName \"1.0\"/versionName \"1.${GITHUB_RUN_NUMBER:-0}\"/" android/app/build.gradle
+grep -n "versionCode\|versionName" android/app/build.gradle
 grep -n "SEND\|WRITE_EXTERNAL" android/app/src/main/AndroidManifest.xml
