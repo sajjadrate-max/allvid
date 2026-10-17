@@ -1063,15 +1063,15 @@ html{overscroll-behavior-y:contain}
     async function load(q,label){
       const my=++seq;head.textContent=label;
       list.innerHTML='<p class="empty2">'+esc(t("loading"))+'</p>';
-      let items=[];
+      let items=[],why="";
       for(const b of BASES){
         // A different sort each time (and a cache-busting bucket for TikTok), so each refresh
         // or tap on a category brings other videos.
         const extra=tiktok?"&r="+Math.floor(Math.random()*6):"&sort="+["","d","w"][Math.floor(Math.random()*3)];
-        try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;break;}}catch(e){}
+        try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;break;}if(j.detail)why=j.detail;}catch(e){}
       }
       if(my!==seq)return;
-      if(!items.length){list.innerHTML='<p class="empty2">'+esc(t("noResults"))+'</p>';return;}
+      if(!items.length){list.innerHTML='<p class="empty2">'+esc(t("noResults"))+(why?'<br><small dir="ltr" style="font-family:var(--mono);opacity:.6">'+esc(why)+'</small>':'')+'</p>';return;}
       items=shuffle(items);
       list.innerHTML=cards(items);
       list._items=items;
@@ -1179,7 +1179,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-h";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-i";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
