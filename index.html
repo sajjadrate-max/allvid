@@ -688,7 +688,7 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
   function showErr(k,detail){
     msg.innerHTML='<div class="status err">'+esc(ERR[k]||ERR["fetch.fail"])+(detail||k&&!ERR[k]?'<br><small dir="ltr" style="opacity:.75;font-family:var(--mono)">'+esc((ERR[k]?"":k+" ")+(detail||""))+'</small>':'')+'</div>';
   }
-  let last="",busy=false,autoShare=false;
+  let last="",busy=false;
   // YouTube's player API answers web pages too (googleapis allows any site); ask as its apps.
   const YT_PHONE=[
     {tag:"vr",client:{clientName:"ANDROID_VR",clientVersion:"1.60.19",deviceMake:"Oculus",deviceModel:"Quest 3",androidSdkVersion:32,osName:"Android",osVersion:"12L"}},
@@ -745,13 +745,10 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
       if(!j){showErr("no.api","page:"+location.host+" "+code.trim());return;}
       if(!j.items){showErr(j.error,((j.detail||"")+" "+ph).trim());return;}
       render(j);
-      // Pasted or shared link: download the best version straight away (the yellow
-      // Download button still opens the list of formats to choose from).
-      if(autoShare){autoShare=false;const b=$("dl");if(b)b.click();}
     }catch(e){showErr("net",String(e&&e.message||e));}
-    finally{autoShare=false;busy=false;go.disabled=false;go.textContent="⬇ Download";}
+    finally{busy=false;go.disabled=false;go.textContent="⬇ Download";}
   }
-  function maybeAuto(){const u=findUrl(link.value);if(u&&u!==last&&platform(u)&&!busy){link.value=u;mark();autoShare=true;analyze();}}
+  function maybeAuto(){const u=findUrl(link.value);if(u&&u!==last&&platform(u)&&!busy){link.value=u;mark();analyze();}}
   link.addEventListener("paste",()=>setTimeout(maybeAuto,0));
   // The keyboard's clipboard suggestion (e.g. Gboard) inserts the whole link at once without
   // a "paste" event: treat a jump of many characters as a paste.
@@ -773,7 +770,7 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
   (function(){
     const q=new URLSearchParams(location.search);
     const u=findUrl([q.get("url"),q.get("text"),q.get("title")].filter(Boolean).join(" "));
-    if(u){link.value=u;mark();history.replaceState({vdl:"home"},"",location.pathname);autoShare=true;maybeAuto();}
+    if(u){link.value=u;mark();history.replaceState({vdl:"home"},"",location.pathname);maybeAuto();}
   })();
 
   // --- Install as app ---
