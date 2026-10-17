@@ -1163,7 +1163,31 @@ const STR={
 "id": "Semua",
 "ms": "Semua",
 "zh": "全部"
-}
+},
+"tabSettings": {"ur": "سیٹنگز", "en": "Settings", "ar": "الإعدادات", "hi": "सेटिंग्स"},
+"searchPh": {"ur": "لنک ڈالیں یا YouTube پر تلاش کریں", "en": "Paste a link or search YouTube", "ar": "الصق رابطًا أو ابحث في YouTube", "hi": "लिंक डालें या YouTube पर खोजें"},
+"linkOrSearch": {"ur": "ویڈیو کا لنک یا تلاش", "en": "Video link or search", "ar": "رابط الفيديو أو البحث", "hi": "वीडियो लिंक या खोज"},
+"sites": {"ur": "سائٹ کھولیں، ویڈیو پر Share دبا کر AllVid چنیں", "en": "Open a site, tap Share on a video and pick AllVid", "ar": "افتح موقعًا، اضغط مشاركة على الفيديو واختر AllVid", "hi": "साइट खोलें, वीडियो पर Share दबाकर AllVid चुनें"},
+"loading": {"ur": "لوڈ ہو رہا ہے...", "en": "Loading...", "ar": "جارٍ التحميل...", "hi": "लोड हो रहा है..."},
+"noResults": {"ur": "کچھ نہیں ملا۔ دوبارہ کوشش کریں۔", "en": "Nothing found. Try again.", "ar": "لم يُعثر على شيء. حاول مرة أخرى.", "hi": "कुछ नहीं मिला। फिर कोशिश करें।"},
+"results": {"ur": "تلاش کے نتائج", "en": "Search results", "ar": "نتائج البحث", "hi": "खोज परिणाम"},
+"setDownloads": {"ur": "ڈاؤن لوڈ", "en": "Downloads", "ar": "التنزيلات", "hi": "डाउनलोड"},
+"setQuality": {"ur": "پہلے سے چنی کوالٹی", "en": "Preferred quality", "ar": "الجودة المفضلة", "hi": "पसंदीदा क्वालिटी"},
+"qBest": {"ur": "بہترین", "en": "Best", "ar": "الأفضل", "hi": "सबसे अच्छी"},
+"setLook": {"ur": "دکھاوٹ", "en": "Appearance", "ar": "المظهر", "hi": "रूप"},
+"setTheme": {"ur": "تھیم", "en": "Theme", "ar": "السمة", "hi": "थीम"},
+"themeAuto": {"ur": "خودکار", "en": "Auto", "ar": "تلقائي", "hi": "ऑटो"},
+"themeLight": {"ur": "روشن", "en": "Light", "ar": "فاتح", "hi": "लाइट"},
+"themeDark": {"ur": "اندھیرا", "en": "Dark", "ar": "داكن", "hi": "डार्क"},
+"setStorage": {"ur": "فائلیں", "en": "Storage", "ar": "التخزين", "hi": "स्टोरेज"},
+"clearFiles": {"ur": "تمام فائلیں ہٹائیں", "en": "Delete all files", "ar": "حذف كل الملفات", "hi": "सारी फ़ाइलें हटाएं"},
+"clearConfirm": {"ur": "کیا آپ \"میری فائلیں\" سے تمام فائلیں ہٹانا چاہتے ہیں؟ فون میں محفوظ کی گئی فائلیں نہیں ہٹیں گی۔", "en": "Delete all files from My files? Copies already saved to your phone stay.", "ar": "حذف كل الملفات من ملفاتي؟ النسخ المحفوظة في هاتفك تبقى.", "hi": "मेरी फ़ाइलों से सारी फ़ाइलें हटाएं? फ़ोन में सेव की गई कॉपी रहेंगी।"},
+"cleared": {"ur": "فائلیں ہٹا دی گئیں", "en": "Files deleted", "ar": "تم حذف الملفات", "hi": "फ़ाइलें हटा दी गईं"},
+"setAbout": {"ur": "معلومات", "en": "About", "ar": "حول", "hi": "जानकारी"},
+"shareApp": {"ur": "AllVid شیئر کریں", "en": "Share AllVid", "ar": "شارك AllVid", "hi": "AllVid शेयर करें"},
+"linkCopied": {"ur": "لنک کاپی ہو گیا", "en": "Link copied", "ar": "تم نسخ الرابط", "hi": "लिंक कॉपी हो गया"},
+"aboutText": {"ur": "AllVid: TikTok، Facebook، Instagram، X اور YouTube کی ویڈیوز ڈاؤن لوڈ کریں۔", "en": "AllVid: download videos from TikTok, Facebook, Instagram, X and YouTube.", "ar": "AllVid: نزّل فيديوهات TikTok وFacebook وInstagram وX وYouTube.", "hi": "AllVid: TikTok, Facebook, Instagram, X और YouTube के वीडियो डाउनलोड करें।"},
+"downloadBtn": {"ur": "ڈاؤن لوڈ", "en": "Download", "ar": "تنزيل", "hi": "डाउनलोड"}
 };
 let cur="ur";
 try{cur=localStorage.getItem("vdlLang")||"ur";}catch(e){}

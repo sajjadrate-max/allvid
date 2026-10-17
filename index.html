@@ -178,6 +178,37 @@ html[dir="ltr"] .steps{padding-right:0;padding-left:18px}
 html[dir="ltr"] .fi .mt{text-align:left}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-weight:700;padding:6px 0}
+.sites-note{font-size:.82rem;color:var(--muted);margin:10px 0 0}
+a.chip{text-decoration:none}
+.yt{display:flex;flex-direction:column;gap:10px}
+.yt-h{margin:0;font-size:1rem;font-family:var(--body)}
+.cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cats button{flex:none;background:var(--surface);border:1.5px solid var(--line);color:var(--fg);border-radius:999px;padding:4px 14px;font-size:.9rem;font-weight:600;white-space:nowrap}
+.cats button[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.vgrid{display:grid;grid-template-columns:1fr;gap:16px}
+.vc{display:flex;flex-direction:column;gap:6px}
+.vc .th2{position:relative;display:block;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--line);padding:0}
+.vc .th2 img{width:100%;height:100%;object-fit:cover;display:block}
+.vc .du{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.78);color:#fff;font-size:.75rem;padding:0 6px;border-radius:4px;font-family:var(--mono);direction:ltr}
+.vc .meta2{display:flex;align-items:flex-start;gap:10px}
+.vc .tx{flex:1;min-width:0}
+.vc .tt2{font-weight:600;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;background:none;padding:0;color:var(--fg);text-align:start;width:100%}
+.vc .sub{font-size:.8rem;color:var(--muted)}
+.vc .dlb{flex:none;width:42px;height:42px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line);color:var(--fg);display:grid;place-items:center}
+.vc .dlb svg{width:22px;height:22px}
+.yt .empty2{color:var(--muted);text-align:center;padding:18px 0;margin:0}
+@media (min-width:520px){.vgrid{grid-template-columns:1fr 1fr}}
+.player .stage iframe{width:100%;aspect-ratio:16/9;border:0;background:#000}
+.player .ytdl{margin:14px auto 0;max-width:320px;width:calc(100% - 32px)}
+.settings .sec-h{margin:8px 4px 0;font-size:.85rem;color:var(--muted);font-weight:600}
+.set-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.set-card .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-top:1px solid var(--line);width:100%;background:none;color:var(--fg);text-align:start}
+.set-card .row:first-child{border-top:0}
+.set-card .row.col{flex-direction:column;align-items:stretch}
+.set-card .row .val{color:var(--muted);font-size:.9rem}
+.set-card .row.danger{color:var(--danger)}
+.set-card .par-opts{flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -194,14 +225,15 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
       </div>
     </div>
     <p class="lead" data-i18n="lead">لنک ڈالیں، فارمیٹ چنیں، اور ویڈیو اپنے موبائل میں محفوظ کریں۔</p>
+    <p class="sites-note" data-i18n="sites">سائٹ کھولیں، ویڈیو پر Share دبا کر AllVid چنیں</p>
     <div class="chips">
-      <span class="chip" data-p="instagram">Instagram</span>
-      <span class="chip" data-p="facebook">Facebook</span>
-      <span class="chip" data-p="tiktok">TikTok</span>
-      <span class="chip" data-p="twitter">X / Twitter</span>
-      <span class="chip" data-p="youtube">YouTube</span>
-      <span class="chip" data-p="snapchat">Snapchat</span>
-      <span class="chip" data-p="pinterest">Pinterest</span>
+      <a class="chip" data-p="instagram" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+      <a class="chip" data-p="facebook" href="https://m.facebook.com/watch/" target="_blank" rel="noopener">Facebook</a>
+      <a class="chip" data-p="tiktok" href="https://www.tiktok.com/" target="_blank" rel="noopener">TikTok</a>
+      <a class="chip" data-p="twitter" href="https://x.com/" target="_blank" rel="noopener">X / Twitter</a>
+      <a class="chip" data-p="youtube" href="https://m.youtube.com/" target="_blank" rel="noopener">YouTube</a>
+      <a class="chip" data-p="snapchat" href="https://www.snapchat.com/spotlight" target="_blank" rel="noopener">Snapchat</a>
+      <a class="chip" data-p="pinterest" href="https://www.pinterest.com/" target="_blank" rel="noopener">Pinterest</a>
     </div>
   </header>
 
@@ -213,27 +245,56 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
   </div>
 
   <form class="card" id="form" novalidate>
-    <label class="l" for="link" data-i18n="linkLabel">ویڈیو کا لنک</label>
+    <label class="l" for="link" data-i18n="linkOrSearch">ویڈیو کا لنک یا تلاش</label>
     <div class="linkbox">
-      <input type="url" id="link" placeholder="https://www.instagram.com/reel/..." autocomplete="off" inputmode="url">
+      <input type="text" id="link" data-i18n-ph="searchPh" placeholder="لنک ڈالیں یا YouTube پر تلاش کریں" autocomplete="off" enterkeyhint="go">
       <button class="paste" type="button" id="paste" data-i18n="paste">Paste</button>
     </div>
     <button class="go" id="go" type="submit">⬇ Download</button>
     <div id="msg" aria-live="polite"></div>
   </form>
 
+  <section class="yt" id="yt" aria-labelledby="ytHead">
+    <div class="cats" id="ytCats"></div>
+    <h3 class="yt-h" id="ytHead">YouTube</h3>
+    <div class="vgrid" id="ytList"></div>
+  </section>
+
   <p class="note" data-i18n-html="note">Instagram، Facebook، TikTok یا X میں ویڈیو پر <b>شیئر</b> دبائیں، <b>Copy link</b> چنیں، پھر یہاں <b>پیسٹ</b> دبائیں۔</p>
   <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
 </div>
 
 <section class="wrap files" data-view="files" id="filesView" hidden>
-  <div class="files-head"><h2 data-i18n="tabFiles">میری فائلیں</h2>
-    <button type="button" class="gear" id="parBtn" aria-expanded="false" aria-controls="parBox"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
-  <div class="par" id="parBox" hidden><span data-i18n="atOnce">ایک وقت میں ڈاؤن لوڈ</span>
-    <div class="par-opts" id="parOpts"><button type="button" data-n="1">1</button><button type="button" data-n="2">2</button><button type="button" data-n="3">3</button><button type="button" data-n="4">4</button><button type="button" data-n="5">5</button><button type="button" data-n="99" data-i18n="allAtOnce">سب</button></div>
-  </div>
+  <h2 data-i18n="tabFiles">میری فائلیں</h2>
   <ul class="fl" id="fileList"></ul>
   <p class="empty" id="noFiles" data-i18n="empty">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
+</section>
+
+<section class="wrap files settings" data-view="settings" id="settingsView" hidden>
+  <h2 data-i18n="tabSettings">سیٹنگز</h2>
+  <p class="sec-h" data-i18n="setDownloads">ڈاؤن لوڈ</p>
+  <div class="set-card">
+    <div class="row col"><span data-i18n="atOnce">ایک وقت میں ڈاؤن لوڈ</span>
+      <div class="par-opts" id="parOpts"><button type="button" data-n="1">1</button><button type="button" data-n="2">2</button><button type="button" data-n="3">3</button><button type="button" data-n="4">4</button><button type="button" data-n="5">5</button><button type="button" data-n="99" data-i18n="allAtOnce">سب</button></div></div>
+    <div class="row col"><span data-i18n="setQuality">پہلے سے چنی کوالٹی</span>
+      <div class="par-opts" id="qOpts"><button type="button" data-q="best" data-i18n="qBest">بہترین</button><button type="button" data-q="1080">1080p</button><button type="button" data-q="720">720p</button><button type="button" data-q="360">360p</button><button type="button" data-q="mp3">MP3</button></div></div>
+  </div>
+  <p class="sec-h" data-i18n="setLook">دکھاوٹ</p>
+  <div class="set-card">
+    <div class="row col"><span data-i18n="setTheme">تھیم</span>
+      <div class="par-opts" id="themeOpts"><button type="button" data-th="auto" data-i18n="themeAuto">خودکار</button><button type="button" data-th="light" data-i18n="themeLight">روشن</button><button type="button" data-th="dark" data-i18n="themeDark">اندھیرا</button></div></div>
+    <button type="button" class="row link" id="setLang"><span data-i18n="language">زبان</span><span class="val" id="setLangName"></span></button>
+  </div>
+  <p class="sec-h" data-i18n="setStorage">فائلیں</p>
+  <div class="set-card">
+    <button type="button" class="row link danger" id="clearAll"><span data-i18n="clearFiles">تمام فائلیں ہٹائیں</span><span class="val" id="filesCount"></span></button>
+  </div>
+  <p class="sec-h" data-i18n="setAbout">معلومات</p>
+  <div class="set-card">
+    <button type="button" class="row link" id="shareApp"><span data-i18n="shareApp">AllVid شیئر کریں</span><span class="val">↗</span></button>
+    <div class="row"><span data-i18n="aboutText">AllVid</span></div>
+  </div>
+  <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
 </section>
 
 <button type="button" class="dlbar" id="dlbar" hidden>
@@ -246,6 +307,8 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span data-i18n="tabHome">ڈاؤن لوڈ</span></button>
   <button class="tab" role="tab" type="button" data-tab="files" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M10 9v6l5-3z" fill="currentColor"/></svg><span data-i18n="tabFiles">میری فائلیں</span><span class="badge" id="badge" hidden>0</span></button>
+  <button class="tab" role="tab" type="button" data-tab="settings" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span data-i18n="tabSettings">سیٹنگز</span></button>
 </nav>
 
 <div class="player" id="player" hidden role="dialog" aria-modal="true" data-i18n-aria="player" aria-label="پلیئر">
@@ -320,7 +383,9 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
     // file (newer compression). When sizes are known and there are no resolutions, the bigger
     // file is listed first as HD and the rest as the smaller file.
     if(vid.length>1&&vid.every(i=>!parseInt(i.label,10)&&i.size)){vid.sort((a,b)=>b.size-a.size);vid.forEach((i,k)=>{i.hd=k===0;});}
-    const def=vid.find(i=>!i.up)||vid[0]||aud[0];   // the original quality, not an enlarged copy
+    // Preferred quality from Settings, else the original quality (not an enlarged copy).
+    const pref=(()=>{try{return localStorage.getItem("vdlQ")||"best";}catch(e){return "best";}})();
+    const def=(pref==="mp3"&&aud[0])||(pref!=="best"&&vid.find(i=>parseInt(i.label,10)===+pref))||vid.find(i=>!i.up)||vid[0]||aud[0];
     // Files the API makes on request (MP3, enlarged sizes) have no size yet: estimate it.
     const src=vid.filter(i=>!i.up&&i.size&&parseInt(i.label,10)>0).sort((a,b)=>parseInt(b.label,10)-parseInt(a.label,10))[0]||vid.find(i=>!i.up&&i.size);
     const dur=+j.duration||0;
@@ -658,14 +723,20 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
       if(NATIVE)recs.forEach(r=>{if(r.status==="busy")poll(r);});   // DownloadManager kept going
       recs.forEach(r=>{if(r.status!=="fail")makeThumb(r);});   // older entries without a kept picture
     })();
-    const parOpts=$("parOpts"),parBtn=$("parBtn");
-    // The "downloads at once" setting stays tucked behind the gear button.
-    parBtn.setAttribute("aria-label",t("atOnce"));
-    parBtn.onclick=()=>{const open=$("parBox").hidden;$("parBox").hidden=!open;parBtn.setAttribute("aria-expanded",String(open));};
+    const parOpts=$("parOpts");   // on the Settings screen
     function markPar(){parOpts.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.n===parLimit())));}
     parOpts.onclick=e=>{const b=e.target.closest("button");if(!b)return;try{localStorage.setItem("vdlPar",b.dataset.n);}catch(x){}markPar();pump();};
     markPar();
-    return {start,redraw:draw,hidePlayer};
+    // Settings -> delete all: everything except downloads still running.
+    async function clearAll(){
+      for(const r of [...recs.values()]){
+        if(RUN(r))continue;
+        r._gone=true;recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}
+        await tx("readwrite",s=>s.delete(r.id));
+      }
+      draw();
+    }
+    return {start,redraw:draw,hidePlayer,clearAll,count:()=>recs.size};
   })();
 
   let toastT=0;
@@ -675,11 +746,12 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
     document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t.dataset.tab===v)));
     scrollTo(0,0);DL.redraw();
   }
+  // "My files" and "Settings" sit one step above the download screen: back returns there.
   function show(v){
-    if(v==="files"){
-      if(NAV.at("sheet"))history.replaceState({vdl:"files"},"");else NAV.push("files");
-      showView("files");
-    }else if(NAV.at("files")){history.back();}   // popstate brings the download screen back
+    if(v!=="home"){
+      if(NAV.at("sheet")||NAV.at("files")||NAV.at("settings"))history.replaceState({vdl:v},"");else NAV.push(v);
+      showView(v);if(v==="settings")fillSettings();
+    }else if(NAV.at("files")||NAV.at("settings")){history.back();}   // popstate brings the download screen back
     else showView("home");
   }
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.tab));
@@ -720,7 +792,11 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
   }
   async function analyze(){
     const url=findUrl(link.value);
-    if(!url){msg.innerHTML='<div class="status err">'+esc(t("needLink"))+'</div>';link.focus();return;}
+    if(!url){
+      const q=link.value.trim();
+      if(q){msg.innerHTML="";link.blur();YT.search(q);return;}
+      msg.innerHTML='<div class="status err">'+esc(t("needLink"))+'</div>';link.focus();return;
+    }
     if(!platform(url)){msg.innerHTML='<div class="status err">'+ERR.unsupported+'</div>';return;}
     last=url;busy=true;msg.innerHTML="";
     go.disabled=true;go.innerHTML='<span class="spin"></span> '+esc(t("searching"));
@@ -818,6 +894,7 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
     document.title=t("title");
     const cur=I18N.LANGS.find(l=>l.code===I18N.lang);$("langName").textContent=cur?shortName(cur.name):"Language";
     langBtn.setAttribute("aria-label",t("language"));
+    $("setLangName").textContent=$("langName").textContent;
     instBtn.hidden=false;
     msg.innerHTML="";closeSheet();DL.redraw();
   }
@@ -838,11 +915,75 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!langPanel.hidden){closeLangs();langBtn.focus();}});
 
   // Phone back button: close whatever is on top.
+  // --- YouTube on the home screen: category chips and search, each video can be watched
+  // here (YouTube's own player) or downloaded (the same list of sizes as a pasted link).
+  const YT=(function(){
+    const CATS=[["🔥 Trending","trending pakistan today"],["📰 News","pakistan news today"],["🎵 Music","new songs 2026"],["🕌 Naat","naat sharif"],["📺 Drama","pakistani drama latest episode"],["😂 Comedy","funny videos"],["🏏 Cricket","cricket highlights"],["🍳 Food","pakistani food recipe"]];
+    const cats=$("ytCats"),list=$("ytList"),head=$("ytHead");
+    let seq=0,loaded=false;
+    const DLI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+    cats.innerHTML=CATS.map((c,i)=>'<button type="button" data-i="'+i+'" aria-pressed="false">'+esc(c[0])+'</button>').join("");
+    async function load(q,label){
+      const my=++seq;head.textContent=label;
+      list.innerHTML='<p class="empty2">'+esc(t("loading"))+'</p>';
+      let items=[];
+      for(const b of BASES){
+        try{const r=await fetch(b+"/api/download?search="+encodeURIComponent(q));const j=await r.json();if(j.items){items=j.items;break;}}catch(e){}
+      }
+      if(my!==seq)return;
+      if(!items.length){list.innerHTML='<p class="empty2">'+esc(t("noResults"))+'</p>';return;}
+      list.innerHTML=items.map((v,i)=>'<div class="vc" data-i="'+i+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" src="'+esc(v.thumb)+'" alt="" referrerpolicy="no-referrer">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+'</button>'+
+        '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div></div>'+
+        '<button type="button" class="dlb" data-act="dl" aria-label="'+esc(t("downloadBtn"))+'">'+DLI+'</button></div></div>').join("");
+      list._items=items;
+    }
+    function pick(i){[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));load(CATS[i][1],CATS[i][0]);}
+    cats.onclick=e=>{const b=e.target.closest("button");if(b)pick(+b.dataset.i);};
+    function download(v){link.value="https://youtu.be/"+v.id;mark();last="";analyze();}
+    function watch(v){
+      $("plTitle").textContent=v.title;
+      $("plStage").innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'+
+        '<button type="button" class="go ytdl" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button>';
+      $("player").hidden=false;NAV.push("player");
+      $("ytdl").onclick=()=>{NAV.pop("player",DL.hidePlayer);setTimeout(()=>download(v),50);};
+    }
+    list.onclick=e=>{
+      const b=e.target.closest("[data-act]");if(!b)return;
+      const v=(list._items||[])[+b.closest(".vc").dataset.i];if(!v)return;
+      if(b.dataset.act==="dl")download(v);else watch(v);
+    };
+    return {
+      start(){if(!loaded){loaded=true;pick(0);}},
+      search(q){[...cats.children].forEach(b=>b.setAttribute("aria-pressed","false"));load(q,t("results")+": "+q);$("yt").scrollIntoView({behavior:"smooth",block:"start"});}
+    };
+  })();
+  YT.start();
+
+  // --- Settings screen
+  function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
+  function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
+  applyTheme();
+  function fillSettings(){
+    $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
+    let q="best";try{q=localStorage.getItem("vdlQ")||"best";}catch(e){}
+    $("qOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.q===q)));
+    const n=DL.count();$("filesCount").textContent=n?String(n):"";
+  }
+  $("themeOpts").onclick=e=>{const b=e.target.closest("button");if(!b)return;try{localStorage.setItem("vdlTheme",b.dataset.th);}catch(x){}applyTheme();fillSettings();};
+  $("qOpts").onclick=e=>{const b=e.target.closest("button");if(!b)return;try{localStorage.setItem("vdlQ",b.dataset.q);}catch(x){}fillSettings();};
+  $("setLang").onclick=()=>{show("home");setTimeout(()=>{scrollTo(0,0);langBtn.click();},80);};
+  $("clearAll").onclick=async()=>{if(!DL.count()||!confirm(t("clearConfirm")))return;await DL.clearAll();fillSettings();toast(t("cleared"));};
+  $("shareApp").onclick=async()=>{
+    const url=location.origin+location.pathname;
+    try{if(navigator.share){await navigator.share({title:"AllVid",text:t("aboutText"),url});return;}}catch(e){return;}
+    try{await navigator.clipboard.writeText(url);toast(t("linkCopied"));}catch(e){}
+  };
+
   window.addEventListener("popstate",()=>{
     if(!$("player").hidden){DL.hidePlayer();return;}
     if(root.classList.contains("open")){hideSheet();return;}
     if(!langPanel.hidden){openLangs(false);return;}
-    if(!$("filesView").hidden){showView("home");return;}
+    if(!$("filesView").hidden||!$("settingsView").hidden){showView("home");return;}
   });
   applyLang();
 })();

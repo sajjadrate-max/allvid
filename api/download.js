@@ -6,7 +6,7 @@
 // (MP3 and enlarged copies are made by api/convert.js.)
 
 import { Readable } from 'node:stream';
-import { UserError, allowedMedia, mediaHeaders, resolve, addSizes, ytJob } from '../lib/resolve.js';
+import { UserError, allowedMedia, mediaHeaders, resolve, addSizes, ytJob, ytSearch } from '../lib/resolve.js';
 
 export const config = { maxDuration: 60 };
 
@@ -49,6 +49,11 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   try {
     if (req.method === 'GET' && req.query && req.query.file) return await stream(req, res);
+    if (req.method === 'GET' && req.query && req.query.search) {
+      const out = await ytSearch(req.query.search);
+      res.setHeader('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600');   // the same lists are asked for often
+      res.status(200).json(out); return;
+    }
     if (req.method === 'GET' && req.query && req.query.yt) { res.status(200).json(await ytJob(req.query)); return; }
     if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
     const url = String((req.body && req.body.url) || '').trim();
