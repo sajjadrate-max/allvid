@@ -1,6 +1,6 @@
 // App shell cache for the video downloader. Only same-origin GETs inside this
 // app's folder are cached; API calls and downloads always go to the network.
-const CACHE = "video-dl-v42";
+const CACHE = "video-dl-v43";
 const BASE = new URL("./", self.location).pathname;
 const SHELL = [BASE, BASE + "i18n.js", BASE + "manifest.json", BASE + "icon-192.png", BASE + "icon-512.png"];
 
@@ -17,16 +17,18 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const req = e.request, u = new URL(req.url);
   if (req.method !== "GET" || u.origin !== location.origin || !u.pathname.startsWith(BASE)) return;
-  // Open straight from the cache (fast, e.g. when picked from another app's Share menu)
-  // and fetch the newest copy in the background for next time. Pages share one cache
-  // entry, so a shared link (?url=...) opens the same saved page.
+  // Newest copy from the network when it answers within 3 seconds (so updates show up
+  // at once); otherwise the saved copy, so the app still opens fast on a slow line or offline.
+  // Pages share one cache entry, so a shared link (?url=...) opens the same saved page.
   const key = req.mode === "navigate" ? BASE : req;
   const fresh = fetch(req).then(r => {
     if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(key, copy)); }
     return r;
   });
   e.waitUntil(fresh.then(() => {}, () => {}));
-  e.respondWith(caches.match(key).then(hit => hit || fresh));
+  const late = new Promise(res => setTimeout(res, 3000)).then(() => caches.match(key));
+  e.respondWith(Promise.race([fresh.catch(() => caches.match(key)), late.then(hit => hit || fresh)])
+    .then(r => r || fresh));
 });
 
 // Background downloads (started by the page when the app is closed mid-download).
