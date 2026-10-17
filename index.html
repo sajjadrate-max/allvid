@@ -890,35 +890,6 @@ html{overscroll-behavior-y:contain}
     msg.innerHTML='<div class="status err">'+esc(ERR[k]||ERR["fetch.fail"])+(detail||k&&!ERR[k]?'<br><small dir="ltr" style="opacity:.75;font-family:var(--mono)">'+esc((ERR[k]?"":k+" ")+(detail||""))+'</small>':'')+'</div>';
   }
   let last="",busy=false;
-  // YouTube's player API answers web pages too (googleapis allows any site); ask as its apps.
-  const YT_PHONE=[
-    {tag:"vr",client:{clientName:"ANDROID_VR",clientVersion:"1.60.19",deviceMake:"Oculus",deviceModel:"Quest 3",androidSdkVersion:32,osName:"Android",osVersion:"12L"}},
-    {tag:"ios",client:{clientName:"IOS",clientVersion:"20.10.4",deviceMake:"Apple",deviceModel:"iPhone16,2",osName:"iPhone",osVersion:"18.3.2.22D82"}},
-    {tag:"and",client:{clientName:"ANDROID",clientVersion:"20.10.38",androidSdkVersion:34,osName:"Android",osVersion:"14"}}
-  ];
-  async function ytPhone(url){
-    const id=(url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/)||[])[1];
-    if(!id)return {why:"ph:noid"};
-    let why="";
-    for(const c of YT_PHONE){
-      try{
-        // text/plain keeps it a "simple" request (no CORS pre-check, which YouTube refuses).
-        const r=await fetch("https://youtubei.googleapis.com/youtubei/v1/player?prettyPrint=false&key=AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w",{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},credentials:"omit",
-          body:JSON.stringify({videoId:id,contentCheckOk:true,racyCheckOk:true,context:{client:{hl:"en",gl:"US",...c.client}}})});
-        const j=await r.json();const st=(j.playabilityStatus||{}).status;why+=" ph"+c.tag+":"+r.status+"-"+st;
-        if(st!=="OK"||!j.streamingData)continue;
-        const title=(j.videoDetails||{}).title||"YouTube video",dur=+(j.videoDetails||{}).lengthSeconds||0;
-        const name=n=>"&name="+encodeURIComponent(n);
-        const muxed=(j.streamingData.formats||[]).filter(f=>f.url&&/video\/mp4/.test(f.mimeType)).sort((a,b)=>(b.height||0)-(a.height||0));
-        const aud=(j.streamingData.adaptiveFormats||[]).filter(f=>f.url&&/audio\/mp4/.test(f.mimeType)).sort((a,b)=>(b.bitrate||0)-(a.bitrate||0))[0];
-        const size=f=>+f.contentLength||(f.bitrate&&dur?Math.round(f.bitrate*dur/8):0)||undefined;
-        const items=muxed.map((f,i)=>({type:"video",hd:i===0,label:f.qualityLabel||"",url:f.url+name(title+".mp4"),direct:f.url,size:size(f)}));
-        if(aud)items.push({type:"audio",label:"M4A",url:aud.url+name(title+".m4a"),direct:aud.url,size:size(aud)});
-        if(items.some(i=>i.type==="video"))return {title,thumb:"https://i.ytimg.com/vi/"+id+"/hqdefault.jpg",items,duration:dur||undefined};
-      }catch(e){why+=" ph"+c.tag+":"+(/fetch|network|cors/i.test(String(e&&e.message))?"blocked":"err");}
-    }
-    return {why:why.trim()};
-  }
   async function analyze(){
     const url=findUrl(link.value);
     if(!url){
@@ -930,15 +901,12 @@ html{overscroll-behavior-y:contain}
     last=url;busy=true;msg.innerHTML="";
     go.disabled=true;go.innerHTML='<span class="spin"></span>';
     try{
-      let j=null,code="",ph="";
+      let j=null,code="";
       if(NATIVE){
         const lib=await import("./lib/resolve.js");
         try{j=await lib.resolve(url);await lib.addSizes(j.items);}
         catch(e){j={error:e&&e.code||"fetch.fail",detail:e&&e.detail||String(e&&e.message||e)};}
       }
-      // YouTube blocks servers ("sign in to confirm you're not a bot") but not phones:
-      // ask YouTube from the phone itself first. Its file links then only work on this phone.
-      if(!NATIVE&&platform(url)==="youtube"){const y=await ytPhone(url);if(y.items)j=y;else ph=y.why;}
       for(const b of NATIVE||j?[]:BASES){
         try{
           const r=await fetch(b+"/api/download",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url})});
@@ -948,7 +916,7 @@ html{overscroll-behavior-y:contain}
         }catch(e){code+=(b?new URL(b).hostname:"same")+":net ";}
       }
       if(!j){showErr("no.api","page:"+location.host+" "+code.trim());return;}
-      if(!j.items){showErr(j.error,((j.detail||"")+" "+ph).trim());return;}
+      if(!j.items){showErr(j.error,j.detail);return;}
       render(j);
     }catch(e){showErr("net",String(e&&e.message||e));}
     finally{busy=false;go.disabled=false;go.innerHTML=GO_HTML;}
@@ -1110,7 +1078,7 @@ html{overscroll-behavior-y:contain}
     try{cur=Math.min(CATS.length-1,+localStorage.getItem("vdlCat_"+pre)||0);}catch(e){}
     function pick(i,force){cur=i;try{localStorage.setItem("vdlCat_"+pre,String(i));}catch(e){}[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));const q=[].concat(CATS[i][1]);load(q[Math.floor(Math.random()*q.length)],CATS[i][0],i,force);}
     cats.onclick=e=>{const b=e.target.closest("button");if(b)pick(+b.dataset.i,+b.dataset.i===cur);};   // tapping the open one again = fresh list
-    function download(v){if(mp3)nextPref="mp3";link.value=v.link||"https://youtu.be/"+v.id;mark();last="";analyze();}
+    function download(v){if(!tiktok){ytSheet(v.id,v.title,mp3);return;}link.value=v.link;mark();last="";analyze();}
     function watch(v){
       $("plTitle").textContent=v.title;
       if(!tiktok){watchYT(v,mp3);return;}
@@ -1145,6 +1113,18 @@ html{overscroll-behavior-y:contain}
       search(q){loaded=true;[...cats.children].forEach(b=>b.setAttribute("aria-pressed","false"));load(q,t("results")+": "+q,"s",true);}
     };
   }
+  // A YouTube video from the lists: its sizes come from the converter, so the list of sizes
+  // can open at once (title and picture are already known) without asking the server first.
+  function ytSheet(id,title,mp3){
+    if(busy)return;
+    const nm=ext=>encodeURIComponent((String(title||"video").replace(/[^\p{L}\p{M}\p{N} ._-]+/gu," ").replace(/\s+/g," ").trim().slice(0,60)||"video")+"."+ext);
+    const job=(f,ext)=>abs("/api/download?yt="+f+"&v="+id+"&name="+nm(ext));
+    if(mp3)nextPref="mp3";
+    link.value="https://youtu.be/"+id;mark();last=link.value;
+    render({title:title||"YouTube video",thumb:"https://i.ytimg.com/vi/"+id+"/hqdefault.jpg",items:[
+      {type:"video",hd:true,label:"1080p",url:job("1080","mp4"),prep:true},{type:"video",label:"720p",url:job("720","mp4"),prep:true},
+      {type:"video",label:"360p",url:job("360","mp4"),prep:true},{type:"audio",label:"MP3",url:job("mp3","mp3"),prep:true}]});
+  }
   // YouTube's player refuses to start without a Referer (the page sends none, for the CDNs),
   // so its frame sends the site's address; ▶ opens YouTube for videos that block embedding.
   // YouTube watch page: player on top, title and Download under it, then related videos
@@ -1160,8 +1140,7 @@ html{overscroll-behavior-y:contain}
     st.scrollTop=0;
     if(pl.hidden){pl.hidden=false;NAV.push("player");}
     // Download from the watch page: the list of sizes opens right here, over the player.
-    const ytGet=id=>{if(busy)return;if(mp3)nextPref="mp3";link.value="https://youtu.be/"+id;mark();last="";toast(t("searching"));analyze();};
-    $("ytdl").onclick=()=>ytGet(v.id);
+    $("ytdl").onclick=()=>ytSheet(v.id,v.title,mp3);
     const rel=$("wrel"),my=++relSeq;
     (async()=>{
       let items=[];
@@ -1173,7 +1152,7 @@ html{overscroll-behavior-y:contain}
       rel.onclick=e=>{
         const b=e.target.closest("[data-act]");if(!b)return;
         const w=items[+b.closest(".vc").dataset.i];if(!w)return;
-        if(b.dataset.act==="dl")ytGet(w.id);
+        if(b.dataset.act==="dl")ytSheet(w.id,w.title,mp3);
         else watchYT(w,mp3);
       };
     })();
@@ -1218,7 +1197,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-m";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-n";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
