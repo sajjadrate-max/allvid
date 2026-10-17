@@ -109,9 +109,6 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 [data-view][hidden]{display:none}
 .files h2{font-family:var(--display);font-size:1.5rem;line-height:2.2;margin:0}
 .empty{color:var(--muted);text-align:center;padding:40px 10px}
-.addbtn{display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px dashed var(--accent);color:var(--accent);border-radius:12px;padding:10px;font-weight:700;cursor:pointer}
-.addbtn input{position:absolute;opacity:0;width:1px;height:1px}
-.addbtn:focus-within{outline:3px solid var(--cta);outline-offset:2px}
 .fl{display:flex;flex-direction:column;gap:10px;list-style:none;margin:0;padding:0}
 .fi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;gap:12px;align-items:center}
 .fi .th{width:84px;height:84px;border-radius:10px;background:var(--line);flex:none;position:relative;overflow:hidden;border:0;padding:0;display:grid;place-items:center;color:var(--fg)}
@@ -175,9 +172,8 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 
 <section class="wrap files" data-view="files" id="filesView" hidden>
   <h2>میری فائلیں</h2>
-  <label class="addbtn"><input type="file" id="pick" accept="video/*,audio/*,image/*" multiple>📁 فون سے ویڈیوز شامل کریں</label>
   <ul class="fl" id="fileList"></ul>
-  <p class="empty" id="noFiles">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔<br>پہلے ڈاؤن لوڈ کی ہوئی ویڈیوز فون کے Downloads فولڈر میں ہیں؛ اوپر والے بٹن سے انہیں یہاں شامل کر لیں۔</p>
+  <p class="empty" id="noFiles">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
 </section>
 
 <nav class="tabs" role="tablist">
@@ -345,17 +341,6 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
         v.onerror=()=>fin("");setTimeout(()=>fin(""),6000);
       });
     }
-    async function addFiles(files){
-      for(const f of files){
-        const type=/^audio/.test(f.type)?"audio":/^image/.test(f.type)?"photo":"video";
-        const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:f.lastModified||Date.now(),status:"done",type,
-          title:f.name.replace(/\.[^.]+$/,""),src:"?name="+encodeURIComponent(f.name),size:f.size,got:f.size,blob:f,thumb:""};
-        if(type==="video")r.thumb=await frame(f);else if(type==="photo")r.thumb="";
-        recs.set(r.id,r);await put(r);draw();
-      }
-      if(files.length)toast("✓ "+files.length+" فائلیں شامل ہو گئیں");
-    }
-    $("pick").onchange=e=>{const fs=[...e.target.files];e.target.value="";addFiles(fs);};
     // Android app: DownloadManager does the work; poll it for progress.
     const MEDIA_UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36";
     async function nativeStart(r){
