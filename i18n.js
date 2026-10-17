@@ -1187,7 +1187,8 @@ const STR={
 "shareApp": {"ur": "AllVid شیئر کریں", "en": "Share AllVid", "ar": "شارك AllVid", "hi": "AllVid शेयर करें"},
 "linkCopied": {"ur": "لنک کاپی ہو گیا", "en": "Link copied", "ar": "تم نسخ الرابط", "hi": "लिंक कॉपी हो गया"},
 "aboutText": {"ur": "AllVid: TikTok، Facebook، Instagram، X اور YouTube کی ویڈیوز ڈاؤن لوڈ کریں۔", "en": "AllVid: download videos from TikTok, Facebook, Instagram, X and YouTube.", "ar": "AllVid: نزّل فيديوهات TikTok وFacebook وInstagram وX وYouTube.", "hi": "AllVid: TikTok, Facebook, Instagram, X और YouTube के वीडियो डाउनलोड करें।"},
-"downloadBtn": {"ur": "ڈاؤن لوڈ", "en": "Download", "ar": "تنزيل", "hi": "डाउनलोड"}
+"downloadBtn": {"ur": "ڈاؤن لوڈ", "en": "Download", "ar": "تنزيل", "hi": "डाउनलोड"},
+"clipPasted": {"ur": "AllVid نے کلپ بورڈ سے لنک لے لیا", "en": "AllVid pasted from your clipboard", "ar": "لصق AllVid الرابط من الحافظة", "hi": "AllVid ने क्लिपबोर्ड से लिंक ले लिया"}
 };
 let cur="ur";
 try{cur=localStorage.getItem("vdlLang")||"ur";}catch(e){}

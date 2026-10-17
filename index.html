@@ -887,6 +887,21 @@ a.site.on{border-color:var(--accent)}
   }
   function maybeAuto(){const u=findUrl(link.value);if(u&&u!==last&&platform(u)&&!busy){link.value=u;mark();analyze();}}
   link.addEventListener("paste",()=>setTimeout(maybeAuto,0));
+  // Like Snaptube: a video link copied in another app is picked up when AllVid opens or
+  // comes back to the screen (once per link; the phone may ask to allow clipboard access).
+  async function fromClipboard(){
+    if(NATIVE||document.visibilityState!=="visible"||busy||root.classList.contains("open")||$("homeView").hidden)return;
+    let txt="";try{txt=await navigator.clipboard.readText();}catch(e){return;}
+    const u=findUrl(txt);if(!u||!platform(u)||platform(u)==="web")return;
+    let seen="";try{seen=localStorage.getItem("vdlClip")||"";}catch(e){}
+    if(u===seen||u===last)return;
+    try{localStorage.setItem("vdlClip",u);}catch(e){}
+    if(typeof hpane==="function")hpane("search");
+    link.value=u;mark();toast(t("clipPasted"));maybeAuto();
+  }
+  document.addEventListener("visibilitychange",()=>setTimeout(fromClipboard,300));
+  window.addEventListener("focus",()=>setTimeout(fromClipboard,300));
+  setTimeout(fromClipboard,800);
   // The keyboard's clipboard suggestion (e.g. Gboard) inserts the whole link at once without
   // a "paste" event: treat a jump of many characters as a paste.
   let prevLen=0;
