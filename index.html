@@ -830,7 +830,7 @@ html{overscroll-behavior-y:contain}
       m.onerror=()=>{if(r.local&&r.direct&&m.src.indexOf(r.direct)!==0&&m.src.indexOf(r.src)!==0){m.src=r.direct;}else if(!NATIVE&&r.direct&&m.src.indexOf(r.direct)===0&&r.src){m.src=r.src;}else{$("plStage").innerHTML='<p style="color:#fff;text-align:center;padding:20px">'+esc(t("cantPlay"))+'</p>';}};
       m.src=u;$("player").hidden=false;NAV.push("player");
     }
-    function hidePlayer(){const m=$("plStage").firstChild;if(m&&m.pause)m.pause();$("plStage").innerHTML="";$("player").hidden=true;$("player").classList.remove("yt");}
+    function hidePlayer(){const m=$("plStage").firstChild;if(m&&m.pause)m.pause();$("plStage").innerHTML="";$("plStage").onscroll=null;$("player").hidden=true;$("player").classList.remove("yt");}
     function closePlayer(){if(!$("player").hidden)NAV.pop("player",hidePlayer);}
     $("plClose").onclick=closePlayer;
     document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("player").hidden)closePlayer();});
@@ -1119,8 +1119,8 @@ html{overscroll-behavior-y:contain}
       }
       return {items:[]};
     }
-    async function loadMore(){
-      if(more||!list._items||!list._items.length||dry>4)return;
+    async function loadMore(force){
+      if(more||!list._items||!list._items.length||(dry>4&&!force))return;
       more=true;const my=seq;
       list.insertAdjacentHTML("beforeend",'<div class="sk more-sk"></div><div class="sk more-sk"></div>');
       let q=curQ,tok=next;
@@ -1178,7 +1178,7 @@ html{overscroll-behavior-y:contain}
       if(!tiktok||v.yt){watchYT(v,mp3);return;}
       // TikTok watch page, like YouTube's: the video on top, Download under it (sizes open
       // right there), then the other videos of this list; tapping one plays it in place.
-      const pl=$("player"),st=$("plStage");pl.classList.add("yt");
+      const pl=$("player"),st=$("plStage");pl.classList.add("yt");st.onscroll=null;
       st.innerHTML='<div class="watch tt"><div class="wv"><video controls autoplay playsinline></video></div>'+
         '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div>'+
         '<div class="wact"><button type="button" class="go" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button></div></div>'+
@@ -1195,6 +1195,18 @@ html{overscroll-behavior-y:contain}
         const b=e.target.closest("[data-act]");if(!b)return;
         const w=more[+b.closest(".vc").dataset.i];if(!w)return;
         if(b.dataset.act==="dl"){if(!busy){toast(t("searching"));download(w);}}else watch(w);
+      };
+      // Endless here too: near the bottom, the tab's list fetches its next page and the new
+      // videos are added below.
+      let busyRel=false,shown=new Set([v.id,...more.map(w=>w.id)]);
+      st.onscroll=async()=>{
+        if(busyRel||st.scrollTop+st.clientHeight<st.scrollHeight-1500)return;
+        busyRel=true;const before=(list._items||[]).length;
+        await loadMore(true);
+        const add=(list._items||[]).slice(before).filter(w=>!shown.has(w.id));
+        add.forEach(w=>shown.add(w.id));
+        if(add.length&&document.body.contains(rel)){rel.insertAdjacentHTML("beforeend",cards(add,more.length));more.push(...add);}
+        busyRel=false;
       };
     }
     list.onclick=e=>{
@@ -1234,7 +1246,7 @@ html{overscroll-behavior-y:contain}
   });
   const ytListen=()=>{const f=$("ytf");if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*");};
   function watchYT(v,mp3){
-    const pl=$("player"),st=$("plStage");
+    const pl=$("player"),st=$("plStage");st.onscroll=null;
     $("plTitle").textContent=v.title;pl.classList.add("yt");
     st.innerHTML='<div class="watch"><div class="wv"><iframe id="ytf" src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&enablejsapi=1&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
       '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div>'+
@@ -1261,6 +1273,18 @@ html{overscroll-behavior-y:contain}
         const w=items[+b.closest(".vc").dataset.i];if(!w)return;
         if(b.dataset.act==="dl")ytSheet(w.id,w.title,mp3);
         else watchYT(w,mp3);
+      };
+      // Endless: near the bottom, the "related" list of a video further down is added.
+      const shown=new Set([v.id,...items.map(w=>w.id)]);let busyRel=false,k=0,dry=0;
+      st.onscroll=async()=>{
+        if(busyRel||dry>4||!items.length||st.scrollTop+st.clientHeight<st.scrollHeight-1500)return;
+        busyRel=true;
+        const from=items[Math.min(items.length-1,k++*3+Math.floor(Math.random()*3))];
+        let got=[];
+        for(const b of BASES){try{const r=await fetch(b+"/api/download?related="+from.id+"&q="+encodeURIComponent(from.title||""));const j=await r.json();if(j.items){got=j.items;break;}}catch(e){}}
+        const add=got.filter(w=>!shown.has(w.id));add.forEach(w=>shown.add(w.id));
+        if(my===relSeq&&add.length&&document.body.contains(rel)){rel.insertAdjacentHTML("beforeend",cards(add,items.length));items.push(...add);dry=0;}else dry++;
+        busyRel=false;
       };
     })();
   }
@@ -1304,7 +1328,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-s";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-t";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
