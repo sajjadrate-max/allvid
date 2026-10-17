@@ -250,7 +250,7 @@ a.site.on{border-color:var(--accent)}
 @media (min-width:520px){.vgrid.tall{grid-template-columns:repeat(3,1fr)}}
 .player .stage video{max-height:70vh}
 .player .ytopen{display:block;text-align:center;color:#fff;opacity:.8;margin-top:12px;font-size:.9rem;text-decoration:underline}
-.player.yt{background:var(--bg)}
+.player.yt{background:var(--bg);gap:0}
 .player.yt .top{background:#000}
 .player.yt .stage{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .watch{max-width:760px;margin:0 auto}
@@ -268,6 +268,7 @@ a.site.on{border-color:var(--accent)}
 .player:not([hidden]) ~ .toast{z-index:32}
 html{overscroll-behavior-y:contain}
 .ptr{position:fixed;top:14px;left:50%;transform:translate(-50%,0);z-index:15;width:40px;height:40px;border-radius:999px;background:var(--surface);box-shadow:0 2px 10px rgba(0,0,0,.2);display:grid;place-items:center;font-size:1.3rem;color:var(--fg);opacity:0;pointer-events:none;transition:opacity .15s}
+.watch.tt .wv video{display:block;width:100%;height:58vh;object-fit:contain;background:#000}
 </style>
 </head>
 <body>
@@ -1084,12 +1085,25 @@ html{overscroll-behavior-y:contain}
     function watch(v){
       $("plTitle").textContent=v.title;
       if(!tiktok){watchYT(v,mp3);return;}
-      $("player").classList.remove("yt");
-      // TikTok videos play straight from their file (through our API if the CDN refuses).
-      $("plStage").innerHTML='<video controls autoplay playsinline loop></video><button type="button" class="go ytdl" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button>';
-      const m=$("plStage").firstChild;m.onerror=()=>{if(m.dataset.p)return;m.dataset.p=1;m.src=abs("/api/download?file="+encodeURIComponent(v.play)+"&name=tiktok.mp4");};m.src=v.play;
-      $("player").hidden=false;NAV.push("player");
-      $("ytdl").onclick=()=>download(v);   // sizes open over the player; it keeps playing
+      // TikTok watch page, like YouTube's: the video on top, Download under it (sizes open
+      // right there), then the other videos of this list; tapping one plays it in place.
+      const pl=$("player"),st=$("plStage");pl.classList.add("yt");
+      st.innerHTML='<div class="watch tt"><div class="wv"><video controls autoplay playsinline loop></video></div>'+
+        '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div>'+
+        '<div class="wact"><button type="button" class="go" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button></div></div>'+
+        '<div class="vgrid tall wrel" id="wrel"></div></div>';
+      // Played straight from its file (through our API if the CDN refuses).
+      const m=st.querySelector("video");m.onerror=()=>{if(m.dataset.p)return;m.dataset.p=1;m.src=abs("/api/download?file="+encodeURIComponent(v.play)+"&name=tiktok.mp4");};m.src=v.play;
+      st.scrollTop=0;
+      if(pl.hidden){pl.hidden=false;NAV.push("player");}
+      $("ytdl").onclick=()=>{if(!busy){toast(t("searching"));download(v);}};
+      const more=(list._items||[]).filter(w=>w.id!==v.id),rel=$("wrel");
+      rel.innerHTML=more.length?cards(more):"";
+      rel.onclick=e=>{
+        const b=e.target.closest("[data-act]");if(!b)return;
+        const w=more[+b.closest(".vc").dataset.i];if(!w)return;
+        if(b.dataset.act==="dl"){if(!busy){toast(t("searching"));download(w);}}else watch(w);
+      };
     }
     list.onclick=e=>{
       const b=e.target.closest("[data-act]");if(!b)return;
@@ -1165,7 +1179,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-g";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-h";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
