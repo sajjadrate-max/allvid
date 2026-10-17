@@ -172,6 +172,9 @@ html[dir="ltr"] .fi .mt{text-align:left}
       <span class="chip" data-p="facebook">Facebook</span>
       <span class="chip" data-p="tiktok">TikTok</span>
       <span class="chip" data-p="twitter">X / Twitter</span>
+      <span class="chip" data-p="youtube">YouTube</span>
+      <span class="chip" data-p="snapchat">Snapchat</span>
+      <span class="chip" data-p="pinterest">Pinterest</span>
     </div>
   </header>
 
@@ -240,7 +243,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
   const NATIVE=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlatform());
   const Downloader=NATIVE?(CAP.registerPlugin?CAP.registerPlugin("Downloader"):CAP.Plugins.Downloader):null;
   const $=id=>document.getElementById(id);
-  const P=[["instagram",/instagram\.com|instagr\.am/i],["facebook",/facebook\.com|fb\.watch|fb\.com/i],["tiktok",/tiktok\.com/i],["twitter",/(^|[\/.])(twitter|x)\.com\//i]];
+  const P=[["instagram",/instagram\.com|instagr\.am/i],["facebook",/facebook\.com|fb\.watch|fb\.com/i],["tiktok",/tiktok\.com/i],["twitter",/(^|[\/.])(twitter|x)\.com\//i],["youtube",/youtube\.com|youtu\.be/i],["snapchat",/snapchat\.com/i],["pinterest",/pinterest\.|pin\.it/i]];
   // Error texts come from i18n.js (keys "e_<code>"); unknown codes fall back to the generic one.
   const ERR=new Proxy({},{get:(_,k)=>typeof k==="string"&&I18N.t("e_"+k)!=="e_"+k?I18N.t("e_"+k):undefined});
 
@@ -251,7 +254,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
   const link=$("link"),go=$("go"),msg=$("msg"),root=$("sheetRoot"),sheet=$("sheet");
   const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const findUrl=v=>{const m=String(v||"").match(/https?:\/\/\S+/);return m?m[0]:"";};
-  const platform=v=>{for(const [n,r] of P) if(r.test(v)) return n; return "";};
+  const platform=v=>{for(const [n,r] of P) if(r.test(v)) return n; return /^https?:\/\//i.test(v)?"web":"";};
   const abs=u=>/^https?:/.test(u)?u:base+u;
   const mb=n=>n?(n/1048576).toFixed(1)+" MB":"";
   function mark(){const hit=platform(link.value);document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c.dataset.p===hit));}
@@ -272,8 +275,8 @@ html[dir="ltr"] .fi .mt{text-align:left}
     const opt=(i,label)=>{list.push(i);return '<label class="opt"><input type="radio" name="fmt" value="'+(list.length-1)+'"'+(i===def?' checked':'')+'>'+ICON[i.type]+'<span class="n">'+label+'</span><span class="s">'+mb(i.size)+'</span><span class="c"></span></label>';};
     let h='<div class="handle"></div><div class="sh-head"><h2 id="sheetTitle">Download</h2><button class="sh-x" type="button" id="shx" aria-label="'+t("close")+'">×</button></div>'+
       '<div class="pv">'+(j.thumb?'<img src="'+esc(j.thumb)+'" alt="" referrerpolicy="no-referrer">':'')+'<div><div class="t" dir="auto">'+esc(j.title)+'</div><div class="d">'+esc(host)+'</div></div></div>';
-    if(aud.length){h+='<p class="sec">Music</p>';aud.forEach(i=>{h+=opt(i,"Classic MP3");});}
-    if(vid.length){h+='<p class="sec">Video</p>';vid.forEach(i=>{h+=opt(i,"MP4"+(vid.length>1?(i.hd?" HD":" ("+t("smaller")+")"):""));});}
+    if(aud.length){h+='<p class="sec">Music</p>';aud.forEach(i=>{h+=opt(i,i.label?"Audio ("+i.label+")":"Classic MP3");});}
+    if(vid.length){h+='<p class="sec">Video</p>';vid.forEach(i=>{h+=opt(i,"MP4"+(i.label?" "+i.label:(vid.length>1?(i.hd?" HD":" ("+t("smaller")+")"):"")));});}
     if(pho.length){
       h+='<p class="sec">Photos</p><div class="photos">';
       pho.forEach(p=>{h+='<a href="'+esc(abs(p.url))+'" download aria-label="'+t("photo")+'"><img src="'+esc(p.thumb)+'" alt="" referrerpolicy="no-referrer"></a>';});
@@ -320,7 +323,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
     }
     // Picture for the list: the post's own thumbnail (fetched through our API so it can be
     // kept as a small JPEG; CDN links expire), else a frame from the video itself.
-    const SITE={facebook:"Facebook",instagram:"Instagram",tiktok:"TikTok",twitter:"X"};
+    const SITE={facebook:"Facebook",instagram:"Instagram",tiktok:"TikTok",twitter:"X",youtube:"YouTube",snapchat:"Snapchat",pinterest:"Pinterest"};
     const making=new Set();
     function shrink(img){
       const c=document.createElement("canvas"),w=240,h=Math.round(w*(img.height||1)/(img.width||1));
@@ -342,7 +345,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
     function siteOf(r){
       if(/^(facebook|instagram|tiktok|x)$/i.test(r.title||""))return {x:"twitter"}[r.title.toLowerCase()]||r.title.toLowerCase();
       let u=r.direct||r.link||"";try{u=u||new URL(r.src,location.href).searchParams.get("file")||"";}catch(e){}
-      return /fbcdn|facebook|fb\.watch/i.test(u)?"facebook":/cdninstagram|instagram/i.test(u)?"instagram":/tikwm|tiktok/i.test(u)?"tiktok":/twimg|twitter|x\.com/i.test(u)?"twitter":"";
+      return /fbcdn|facebook|fb\.watch/i.test(u)?"facebook":/cdninstagram|instagram/i.test(u)?"instagram":/tikwm|tiktok/i.test(u)?"tiktok":/twimg|twitter|x\.com/i.test(u)?"twitter":/googlevideo|youtube|ytimg|piped|invidious/i.test(u)?"youtube":/sc-cdn|snapchat/i.test(u)?"snapchat":/pinimg|pinterest/i.test(u)?"pinterest":"";
     }
     function draw(){
       const all=[...recs.values()].sort((a,b)=>b.created-a.created);

@@ -825,24 +825,24 @@ const STR={
 "zh": "链接似乎不正确。请重新复制完整链接。"
 },
 "e_unsupported": {
-"ur": "ابھی Instagram، Facebook، TikTok اور X (Twitter) کے لنک چلتے ہیں۔",
-"en": "Right now Instagram, Facebook, TikTok and X (Twitter) links work.",
-"ar": "حاليًا تعمل روابط Instagram وFacebook وTikTok وX (Twitter).",
-"fa": "فعلاً لینک‌های Instagram، Facebook، TikTok و X (Twitter) کار می‌کنند.",
-"hi": "अभी Instagram, Facebook, TikTok और X (Twitter) के लिंक चलते हैं।",
-"bn": "এখন Instagram, Facebook, TikTok ও X (Twitter)-এর লিংক চলে।",
-"pa": "ਹਾਲੇ Instagram, Facebook, TikTok ਅਤੇ X (Twitter) ਦੇ ਲਿੰਕ ਚੱਲਦੇ ਹਨ।",
-"ps": "اوس د Instagram، Facebook، TikTok او X (Twitter) لینکونه کار کوي.",
-"fr": "Pour l'instant, les liens Instagram, Facebook, TikTok et X (Twitter) fonctionnent.",
-"es": "Por ahora funcionan los enlaces de Instagram, Facebook, TikTok y X (Twitter).",
-"pt": "Por enquanto funcionam links do Instagram, Facebook, TikTok e X (Twitter).",
-"it": "Per ora funzionano i link di Instagram, Facebook, TikTok e X (Twitter).",
-"de": "Derzeit funktionieren Links von Instagram, Facebook, TikTok und X (Twitter).",
-"ru": "Сейчас работают ссылки Instagram, Facebook, TikTok и X (Twitter).",
-"tr": "Şu an Instagram, Facebook, TikTok ve X (Twitter) bağlantıları çalışıyor.",
-"id": "Saat ini tautan Instagram, Facebook, TikTok dan X (Twitter) yang didukung.",
-"ms": "Buat masa ini pautan Instagram, Facebook, TikTok dan X (Twitter) disokong.",
-"zh": "目前支持 Instagram、Facebook、TikTok 和 X（Twitter）的链接。"
+"ur": "اس ویب سائٹ سے ویڈیو نہیں مل سکی۔",
+"en": "Couldn't find a video on this website.",
+"ar": "تعذّر العثور على فيديو في هذا الموقع.",
+"fa": "ویدیویی در این سایت پیدا نشد.",
+"hi": "इस वेबसाइट से वीडियो नहीं मिल सका।",
+"bn": "এই ওয়েবসাইটে কোনো ভিডিও পাওয়া যায়নি।",
+"pa": "ਇਸ ਵੈੱਬਸਾਈਟ ਤੋਂ ਵੀਡੀਓ ਨਹੀਂ ਮਿਲ ਸਕੀ।",
+"ps": "له دې وېبپاڼې ویډیو ونه موندل شوه.",
+"fr": "Aucune vidéo trouvée sur ce site.",
+"es": "No se encontró ningún vídeo en este sitio.",
+"pt": "Nenhum vídeo encontrado neste site.",
+"it": "Nessun video trovato su questo sito.",
+"de": "Auf dieser Website wurde kein Video gefunden.",
+"ru": "На этом сайте видео не найдено.",
+"tr": "Bu sitede video bulunamadı.",
+"id": "Tidak ada video yang ditemukan di situs ini.",
+"ms": "Tiada video dijumpai di laman ini.",
+"zh": "在此网站上没有找到视频。"
 },
 "e_unavailable": {
 "ur": "یہ ویڈیو نہیں ملی۔ شاید ہٹا دی گئی ہے۔",
@@ -885,8 +885,8 @@ const STR={
 "zh": "该帖子是私密的或暂时打不开。只能下载公开帖子。"
 },
 "e_empty": {
-"ur": "اس پوسٹ میں کوئی ویڈیو یا تصویر نہیں ملی۔",
-"en": "No video or photo was found in this post.",
+"ur": "اس صفحے پر کوئی ویڈیو نہیں ملی۔ ہو سکتا ہے یہ ویب سائٹ ابھی نہ چلتی ہو۔",
+"en": "No video was found on this page. This website may not be supported yet.",
 "ar": "لم يُعثر على فيديو أو صورة في هذا المنشور.",
 "fa": "در این پست ویدیو یا عکسی پیدا نشد.",
 "hi": "इस पोस्ट में कोई वीडियो या फ़ोटो नहीं मिली।",
@@ -1003,6 +1003,26 @@ const STR={
 "id": "Tidak dapat terhubung ke internet. Coba lagi.",
 "ms": "Tidak dapat menyambung ke internet. Cuba lagi.",
 "zh": "无法连接互联网，请重试。"
+},
+"e_yt.blocked": {
+"ur": "YouTube نے اس وقت یہ ویڈیو نہیں دی۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔",
+"en": "YouTube didn't give this video right now. Try again in a little while.",
+"ar": "لم يقدّم YouTube هذا الفيديو الآن. حاول بعد قليل.",
+"fa": "YouTube الان این ویدیو را نداد. کمی بعد دوباره امتحان کنید.",
+"hi": "YouTube ने अभी यह वीडियो नहीं दिया। थोड़ी देर बाद फिर कोशिश करें।",
+"bn": "YouTube এখন ভিডিওটি দেয়নি। কিছুক্ষণ পরে আবার চেষ্টা করুন।",
+"pa": "YouTube ਨੇ ਹਾਲੇ ਇਹ ਵੀਡੀਓ ਨਹੀਂ ਦਿੱਤੀ। ਥੋੜ੍ਹੀ ਦੇਰ ਬਾਅਦ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+"ps": "YouTube اوس دا ویډیو ورنه کړه. لږ وروسته بیا هڅه وکړئ.",
+"fr": "YouTube n'a pas fourni cette vidéo. Réessayez dans un moment.",
+"es": "YouTube no dio este vídeo ahora. Inténtalo más tarde.",
+"pt": "O YouTube não liberou este vídeo agora. Tente daqui a pouco.",
+"it": "YouTube non ha fornito il video. Riprova tra poco.",
+"de": "YouTube hat dieses Video gerade nicht geliefert. Versuche es gleich noch einmal.",
+"ru": "YouTube сейчас не отдал это видео. Попробуйте чуть позже.",
+"tr": "YouTube şu an bu videoyu vermedi. Biraz sonra tekrar deneyin.",
+"id": "YouTube tidak memberikan video ini saat ini. Coba lagi sebentar lagi.",
+"ms": "YouTube tidak memberi video ini sekarang. Cuba lagi sebentar nanti.",
+"zh": "YouTube 暂时没有提供该视频，请稍后再试。"
 }
 };
 let cur="ur";
