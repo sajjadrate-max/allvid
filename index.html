@@ -780,7 +780,7 @@ a.site.on{border-color:var(--accent)}
       }
       draw();
     }
-    return {start,redraw:draw,hidePlayer,clearAll,count:()=>recs.size};
+    return {start,redraw:draw,hidePlayer,clearAll,count:()=>recs.size,busy:()=>[...recs.values()].some(r=>r.status==="busy")};
   })();
 
   let toastT=0;
@@ -899,9 +899,12 @@ a.site.on{border-color:var(--accent)}
   // A new version was installed: reload once into it, unless that would interrupt something
   // (a download running in the page, a link being looked up, or the download sheet open).
   if(!NATIVE&&"serviceWorker" in navigator&&navigator.serviceWorker.controller){
+    // Coming back to the app (it stays open in the background): look for a new version.
+    document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")navigator.serviceWorker.getRegistration().then(g=>g&&g.update()).catch(()=>{});});
     navigator.serviceWorker.addEventListener("controllerchange",()=>{
       const tryReload=()=>{
-        if(busy||root.classList.contains("open")||document.querySelector('.fi .bar:not(.idle)')){setTimeout(tryReload,5000);return;}
+        // Background ("bg") downloads carry on without the page, so only in-page ones wait.
+        if(busy||root.classList.contains("open")||DL.busy()){setTimeout(tryReload,5000);return;}
         location.reload();
       };
       tryReload();
