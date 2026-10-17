@@ -356,6 +356,8 @@ html[dir="ltr"] .fi .mt{text-align:left}
     const tx=(mode,fn)=>new Promise(res=>{if(!db)return res(null);try{const t=db.transaction("files",mode);const q=fn(t.objectStore("files"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>res(null);}catch(e){res(null);}});
     const put=r=>{const o={};for(const k in r)if(k[0]!=="_")o[k]=r[k];return tx("readwrite",s=>s.put(o));};
     const nameOf=r=>{try{return new URL(r.src,location.href).searchParams.get("name")||"video.mp4";}catch(e){return "video.mp4";}};
+    // Downloading now: in the page ("busy") or handed to the phone's background download ("bg").
+    const RUN=r=>r.status==="busy"||r.status==="bg";
     const blobUrl=r=>{if(!r.blob)return "";if(!urls.has(r.id))urls.set(r.id,URL.createObjectURL(r.blob));return urls.get(r.id);};
     function phoneSave(r){const a=document.createElement("a");a.href=r.src;a.download="";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();}
     function toPhone(r){const a=document.createElement("a");a.href=blobUrl(r);a.download=nameOf(r);document.body.appendChild(a);a.click();a.remove();}
@@ -376,9 +378,9 @@ html[dir="ltr"] .fi .mt{text-align:left}
       return '<li class="fi'+(r.status==="fail"?' fail':'')+'" data-id="'+r.id+'">'+
         '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="'+t("play")+'">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
         '<div class="bd"><div class="tt" dir="auto">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" "+t("video"))+'</div><div class="mt">'+esc(meta)+'</div>'+
-        (/busy|paused|queued/.test(r.status)?'<div class="bar'+(r.status==="busy"?'':' idle')+'"><i style="width:'+(total?pct:(r.status==="busy"?8:0))+'%"></i></div>':'')+
+        (/busy|bg|paused|queued/.test(r.status)?'<div class="bar'+(RUN(r)?'':' idle')+'"><i style="width:'+(total?pct:(RUN(r)?8:0))+'%"></i></div>':'')+
         '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>'):'')+
-        (r.status==="busy"||r.status==="queued"?'<button type="button" data-act="pause">'+t("pause")+'</button>':'')+
+        (RUN(r)||r.status==="queued"?'<button type="button" data-act="pause">'+t("pause")+'</button>':'')+
         (r.status==="paused"?'<button class="pri" type="button" data-act="resume">'+t("resume")+'</button>':'')+
         (r.status==="fail"?'<button class="pri" type="button" data-act="retry">'+t("retry")+'</button>'+(r.direct||r.src?'<button type="button" data-act="open">'+t("openDirect")+'</button>':''):'')+
         '<button type="button" data-act="del">'+t("remove")+'</button></div></div></li>';
@@ -413,13 +415,13 @@ html[dir="ltr"] .fi .mt{text-align:left}
       const all=[...recs.values()].sort((a,b)=>b.created-a.created);
       list.innerHTML=all.map(row).join("");
       noFiles.hidden=all.length>0;
-      const busyList=all.filter(r=>r.status==="busy"),busy=busyList.length+all.filter(r=>r.status==="queued").length;
+      const busyList=all.filter(RUN),busy=busyList.length+all.filter(r=>r.status==="queued").length;
       badge.hidden=!busy;badge.textContent=busy;
       drawBar();
     }
     function drawBar(){
       const all=[...recs.values()];
-      const busyList=all.filter(r=>r.status==="busy"),busy=busyList.length+all.filter(r=>r.status==="queued").length;
+      const busyList=all.filter(RUN),busy=busyList.length+all.filter(r=>r.status==="queued").length;
       // Bar above the tabs while something downloads (hidden on "my files", which shows it anyway).
       const bar=$("dlbar"),cur=busyList[busyList.length-1];
       bar.hidden=!cur||!$("filesView").hidden;
@@ -432,7 +434,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
     }
     function progress(){
       recs.forEach(r=>{
-        if(r.status!=="busy")return;
+        if(!RUN(r))return;
         const li=list.querySelector('.fi[data-id="'+r.id+'"]');if(!li){draw();return;}
         const m=metaOf(r);li.querySelector(".mt").textContent=m.meta;
         const bar=li.querySelector(".bar i");if(bar)bar.style.width=(m.total?m.pct:8)+"%";
@@ -478,7 +480,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
         if(r.type==="video"){const t=await frame(r.blob);if(t)r.thumb=t;}   // remote thumbnails expire
         r.status="done";await put(r);draw();toPhone(r);toast(t("toastDone"));
       }catch(e){
-        if(r._gone){return;}
+        if(r._gone||r._handoff||r.status==="bg"){return;}
         if(r._pausing){   // keep what arrived; "resume" continues from here
           r._pausing=false;r.status="paused";if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;await put(r);draw();
         }else if(!NATIVE&&r.src){   // fall back to the phone's download manager
@@ -488,6 +490,49 @@ html[dir="ltr"] .fi .mt{text-align:left}
         }
       }finally{r._ctl=null;pump();}
     }
+    // Background download (Chrome's Background Fetch): when the app is closed or put aside,
+    // running and waiting downloads are handed to the phone, which finishes them with a
+    // notification; sw.js stores the file here when it is done. Pause/resume stay in the app.
+    const BG=!NATIVE&&"serviceWorker" in navigator&&"BackgroundFetchManager" in window;
+    const bgReg=()=>navigator.serviceWorker.ready.then(g=>g.backgroundFetch?g:null);
+    async function bgStop(r){try{const g=await bgReg(),f=g&&await g.backgroundFetch.get("vdl-"+r.id);if(f)await f.abort();}catch(e){}}
+    function bgWatch(r,f){
+      const off=r.bgOffset||0;
+      f.addEventListener("progress",()=>{
+        if(f.downloadTotal)r.size=off+f.downloadTotal;r.got=off+f.downloaded;soon();
+        if(f.result==="success"||f.result==="failure")setTimeout(reload,800,r.id);
+      });
+    }
+    async function handOff(r){
+      if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);
+      const got=r.partial?r.partial.size:0;
+      r._handoff=true;if(r._ctl)r._ctl.abort();r._parts=null;
+      const prev=r.status;r.status="bg";r.bgOffset=got;r.got=got;await put(r);
+      const url=abs(r.via==="api"?r.src:(r.direct||r.src));
+      const opts={title:r.title||"Video",icons:[{src:"icon-192.png",sizes:"192x192",type:"image/png"}]};
+      if(r.size&&r.size>got)opts.downloadTotal=r.size-got;
+      try{
+        const g=await bgReg();if(!g)throw 0;let f;
+        try{f=await g.backgroundFetch.fetch("vdl-"+r.id,[new Request(url,got?{headers:{Range:"bytes="+got+"-"}}:{})],opts);}
+        catch(e){r.bgOffset=0;delete opts.downloadTotal;if(r.size)opts.downloadTotal=r.size;f=await g.backgroundFetch.fetch("vdl-"+r.id,[url],opts);}
+        await put(r);bgWatch(r,f);
+      }catch(e){r._handoff=false;r.status=prev==="busy"?"queued":prev;await put(r);}
+      finally{r._handoff=false;draw();}
+    }
+    document.addEventListener("visibilitychange",()=>{
+      if(!BG||document.visibilityState!=="hidden")return;
+      [...recs.values()].filter(r=>r.status==="busy"||r.status==="queued").forEach(handOff);
+    });
+    // A background download finished (sw.js wrote it to the database): show it.
+    async function reload(id){
+      const o=await tx("readonly",s=>s.get(id));if(!o)return;
+      const r=recs.get(id);if(!r||r.status!=="bg")return;
+      Object.assign(r,o);
+      if(r.status==="done"&&r.autoSave&&document.visibilityState==="visible"){r.autoSave=false;await put(r);toPhone(r);toast(t("toastDone"));}
+      if(r.status==="queued")pump();
+      draw();if(r.status==="done")makeThumb(r);
+    }
+    if(BG)navigator.serviceWorker.addEventListener("message",e=>{if(e.data&&e.data.vdl==="bg")reload(e.data.id);});
     // Queue: start as many as the "at once" setting allows; the rest wait their turn.
     function parLimit(){let n=2;try{n=+localStorage.getItem("vdlPar")||2;}catch(e){}return n;}
     function pump(){
@@ -498,7 +543,8 @@ html[dir="ltr"] .fi .mt{text-align:left}
       draw();
     }
     function pause(r){
-      if(r.status==="busy"){r._pausing=true;if(r._ctl)r._ctl.abort();}
+      if(r.status==="bg"){bgStop(r);r.status="paused";r.got=r.partial?r.partial.size:0;put(r);draw();}
+      else if(r.status==="busy"){r._pausing=true;if(r._ctl)r._ctl.abort();}
       else if(r.status==="queued"){r.status="paused";put(r);draw();}
     }
     function resume(r){r.status="queued";put(r);pump();}
@@ -562,13 +608,20 @@ html[dir="ltr"] .fi .mt{text-align:left}
       else if(act==="pause")pause(r);
       else if(act==="resume")resume(r);
       else if(act==="open")window.open(r.direct||r.src,"_blank","noopener");
-      else if(act==="del"){r._gone=true;if(r._ctl)r._ctl.abort();recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}await tx("readwrite",s=>s.delete(r.id));draw();}
+      else if(act==="del"){r._gone=true;if(r._ctl)r._ctl.abort();if(r.status==="bg")bgStop(r);recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}await tx("readwrite",s=>s.delete(r.id));draw();}
     });
     (async()=>{
       db=await open();
       const all=await tx("readonly",s=>s.getAll())||[];
       // Closed mid-download: continue from the last saved part (every 8 MB).
       all.forEach(r=>{if(r.status==="busy"&&!(NATIVE&&r.dlId)){r.status="queued";r.got=r.partial?r.partial.size:0;}if(!recs.has(r.id))recs.set(r.id,r);});
+      if(BG)for(const r of recs.values()){
+        if(r.status==="done"&&r.autoSave){r.autoSave=false;put(r);setTimeout(()=>toPhone(r),300);}   // finished while closed
+        if(r.status!=="bg")continue;
+        let f=null;try{const g=await bgReg();f=g&&await g.backgroundFetch.get("vdl-"+r.id);}catch(e){}
+        if(f&&!f.result){r.got=(r.bgOffset||0)+f.downloaded;bgWatch(r,f);}
+        else{const o=await tx("readonly",s=>s.get(r.id));if(o)Object.assign(r,o);if(r.status==="bg"){r.status="queued";r.got=r.partial?r.partial.size:0;}}
+      }
       draw();pump();
       if(NATIVE)recs.forEach(r=>{if(r.status==="busy")poll(r);});   // DownloadManager kept going
       recs.forEach(r=>{if(r.status!=="fail")makeThumb(r);});   // older entries without a kept picture
@@ -656,6 +709,8 @@ html[dir="ltr"] .fi .mt{text-align:left}
 
   // --- Install as app ---
   if(!NATIVE && "serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(()=>{});
+  // Opened from a download notification: go straight to "my files".
+  if(location.hash==="#files"){history.replaceState({vdl:"home"},"",location.pathname);show("files");}
   const inst=$("install"),instBtn=$("installBtn"),hint=$("installHint");
   const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
   const ua=navigator.userAgent;

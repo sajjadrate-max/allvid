@@ -43,7 +43,7 @@ export default async function handler(req, res) {
   // Public, read-only API: any page (GitHub Pages, the installed app) may call it.
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range');
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   try {
     if (req.method === 'GET' && req.query && req.query.file) return await stream(req, res);
