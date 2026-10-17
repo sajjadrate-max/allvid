@@ -5,14 +5,14 @@
 //                                         so the browser saves it instead of playing it.
 
 import { Readable } from 'node:stream';
-import { UA, UserError, allowedMedia, resolve, addSizes } from '../lib/resolve.js';
+import { UserError, allowedMedia, mediaHeaders, resolve, addSizes } from '../lib/resolve.js';
 
 export const config = { maxDuration: 60 };
 
 async function stream(req, res) {
   const file = String(req.query.file || '');
   if (!allowedMedia(file)) { res.status(400).json({ error: 'link.invalid' }); return; }
-  const up = await fetch(file, { headers: { 'User-Agent': UA, Referer: 'https://www.tikwm.com/' } });
+  const up = await fetch(file, { headers: mediaHeaders(file) });
   if (!up.ok || !up.body) { res.status(502).json({ error: 'fetch.fail' }); return; }
   const name = String(req.query.name || 'video.mp4');
   res.setHeader('Content-Type', up.headers.get('content-type') || 'application/octet-stream');
