@@ -263,6 +263,9 @@ a.site.on{border-color:var(--accent)}
 .watch .wact .go{flex:1;margin:0}
 .watch .wyt{flex:none;width:48px;height:48px;border-radius:999px;border:1.5px solid var(--line);display:grid;place-items:center;color:#f00;font-size:1.2rem;text-decoration:none;background:var(--surface)}
 .watch .wrel{padding:16px 16px 40px}
+.player:not([hidden]) ~ #sheetRoot .scrim{z-index:30}
+.player:not([hidden]) ~ #sheetRoot .sheet{z-index:31}
+.player:not([hidden]) ~ .toast{z-index:32}
 </style>
 </head>
 <body>
@@ -449,7 +452,7 @@ a.site.on{border-color:var(--accent)}
   };
   try{if(!history.state||!history.state.vdl)history.replaceState({vdl:"home"},"");}catch(e){}
   function hideSheet(){root.classList.remove("open");}
-  function openSheet(){root.classList.add("open");NAV.push("sheet");}
+  function openSheet(){root.classList.add("open");$("toast").classList.remove("on");NAV.push("sheet");}
   function closeSheet(){if(root.classList.contains("open"))NAV.pop("sheet",hideSheet);}
   $("scrim").onclick=closeSheet;
   document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet();});
@@ -495,8 +498,10 @@ a.site.on{border-color:var(--accent)}
     if(list.length) $("dl").onclick=()=>{
       const sel=sheet.querySelector('input[name=fmt]:checked');
       const pick=list[sel?Number(sel.value):0];
-      hideSheet();   // its history entry becomes the "my files" one (see show)
-      DL.start({src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0,est:pick.est||0,prep:!!pick.prep});
+      // From a playing video: stay there (the download runs in the background, "My files" shows it).
+      const stay=!$("player").hidden;
+      if(stay)NAV.pop("sheet",hideSheet);else hideSheet();   // otherwise its history entry becomes the "my files" one (see show)
+      DL.start(stay,{src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0,est:pick.est||0,prep:!!pick.prep});
     };
   }
 
@@ -770,14 +775,14 @@ a.site.on{border-color:var(--accent)}
       if(st.status==="failed"||st.status==="missing"){r.status="fail";r.why="dm:"+(st.reason||st.status);await put(r);draw();return;}
       soon();setTimeout(()=>poll(r),1000);
     }
-    function start(o){
+    function start(stay,o){
       // The app fetches the file itself so its progress shows here (bar above the tabs and in
       // "my files"); when done it is kept for offline playback and saved to the phone.
       // If that fails, the phone's own download manager takes over (see run).
       const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:NATIVE?"busy":"queued",...o};
       recs.set(r.id,r);put(r);makeThumb(r);
-      if(NATIVE){nativeStart(r);draw();show("files");toast(t("toastStarted"));return;}
-      show("files");toast(t("toastStarted"));pump();
+      if(NATIVE){nativeStart(r);draw();if(!stay)show("files");toast(t("toastStarted"));return;}
+      if(!stay)show("files");toast(t("toastStarted"));pump();
     }
     function play(r){
       const u=r.blob?blobUrl(r):(r.local&&NATIVE?CAP.convertFileSrc(r.local):(r.direct||r.src));$("plTitle").textContent=r.title;
@@ -854,6 +859,7 @@ a.site.on{border-color:var(--accent)}
   $("dlbar").onclick=()=>show("files");
 
   function showErr(k,detail){
+    if(!$("player").hidden)toast(ERR[k]||ERR["fetch.fail"]);   // the error box is under the player
     hpane("search");   // errors show under the link box
     msg.innerHTML='<div class="status err">'+esc(ERR[k]||ERR["fetch.fail"])+(detail||k&&!ERR[k]?'<br><small dir="ltr" style="opacity:.75;font-family:var(--mono)">'+esc((ERR[k]?"":k+" ")+(detail||""))+'</small>':'')+'</div>';
   }
@@ -1072,7 +1078,7 @@ a.site.on{border-color:var(--accent)}
       $("plStage").innerHTML='<video controls autoplay playsinline loop></video><button type="button" class="go ytdl" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button>';
       const m=$("plStage").firstChild;m.onerror=()=>{if(m.dataset.p)return;m.dataset.p=1;m.src=abs("/api/download?file="+encodeURIComponent(v.play)+"&name=tiktok.mp4");};m.src=v.play;
       $("player").hidden=false;NAV.push("player");
-      $("ytdl").onclick=()=>{NAV.pop("player",DL.hidePlayer);setTimeout(()=>download(v),50);};
+      $("ytdl").onclick=()=>download(v);   // sizes open over the player; it keeps playing
     }
     list.onclick=e=>{
       const b=e.target.closest("[data-act]");if(!b)return;
@@ -1098,7 +1104,9 @@ a.site.on{border-color:var(--accent)}
       '<div class="vgrid wrel" id="wrel"><p class="empty2">'+esc(t("loading"))+'</p></div></div>';
     st.scrollTop=0;
     if(pl.hidden){pl.hidden=false;NAV.push("player");}
-    $("ytdl").onclick=()=>{NAV.pop("player",DL.hidePlayer);setTimeout(()=>{if(mp3)nextPref="mp3";link.value="https://youtu.be/"+v.id;mark();last="";analyze();},50);};
+    // Download from the watch page: the list of sizes opens right here, over the player.
+    const ytGet=id=>{if(busy)return;if(mp3)nextPref="mp3";link.value="https://youtu.be/"+id;mark();last="";toast(t("searching"));analyze();};
+    $("ytdl").onclick=()=>ytGet(v.id);
     const rel=$("wrel"),my=++relSeq;
     (async()=>{
       let items=[];
@@ -1110,7 +1118,7 @@ a.site.on{border-color:var(--accent)}
       rel.onclick=e=>{
         const b=e.target.closest("[data-act]");if(!b)return;
         const w=items[+b.closest(".vc").dataset.i];if(!w)return;
-        if(b.dataset.act==="dl"){NAV.pop("player",DL.hidePlayer);setTimeout(()=>{if(mp3)nextPref="mp3";link.value="https://youtu.be/"+w.id;mark();last="";analyze();},50);}
+        if(b.dataset.act==="dl")ytGet(w.id);
         else watchYT(w,mp3);
       };
     })();
@@ -1126,7 +1134,7 @@ a.site.on{border-color:var(--accent)}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-d";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-e";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
@@ -1150,8 +1158,8 @@ a.site.on{border-color:var(--accent)}
   $("shareBtn").onclick=shareAllVid;
 
   window.addEventListener("popstate",()=>{
+    if(root.classList.contains("open")){hideSheet();return;}   // the sheet can sit over the player
     if(!$("player").hidden){DL.hidePlayer();return;}
-    if(root.classList.contains("open")){hideSheet();return;}
     if(!langPanel.hidden){openLangs(false);return;}
     if(!$("filesView").hidden||!$("settingsView").hidden){showView("home");return;}
   });
