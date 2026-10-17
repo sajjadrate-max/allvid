@@ -1005,11 +1005,11 @@ const STR={
 "zh": "无法连接互联网，请重试。"
 },
 "e_yt.blocked": {
-"ur": "YouTube نے اس وقت یہ ویڈیو نہیں دی۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔",
-"en": "YouTube didn't give this video right now. Try again in a little while.",
-"ar": "لم يقدّم YouTube هذا الفيديو الآن. حاول بعد قليل.",
+"ur": "YouTube فی الحال اس ایپ کو ویڈیوز ڈاؤن لوڈ نہیں کرنے دیتا۔ TikTok، Facebook، Instagram اور X کی ویڈیوز ڈاؤن لوڈ ہو جاتی ہیں۔",
+"en": "YouTube doesn't let this app download videos for now. TikTok, Facebook, Instagram and X videos work.",
+"ar": "لا يسمح YouTube حاليًا لهذا التطبيق بتنزيل الفيديوهات. فيديوهات TikTok وFacebook وInstagram وX تعمل.",
 "fa": "YouTube الان این ویدیو را نداد. کمی بعد دوباره امتحان کنید.",
-"hi": "YouTube ने अभी यह वीडियो नहीं दिया। थोड़ी देर बाद फिर कोशिश करें।",
+"hi": "YouTube अभी इस ऐप को वीडियो डाउनलोड नहीं करने देता। TikTok, Facebook, Instagram और X के वीडियो डाउनलोड होते हैं।",
 "bn": "YouTube এখন ভিডিওটি দেয়নি। কিছুক্ষণ পরে আবার চেষ্টা করুন।",
 "pa": "YouTube ਨੇ ਹਾਲੇ ਇਹ ਵੀਡੀਓ ਨਹੀਂ ਦਿੱਤੀ। ਥੋੜ੍ਹੀ ਦੇਰ ਬਾਅਦ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
 "ps": "YouTube اوس دا ویډیو ورنه کړه. لږ وروسته بیا هڅه وکړئ.",
