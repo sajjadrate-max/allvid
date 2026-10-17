@@ -477,9 +477,14 @@ html{overscroll-behavior-y:contain}
     // file (newer compression). When sizes are known and there are no resolutions, the bigger
     // file is listed first as HD and the rest as the smaller file.
     if(vid.length>1&&vid.every(i=>!parseInt(i.label,10)&&i.size)){vid.sort((a,b)=>b.size-a.size);vid.forEach((i,k)=>{i.hd=k===0;});}
+    // TikTok's HD file is usually H.265 (HEVC), which many phones' browsers can't play:
+    // there the normal file is picked first and HD carries a note.
+    const tt=platform(findUrl(link.value))==="tiktok";
+    const hevc=(()=>{try{return !!(window.MediaSource&&MediaSource.isTypeSupported('video/mp4; codecs="hvc1.1.6.L93.B0"'));}catch(e){return false;}})();
+    if(tt&&!hevc&&vid.length>1)vid.forEach(i=>{if(i.hd)i.hevc=true;});
     // Preferred quality from Settings, else the original quality (not an enlarged copy).
     const pref=nextPref||(()=>{try{return localStorage.getItem("vdlQ")||"best";}catch(e){return "best";}})();nextPref="";
-    const def=(pref==="mp3"&&aud[0])||(pref==="best"&&vid.some(i=>i.prep)&&vid.find(i=>parseInt(i.label,10)===720))||(pref!=="best"&&vid.find(i=>parseInt(i.label,10)===+pref))||vid.find(i=>!i.up)||vid[0]||aud[0];
+    const def=(pref==="mp3"&&aud[0])||(pref==="best"&&vid.some(i=>i.hevc)&&vid.find(i=>!i.hevc&&!i.up))||(pref==="best"&&vid.some(i=>i.prep)&&vid.find(i=>parseInt(i.label,10)===720))||(pref!=="best"&&vid.find(i=>parseInt(i.label,10)===+pref))||vid.find(i=>!i.up)||vid[0]||aud[0];
     // Files the API makes on request (MP3, enlarged sizes) have no size yet: estimate it.
     const src=vid.filter(i=>!i.up&&i.size&&parseInt(i.label,10)>0).sort((a,b)=>parseInt(b.label,10)-parseInt(a.label,10))[0]||vid.find(i=>!i.up&&i.size);
     const dur=+j.duration||0;
@@ -497,7 +502,7 @@ html{overscroll-behavior-y:contain}
     let h='<div class="handle"></div><div class="sh-head"><h2 id="sheetTitle">Download</h2><button class="sh-x" type="button" id="shx" aria-label="'+t("close")+'">×</button></div>'+
       '<div class="pv">'+(j.thumb?'<img src="'+esc(j.thumb)+'" alt="" referrerpolicy="no-referrer">':'')+'<div><div class="t" dir="auto">'+esc(j.title)+'</div><div class="d">'+esc(host)+'</div></div></div>';
     if(aud.length){h+='<p class="sec">Music</p>';aud.forEach(i=>{h+=opt(i,i.label?"Audio ("+i.label+")":"Classic MP3");});}
-    if(vid.length){h+='<p class="sec">Video</p>';vid.forEach(i=>{h+=opt(i,"MP4"+(i.label?" "+i.label:(vid.length>1?(i.hd?" HD":" ("+t("smaller")+")"):""))+(i.up?' <small class="up">'+esc(t("enlarged"))+'</small>':''));});}
+    if(vid.length){h+='<p class="sec">Video</p>';vid.forEach(i=>{h+=opt(i,"MP4"+(i.label?" "+i.label:(vid.length>1?(i.hd?" HD":" ("+t("smaller")+")"):""))+(i.up?' <small class="up">'+esc(t("enlarged"))+'</small>':'')+(i.hevc?' <small class="up">'+esc(t("hevcNote"))+'</small>':''));});}
     if(pho.length){
       h+='<p class="sec">Photos</p><div class="photos">';
       pho.forEach(p=>{h+='<a href="'+esc(abs(p.url))+'" download aria-label="'+t("photo")+'"><img src="'+esc(p.thumb)+'" alt="" referrerpolicy="no-referrer"></a>';});
@@ -1068,9 +1073,14 @@ html{overscroll-behavior-y:contain}
     const cats=$(pre+"Cats"),list=$(pre+"List"),head=$(pre+"Head");
     let seq=0,loaded=false;
     cats.innerHTML=CATS.map((c,i)=>'<button type="button" data-i="'+i+'" aria-pressed="false">'+esc(c[0])+'</button>').join("");
-    async function load(q,label){
+    // The last list of each category is kept on the phone and shown at once; the fresh one
+    // replaces it when it arrives (a pull-down refresh waits for the fresh one instead).
+    const show=items=>{list.innerHTML=cards(items);list._items=items;};
+    async function load(q,label,ci,force){
       const my=++seq;head.textContent=label;
-      list.innerHTML='<p class="empty2">'+esc(t("loading"))+'</p>';
+      const key="vdlFeed_"+pre+"_"+ci;let had=false;
+      if(!force){try{const c=JSON.parse(localStorage.getItem(key)||"null");if(c&&c.length){show(shuffle(c));had=true;}}catch(e){}}
+      if(!had)list.innerHTML='<p class="empty2">'+esc(t("loading"))+'</p>';
       let items=[],why="";
       for(const b of BASES){
         // A different sort each time (and a cache-busting bucket for TikTok), so each refresh
@@ -1079,16 +1089,17 @@ html{overscroll-behavior-y:contain}
         try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;break;}if(j.detail)why=j.detail;}catch(e){}
       }
       if(my!==seq)return;
+      if(items.length){try{localStorage.setItem(key,JSON.stringify(items.slice(0,24)));}catch(e){}}
+      else if(had)return;   // keep the saved list rather than "nothing found"
       if(!items.length){list.innerHTML='<p class="empty2">'+esc(t("noResults"))+(why?'<br><small dir="ltr" style="font-family:var(--mono);opacity:.6">'+esc(why)+'</small>':'')+'</p>';return;}
-      items=shuffle(items);
-      list.innerHTML=cards(items);
-      list._items=items;
+      if(had&&$("player").hidden===false)return;   // don't swap the list under an open video
+      show(shuffle(items));
     }
     // Each category has several searches; one is picked at random each time.
     let cur=0;
     try{cur=Math.min(CATS.length-1,+localStorage.getItem("vdlCat_"+pre)||0);}catch(e){}
-    function pick(i){cur=i;try{localStorage.setItem("vdlCat_"+pre,String(i));}catch(e){}[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));const q=[].concat(CATS[i][1]);load(q[Math.floor(Math.random()*q.length)],CATS[i][0]);}
-    cats.onclick=e=>{const b=e.target.closest("button");if(b)pick(+b.dataset.i);};
+    function pick(i,force){cur=i;try{localStorage.setItem("vdlCat_"+pre,String(i));}catch(e){}[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));const q=[].concat(CATS[i][1]);load(q[Math.floor(Math.random()*q.length)],CATS[i][0],i,force);}
+    cats.onclick=e=>{const b=e.target.closest("button");if(b)pick(+b.dataset.i,+b.dataset.i===cur);};   // tapping the open one again = fresh list
     function download(v){if(mp3)nextPref="mp3";link.value=v.link||"https://youtu.be/"+v.id;mark();last="";analyze();}
     function watch(v){
       $("plTitle").textContent=v.title;
@@ -1120,7 +1131,7 @@ html{overscroll-behavior-y:contain}
     };
     return {
       start(){if(!loaded){loaded=true;pick(cur);}},
-      refresh(){pick(cur);},
+      refresh(){pick(cur,true);},
       search(q){loaded=true;[...cats.children].forEach(b=>b.setAttribute("aria-pressed","false"));load(q,t("results")+": "+q);}
     };
   }
@@ -1187,7 +1198,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-j";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-k";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
