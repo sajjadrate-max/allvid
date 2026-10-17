@@ -301,6 +301,10 @@ html[dir="ltr"] .fi .mt{text-align:left}
   function render(j){
     const host=(()=>{try{return new URL(findUrl(link.value)).hostname.replace(/^www\./,"")}catch(e){return ""}})();
     const aud=j.items.filter(i=>i.type==="audio"), vid=j.items.filter(i=>i.type==="video"), pho=j.items.filter(i=>i.type==="photo");
+    // Sites like TikTok name their versions ("HD", normal) but the "HD" one can be the smaller
+    // file (newer compression). When sizes are known and there are no resolutions, the bigger
+    // file is listed first as HD and the rest as the smaller file.
+    if(vid.length>1&&vid.every(i=>!parseInt(i.label,10)&&i.size)){vid.sort((a,b)=>b.size-a.size);vid.forEach((i,k)=>{i.hd=k===0;});}
     const def=vid.find(i=>!i.up)||vid[0]||aud[0];   // the original quality, not an enlarged copy
     // Files the API makes on request (MP3, enlarged sizes) have no size yet: estimate it.
     const src=vid.filter(i=>!i.up&&i.size&&parseInt(i.label,10)>0).sort((a,b)=>parseInt(b.label,10)-parseInt(a.label,10))[0]||vid.find(i=>!i.up&&i.size);
