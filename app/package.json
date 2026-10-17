@@ -1,0 +1,10 @@
+{
+  "name": "video-downloader-android",
+  "private": true,
+  "description": "Android wrapper (Capacitor) for the video downloader page; built by .github/workflows/android.yml",
+  "dependencies": {
+    "@capacitor/android": "6.2.0",
+    "@capacitor/cli": "6.2.0",
+    "@capacitor/core": "6.2.0"
+  }
+}

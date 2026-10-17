@@ -1,0 +1,8 @@
+{
+  "appId": "com.sajjadrate.videodl",
+  "appName": "ڈاؤن لوڈر",
+  "webDir": "www",
+  "plugins": {
+    "CapacitorHttp": { "enabled": true }
+  }
+}
