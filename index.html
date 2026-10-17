@@ -133,6 +133,12 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .player .top button{background:none;color:#fff;font-size:1.7rem;line-height:1;padding:4px 8px}
 .player .stage{flex:1;display:grid;place-items:center;min-height:0}
 .player video,.player img{max-width:100%;max-height:100%}
+.dlbar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:9;display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;
+  background:var(--surface);color:var(--fg);border:1.5px solid var(--accent);border-radius:14px;padding:10px 14px;box-shadow:0 6px 20px rgba(0,0,0,.15);text-align:start}
+.dlbar[hidden]{display:none}
+.dlbar-t{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.dlbar-p{font-size:.85rem;color:var(--muted);white-space:nowrap;direction:ltr}
+.dlbar .bar{grid-column:1/-1}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:12;background:var(--fg);color:var(--bg);border-radius:12px;padding:10px 14px;text-align:center;font-weight:600;opacity:0;transform:translateY(10px);transition:all .2s;pointer-events:none}
 .toast.on{opacity:1;transform:none}
 /* language menu (same idea as the calculator: search box + scrolling list) */
@@ -206,6 +212,11 @@ html[dir="ltr"] .fi .mt{text-align:left}
   <ul class="fl" id="fileList"></ul>
   <p class="empty" id="noFiles" data-i18n="empty">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
 </section>
+
+<button type="button" class="dlbar" id="dlbar" hidden>
+  <span class="dlbar-t" id="dlbarT" dir="auto"></span><span class="dlbar-p" id="dlbarP"></span>
+  <span class="bar"><i id="dlbarI"></i></span>
+</button>
 
 <nav class="tabs" role="tablist">
   <button class="tab" role="tab" type="button" data-tab="home" aria-selected="true">
@@ -313,7 +324,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
       const sel=sheet.querySelector('input[name=fmt]:checked');
       const pick=list[sel?Number(sel.value):0];
       hideSheet();   // its history entry becomes the "my files" one (see show)
-      DL.start({src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0});
+      DL.start({src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0,est:pick.est||0});
     };
   }
 
@@ -331,16 +342,17 @@ html[dir="ltr"] .fi .mt{text-align:left}
     function phoneSave(r){const a=document.createElement("a");a.href=r.src;a.download="";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();}
     function toPhone(r){const a=document.createElement("a");a.href=blobUrl(r);a.download=nameOf(r);document.body.appendChild(a);a.click();a.remove();}
     function row(r){
-      const pct=r.size?Math.min(100,Math.round(r.got/r.size*100)):0;
+      const total=r.size||r.est||0;
+      const pct=total?Math.min(99,Math.round(r.got/total*100)):0;
       const playable=r.status==="done"||r.status==="phone";
       const site=SITE[r.site||siteOf(r)]||"";
       const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size):"MP4"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
         :r.status==="fail"?t("stopped")+" "+(r.why?"("+r.why+")":"")
-        :(r.size?pct+"% · "+mb(r.got)+" / "+mb(r.size):mb(r.got)||t("starting")));
+        :(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
       return '<li class="fi'+(r.status==="fail"?' fail':'')+'" data-id="'+r.id+'">'+
         '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="'+t("play")+'">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
         '<div class="bd"><div class="tt" dir="auto">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" "+t("video"))+'</div><div class="mt">'+esc(meta)+'</div>'+
-        (r.status==="busy"?'<div class="bar"><i style="width:'+(r.size?pct:8)+'%"></i></div>':'')+
+        (r.status==="busy"?'<div class="bar"><i style="width:'+(total?pct:8)+'%"></i></div>':'')+
         '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>'):'')+
         (r.status==="fail"?'<button class="pri" type="button" data-act="retry">'+t("retry")+'</button>'+(r.direct||r.src?'<button type="button" data-act="open">'+t("openDirect")+'</button>':''):'')+
         '<button type="button" data-act="del">'+t("remove")+'</button></div></div></li>';
@@ -375,8 +387,17 @@ html[dir="ltr"] .fi .mt{text-align:left}
       const all=[...recs.values()].sort((a,b)=>b.created-a.created);
       list.innerHTML=all.map(row).join("");
       noFiles.hidden=all.length>0;
-      const busy=all.filter(r=>r.status==="busy").length;
+      const busyList=all.filter(r=>r.status==="busy"),busy=busyList.length;
       badge.hidden=!busy;badge.textContent=busy;
+      // Bar above the tabs while something downloads (hidden on "my files", which shows it anyway).
+      const bar=$("dlbar"),cur=busyList[busyList.length-1];
+      bar.hidden=!cur||!$("filesView").hidden;
+      if(cur){
+        const tot=cur.size||cur.est||0,p=tot?Math.min(99,Math.round(cur.got/tot*100)):0;
+        $("dlbarT").textContent=(busy>1?"("+busy+") ":"")+(cur.title||"");
+        $("dlbarP").textContent=tot?p+"% · "+mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):(mb(cur.got)||t("starting"));
+        $("dlbarI").style.width=(tot?p:8)+"%";
+      }
     }
     let pending=0;const soon=()=>{if(!pending)pending=requestAnimationFrame(()=>{pending=0;draw();});};
     // One attempt: fetch with progress; a short or failed body throws with a reason.
@@ -402,7 +423,12 @@ html[dir="ltr"] .fi .mt{text-align:left}
         r.blob=blob;
         if(r.type==="video"){const t=await frame(r.blob);if(t)r.thumb=t;}   // remote thumbnails expire
         r.status="done";await put(r);draw();toPhone(r);toast(t("toastDone"));
-      }catch(e){r.status="fail";r.why=String(e.message||e);const {blob,...m}=r;await put(m);draw();}
+      }catch(e){
+        if(!NATIVE&&r.src){   // fall back to the phone's download manager
+          r.status="phone";r.why="";const {blob,...m}=r;await put(m);draw();phoneSave(r);toast(t("toastStart"));return;
+        }
+        r.status="fail";r.why=String(e.message||e);const {blob,...m}=r;await put(m);draw();
+      }
     }
     // First frame of a video as a small JPEG, for files that came without a thumbnail.
     function frame(blob){return frameAt(URL.createObjectURL(blob),true);}
@@ -434,12 +460,13 @@ html[dir="ltr"] .fi .mt{text-align:left}
       soon();setTimeout(()=>poll(r),1000);
     }
     function start(o){
-      // The phone's own download manager fetches the file (progress in the notification);
-      // the list keeps an entry that can be played from the internet.
-      const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:NATIVE?"busy":"phone",...o};
+      // The app fetches the file itself so its progress shows here (bar above the tabs and in
+      // "my files"); when done it is kept for offline playback and saved to the phone.
+      // If that fails, the phone's own download manager takes over (see run).
+      const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:"busy",...o};
       recs.set(r.id,r);put({...r});makeThumb(r);
       if(NATIVE){nativeStart(r);draw();show("files");toast(t("toastStarted"));return;}
-      phoneSave(r);draw();show("files");toast(t("toastStart"));
+      draw();show("files");toast(t("toastStarted"));run(r);
     }
     function play(r){
       const u=r.blob?blobUrl(r):(r.local&&NATIVE?CAP.convertFileSrc(r.local):(r.direct||r.src));$("plTitle").textContent=r.title;
@@ -479,7 +506,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
   function showView(v){
     document.querySelectorAll("[data-view]").forEach(el=>el.hidden=el.dataset.view!==v);
     document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t.dataset.tab===v)));
-    scrollTo(0,0);
+    scrollTo(0,0);DL.redraw();
   }
   function show(v){
     if(v==="files"){
@@ -489,6 +516,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
     else showView("home");
   }
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.tab));
+  $("dlbar").onclick=()=>show("files");
 
   function showErr(k,detail){
     msg.innerHTML='<div class="status err">'+esc(ERR[k]||ERR["fetch.fail"])+(detail||k&&!ERR[k]?'<br><small dir="ltr" style="opacity:.75;font-family:var(--mono)">'+esc((ERR[k]?"":k+" ")+(detail||""))+'</small>':'')+'</div>';
