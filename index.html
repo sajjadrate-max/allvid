@@ -249,6 +249,7 @@ a.site.on{border-color:var(--accent)}
 .vgrid.tall .dlb{width:36px;height:36px}
 @media (min-width:520px){.vgrid.tall{grid-template-columns:repeat(3,1fr)}}
 .player .stage video{max-height:70vh}
+.player .ytopen{display:block;text-align:center;color:#fff;opacity:.8;margin-top:12px;font-size:.9rem;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -1054,7 +1055,10 @@ a.site.on{border-color:var(--accent)}
       if(tiktok){   // TikTok videos play straight from their file (through our API if the CDN refuses)
         $("plStage").innerHTML='<video controls autoplay playsinline loop></video><button type="button" class="go ytdl" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button>';
         const m=$("plStage").firstChild;m.onerror=()=>{if(m.dataset.p)return;m.dataset.p=1;m.src=abs("/api/download?file="+encodeURIComponent(v.play)+"&name=tiktok.mp4");};m.src=v.play;
-      }else $("plStage").innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'+
+      // YouTube's player refuses to start without a Referer (the page sends none, for the CDNs),
+      // so this frame sends the site's address; "Open in YouTube" for videos that block embedding.
+      }else $("plStage").innerHTML='<iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'+
+        '<a class="ytopen" href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener">▶ YouTube</a>'+
         '<button type="button" class="go ytdl" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button>';
       $("player").hidden=false;NAV.push("player");
       $("ytdl").onclick=()=>{NAV.pop("player",DL.hidePlayer);setTimeout(()=>download(v),50);};
@@ -1080,7 +1084,7 @@ a.site.on{border-color:var(--accent)}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-b";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-c";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
