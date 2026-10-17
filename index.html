@@ -1105,11 +1105,15 @@ html{overscroll-behavior-y:contain}
     const show=items=>{list.innerHTML=cards(items);list._items=items;seen=new Set(items.map(v=>v.id));setTimeout(()=>maybeMore&&maybeMore(),300);};
     // Endless list: near the bottom the next page is fetched (YouTube's next-page token,
     // TikTok's cursor), or else another search of the same category; repeats are skipped.
-    let seen=new Set(),curQ="",curCat=-1,next="",more=false,dry=0;
+    let seen=new Set(),curQ="",curCat=-1,next="",more=false,dry=0,alt=false;
+    // TikTok tab when tikwm (the only TikTok list source) refuses both the phone and our
+    // server: short videos from YouTube (Shorts) for the same topic, so the tab never stays empty.
+    const shortsQ=q=>(q||"trending pakistan")+" shorts";
+    const asShort=v=>({...v,yt:true});
     async function fetchPage(q,tok){
       for(const b of BASES){
         try{
-          const u=b+"/api/download?"+(tiktok?"tt="+encodeURIComponent(q)+(tok?"&cursor="+encodeURIComponent(tok):""):"search="+encodeURIComponent(q)+(tok?"&cont="+encodeURIComponent(tok):"&sort="+["","d","w"][Math.floor(Math.random()*3)]));
+          const u=b+"/api/download?"+(tiktok&&!alt?"tt="+encodeURIComponent(q)+(tok?"&cursor="+encodeURIComponent(tok):""):"search="+encodeURIComponent(q)+(tok?"&cont="+encodeURIComponent(tok):"&sort="+["","d","w"][Math.floor(Math.random()*3)]));
           const r=await fetch(u);const j=await r.json();if(j.items)return j;
         }catch(e){}
       }
@@ -1121,7 +1125,8 @@ html{overscroll-behavior-y:contain}
       list.insertAdjacentHTML("beforeend",'<div class="sk more-sk"></div><div class="sk more-sk"></div>');
       let q=curQ,tok=next;
       if(!tok){const qs=curCat>=0?[].concat(CATS[curCat][1]):[curQ];q=qs[Math.floor(Math.random()*qs.length)]||curQ;}
-      const j=await fetchPage(q,tok);
+      const j=await fetchPage(alt?shortsQ(q):q,tok);
+      if(alt)j.items=(j.items||[]).map(asShort);
       list.querySelectorAll(".more-sk").forEach(e=>e.remove());
       if(my!==seq){more=false;return;}
       next=j.next||"";if(!tok)curQ=q;
@@ -1138,7 +1143,7 @@ html{overscroll-behavior-y:contain}
     const maybeMore=()=>{if(near())loadMore();};
     addEventListener("scroll",()=>{if(!more)maybeMore();},{passive:true});
     async function load(q,label,ci,force){
-      const my=++seq;head.textContent=label;curQ=q;curCat=typeof ci==="number"?ci:-1;next="";dry=0;more=false;
+      const my=++seq;head.textContent=label;curQ=q;curCat=typeof ci==="number"?ci:-1;next="";dry=0;more=false;alt=false;
       const key="vdlFeed_"+pre+"_"+ci;let had=false;
       if(!force){try{const c=JSON.parse(localStorage.getItem(key)||"null");if(c&&c.length){show(shuffle(c));had=true;}}catch(e){}}
       if(!had)list.innerHTML=SKEL;
@@ -1148,6 +1153,12 @@ html{overscroll-behavior-y:contain}
         // A different sort each time, so each refresh or tap on a category brings other videos.
         const extra=tiktok?"":"&sort="+["","d","w"][Math.floor(Math.random()*3)];   // TikTok: let the edge cache spare tikwm
         try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;next=j.next||"";break;}if(j.detail)why=(why?why+" ":"")+j.detail;}catch(e){}
+      }
+      if(tiktok&&!items.length){   // tikwm refused everywhere: YouTube Shorts on the same topic
+        for(const b of BASES){
+          try{const r=await fetch(b+"/api/download?search="+encodeURIComponent(shortsQ(q)));const j=await r.json();if(j.items&&j.items.length){items=j.items.map(asShort);next=j.next||"";alt=true;break;}}catch(e){}
+        }
+        if(alt)head.textContent=label+" · Shorts";
       }
       if(my!==seq)return;
       if(items.length){try{localStorage.setItem(key,JSON.stringify(items.slice(0,24)));}catch(e){}}
@@ -1161,10 +1172,10 @@ html{overscroll-behavior-y:contain}
     try{cur=Math.min(CATS.length-1,+localStorage.getItem("vdlCat_"+pre)||0);}catch(e){}
     function pick(i,force){cur=i;try{localStorage.setItem("vdlCat_"+pre,String(i));}catch(e){}[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));const q=[].concat(CATS[i][1]);load(q[Math.floor(Math.random()*q.length)],CATS[i][0],i,force);}
     cats.onclick=e=>{const b=e.target.closest("button");if(b)pick(+b.dataset.i,+b.dataset.i===cur);};   // tapping the open one again = fresh list
-    function download(v){if(!tiktok){ytSheet(v.id,v.title,mp3);return;}link.value=v.link;mark();last="";analyze();}
+    function download(v){if(!tiktok||v.yt){ytSheet(v.id,v.title,mp3);return;}link.value=v.link;mark();last="";analyze();}
     function watch(v){
       $("plTitle").textContent=v.title;
-      if(!tiktok){watchYT(v,mp3);return;}
+      if(!tiktok||v.yt){watchYT(v,mp3);return;}
       // TikTok watch page, like YouTube's: the video on top, Download under it (sizes open
       // right there), then the other videos of this list; tapping one plays it in place.
       const pl=$("player"),st=$("plStage");pl.classList.add("yt");
@@ -1293,7 +1304,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-r";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-s";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
