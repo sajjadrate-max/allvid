@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/download.js": {
+    "api/convert.js": {
       "includeFiles": "node_modules/ffmpeg-static/ffmpeg"
     }
   }
