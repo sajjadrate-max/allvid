@@ -1023,6 +1023,26 @@ const STR={
 "id": "YouTube tidak memberikan video ini saat ini. Coba lagi sebentar lagi.",
 "ms": "YouTube tidak memberi video ini sekarang. Cuba lagi sebentar nanti.",
 "zh": "YouTube 暂时没有提供该视频，请稍后再试。"
+},
+"enlarged": {
+"ur": "اصل ویڈیو سے بڑا کیا گیا، تیار ہونے میں کچھ وقت لگے گا",
+"en": "enlarged from the original; takes a moment to prepare",
+"ar": "مكبَّر من الأصل؛ يحتاج بعض الوقت للتحضير",
+"fa": "از نسخه اصلی بزرگ‌شده؛ آماده‌سازی کمی طول می‌کشد",
+"hi": "असली वीडियो से बड़ा किया गया, तैयार होने में थोड़ा समय लगेगा",
+"bn": "আসল ভিডিও থেকে বড় করা, তৈরি হতে একটু সময় লাগবে",
+"pa": "ਅਸਲ ਵੀਡੀਓ ਤੋਂ ਵੱਡਾ ਕੀਤਾ ਗਿਆ, ਤਿਆਰ ਹੋਣ ਵਿੱਚ ਥੋੜ੍ਹਾ ਸਮਾਂ ਲੱਗੇਗਾ",
+"ps": "له اصلي ویډیو لوی شوی، چمتو کېدو ته لږ وخت غواړي",
+"fr": "agrandie à partir de l'original ; préparation un peu plus longue",
+"es": "ampliado del original; tarda un poco en prepararse",
+"pt": "ampliado do original; leva um momento para preparar",
+"it": "ingrandito dall'originale; serve un attimo per prepararlo",
+"de": "aus dem Original vergrößert; die Vorbereitung dauert kurz",
+"ru": "увеличено из оригинала; подготовка займёт немного времени",
+"tr": "orijinalden büyütüldü; hazırlanması biraz sürer",
+"id": "diperbesar dari aslinya; perlu sedikit waktu untuk disiapkan",
+"ms": "dibesarkan daripada asal; perlu sedikit masa untuk disediakan",
+"zh": "由原视频放大，需要一点时间准备"
 }
 };
 let cur="ur";
