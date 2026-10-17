@@ -111,7 +111,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .empty{color:var(--muted);text-align:center;padding:40px 10px}
 .fl{display:flex;flex-direction:column;gap:10px;list-style:none;margin:0;padding:0}
 .fi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;gap:12px;align-items:center}
-.fi .th{width:84px;height:84px;border-radius:10px;background:var(--line);flex:none;position:relative;overflow:hidden;border:0;padding:0;display:grid;place-items:center;color:var(--fg)}
+.fi .th{width:104px;height:104px;border-radius:10px;background:var(--line);flex:none;position:relative;overflow:hidden;border:0;padding:0;display:grid;place-items:center;color:var(--fg)}
 .fi .th img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 .fi .th .pl{position:relative;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);display:grid;place-items:center}
 .fi .th .pl::after{content:"";border-left:12px solid #fff;border-top:8px solid transparent;border-bottom:8px solid transparent;margin-left:3px}
@@ -266,7 +266,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       const sel=sheet.querySelector('input[name=fmt]:checked');
       const pick=list[sel?Number(sel.value):0];
       closeSheet();
-      DL.start({src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,thumb:j.thumb||pick.thumb||"",size:pick.size||0});
+      DL.start({src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0});
     };
   }
 
@@ -286,16 +286,37 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
     function row(r){
       const pct=r.size?Math.min(100,Math.round(r.got/r.size*100)):0;
       const playable=r.status==="done"||r.status==="phone";
-      const meta=NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size)+" · ":"")+"فون کے Downloads میں":r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?"تصویر":(nameOf(r).split(".").pop()||"mp4").toUpperCase())
+      const site=SITE[r.site]||(r.src&&r.src.charAt(0)==="?"?"":"");
+      const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size):"MP4"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?"تصویر":(nameOf(r).split(".").pop()||"mp4").toUpperCase())
         :r.status==="fail"?"ڈاؤن لوڈ رک گیا "+(r.why?"("+r.why+")":"")
-        :(r.size?pct+"% · "+mb(r.got)+" / "+mb(r.size):mb(r.got)||"شروع ہو رہا ہے...");
+        :(r.size?pct+"% · "+mb(r.got)+" / "+mb(r.size):mb(r.got)||"شروع ہو رہا ہے..."));
       return '<li class="fi'+(r.status==="fail"?' fail':'')+'" data-id="'+r.id+'">'+
         '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="چلائیں">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
-        '<div class="bd"><div class="tt">'+esc(r.title)+'</div><div class="mt">'+esc(meta)+'</div>'+
+        '<div class="bd"><div class="tt">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" ویڈیو")+'</div><div class="mt">'+esc(meta)+'</div>'+
         (r.status==="busy"?'<div class="bar"><i style="width:'+(r.size?pct:8)+'%"></i></div>':'')+
         '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">▶ دیکھیں</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?"دوبارہ ڈاؤن لوڈ":"فون میں محفوظ")+'</button>'):'')+
         (r.status==="fail"?'<button class="pri" type="button" data-act="retry">دوبارہ</button>'+(r.direct||r.src?'<button type="button" data-act="open">سیدھا کھولیں</button>':''):'')+
         '<button type="button" data-act="del">ہٹائیں</button></div></div></li>';
+    }
+    // Picture for the list: the post's own thumbnail (fetched through our API so it can be
+    // kept as a small JPEG; CDN links expire), else a frame from the video itself.
+    const SITE={facebook:"Facebook",instagram:"Instagram",tiktok:"TikTok",twitter:"X"};
+    const making=new Set();
+    function shrink(img){
+      const c=document.createElement("canvas"),w=240,h=Math.round(w*(img.height||1)/(img.width||1));
+      c.width=w;c.height=Math.min(h,480);c.getContext("2d").drawImage(img,0,0,w,h);return c.toDataURL("image/jpeg",.75);
+    }
+    async function makeThumb(r){
+      if(making.has(r.id)||(r.thumb&&r.thumb.indexOf("data:")===0)||r.type==="audio")return;
+      making.add(r.id);let t="";
+      if(r.thumb){
+        try{
+          const u=NATIVE?r.thumb:abs("/api/download?file="+encodeURIComponent(r.thumb)+"&name=thumb.jpg");
+          const res=await fetch(u);if(res.ok)t=shrink(await createImageBitmap(await res.blob()));
+        }catch(e){}
+      }
+      if(!t&&r.type==="video"){const u=r.blob?"":(NATIVE?r.direct:r.src);if(u)t=await frameAt(u,false);}
+      if(t){r.thumb=t;await put(r);draw();}
     }
     function draw(){
       const all=[...recs.values()].sort((a,b)=>b.created-a.created);
@@ -331,14 +352,15 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       }catch(e){r.status="fail";r.why=String(e.message||e);const {blob,...m}=r;await put(m);draw();}
     }
     // First frame of a video as a small JPEG, for files that came without a thumbnail.
-    function frame(blob){
+    function frame(blob){return frameAt(URL.createObjectURL(blob),true);}
+    function frameAt(u,revoke){
       return new Promise(res=>{
-        const v=document.createElement("video"),u=URL.createObjectURL(blob);let done=false;
-        const fin=x=>{if(done)return;done=true;URL.revokeObjectURL(u);res(x);};
+        const v=document.createElement("video");let done=false;
+        const fin=x=>{if(done)return;done=true;v.removeAttribute("src");v.load();if(revoke)URL.revokeObjectURL(u);res(x);};
         v.muted=true;v.playsInline=true;v.preload="auto";v.src=u;
         v.onloadeddata=()=>{try{v.currentTime=Math.min(1,(v.duration||2)/3);}catch(e){fin("");}};
         v.onseeked=()=>{try{const c=document.createElement("canvas"),w=200,h=Math.round(w*(v.videoHeight||1)/(v.videoWidth||1));c.width=w;c.height=h;c.getContext("2d").drawImage(v,0,0,w,h);fin(c.toDataURL("image/jpeg",.7));}catch(e){fin("");}};
-        v.onerror=()=>fin("");setTimeout(()=>fin(""),6000);
+        v.onerror=()=>fin("");setTimeout(()=>fin(""),15000);
       });
     }
     // Android app: DownloadManager does the work; poll it for progress.
@@ -362,7 +384,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       // The phone's own download manager fetches the file (progress in the notification);
       // the list keeps an entry that can be played from the internet.
       const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:NATIVE?"busy":"phone",...o};
-      recs.set(r.id,r);put({...r});
+      recs.set(r.id,r);put({...r});makeThumb(r);
       if(NATIVE){nativeStart(r);draw();show("files");toast("ڈاؤن لوڈ شروع ہو گیا");return;}
       phoneSave(r);draw();show("files");toast("ڈاؤن لوڈ شروع — اوپر نوٹیفکیشن میں دیکھیں");
     }
@@ -393,6 +415,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       all.forEach(r=>{if(r.status==="busy"&&!(NATIVE&&r.dlId))r.status="fail";if(!recs.has(r.id))recs.set(r.id,r);});   // closed mid-download
       draw();
       if(NATIVE)recs.forEach(r=>{if(r.status==="busy")poll(r);});   // DownloadManager kept going
+      recs.forEach(r=>{if(r.status!=="fail")makeThumb(r);});   // older entries without a kept picture
     })();
     return {start};
   })();
