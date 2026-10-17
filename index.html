@@ -294,6 +294,7 @@ html{overscroll-behavior-y:contain}
 @keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
 .watch .upnext{margin:14px 16px 0;font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .watch .upnext:empty{display:none}
+.more-sentinel{height:1px}
 </style>
 </head>
 <body>
@@ -1092,7 +1093,7 @@ html{overscroll-behavior-y:contain}
   const SKEL='<div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>';
   const fresh=v=>/minute|hour|just now/i.test(v.ago||"");   // uploaded today
   window.thumbFail=img=>{const u=img.src;if(/hq720\.jpg$/.test(u))img.src=u.replace("hq720.jpg","hqdefault.jpg");else img.onerror=null;};
-  const cards=items=>items.map((v,i)=>'<div class="vc" data-i="'+i+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" decoding="async" src="'+esc(hdThumb(v.thumb))+'" alt="" referrerpolicy="no-referrer" onerror="thumbFail(this)">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+(fresh(v)?'<span class="new">NEW</span>':'')+'<span class="pi2" aria-hidden="true"></span></button>'+
+  const cards=(items,off)=>items.map((v,i)=>'<div class="vc" data-i="'+((off||0)+i)+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" decoding="async" src="'+esc(hdThumb(v.thumb))+'" alt="" referrerpolicy="no-referrer" onerror="thumbFail(this)">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+(fresh(v)?'<span class="new">NEW</span>':'')+'<span class="pi2" aria-hidden="true"></span></button>'+
     '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div></div>'+
     '<button type="button" class="dlb" data-act="dl" aria-label="'+esc(t("downloadBtn"))+'">'+DLI+'</button></div></div>').join("");
   function feed(pre,CATS,mp3,tiktok){
@@ -1101,9 +1102,43 @@ html{overscroll-behavior-y:contain}
     cats.innerHTML=CATS.map((c,i)=>'<button type="button" data-i="'+i+'" aria-pressed="false">'+esc(c[0])+'</button>').join("");
     // The last list of each category is kept on the phone and shown at once; the fresh one
     // replaces it when it arrives (a pull-down refresh waits for the fresh one instead).
-    const show=items=>{list.innerHTML=cards(items);list._items=items;};
+    const show=items=>{list.innerHTML=cards(items);list._items=items;seen=new Set(items.map(v=>v.id));setTimeout(()=>maybeMore&&maybeMore(),300);};
+    // Endless list: near the bottom the next page is fetched (YouTube's next-page token,
+    // TikTok's cursor), or else another search of the same category; repeats are skipped.
+    let seen=new Set(),curQ="",curCat=-1,next="",more=false,dry=0;
+    async function fetchPage(q,tok){
+      for(const b of BASES){
+        try{
+          const u=b+"/api/download?"+(tiktok?"tt="+encodeURIComponent(q)+(tok?"&cursor="+encodeURIComponent(tok):""):"search="+encodeURIComponent(q)+(tok?"&cont="+encodeURIComponent(tok):"&sort="+["","d","w"][Math.floor(Math.random()*3)]));
+          const r=await fetch(u);const j=await r.json();if(j.items)return j;
+        }catch(e){}
+      }
+      return {items:[]};
+    }
+    async function loadMore(){
+      if(more||!list._items||!list._items.length||dry>4)return;
+      more=true;const my=seq;
+      list.insertAdjacentHTML("beforeend",'<div class="sk more-sk"></div><div class="sk more-sk"></div>');
+      let q=curQ,tok=next;
+      if(!tok){const qs=curCat>=0?[].concat(CATS[curCat][1]):[curQ];q=qs[Math.floor(Math.random()*qs.length)]||curQ;}
+      const j=await fetchPage(q,tok);
+      list.querySelectorAll(".more-sk").forEach(e=>e.remove());
+      if(my!==seq){more=false;return;}
+      next=j.next||"";if(!tok)curQ=q;
+      const fresh=(j.items||[]).filter(v=>v.id&&!seen.has(v.id));
+      fresh.forEach(v=>seen.add(v.id));
+      if(fresh.length){const off=list._items.length;list.insertAdjacentHTML("beforeend",cards(fresh,off));list._items=list._items.concat(fresh);dry=0;}
+      else dry++;
+      more=false;setTimeout(maybeMore,300);
+    }
+    const sentinel=document.createElement("div");sentinel.className="more-sentinel";list.after(sentinel);
+    // Fetch more whenever the end of the list is within ~1.5 screens (checked on scroll and
+    // after each page, so a short list fills itself up).
+    const near=()=>!list.closest(".hpane").hidden&&$("homeView").hidden===false&&sentinel.getBoundingClientRect().top<innerHeight*2.5;
+    const maybeMore=()=>{if(near())loadMore();};
+    addEventListener("scroll",()=>{if(!more)maybeMore();},{passive:true});
     async function load(q,label,ci,force){
-      const my=++seq;head.textContent=label;
+      const my=++seq;head.textContent=label;curQ=q;curCat=typeof ci==="number"?ci:-1;next="";dry=0;more=false;
       const key="vdlFeed_"+pre+"_"+ci;let had=false;
       if(!force){try{const c=JSON.parse(localStorage.getItem(key)||"null");if(c&&c.length){show(shuffle(c));had=true;}}catch(e){}}
       if(!had)list.innerHTML=SKEL;
@@ -1112,7 +1147,7 @@ html{overscroll-behavior-y:contain}
       for(const b of items.length?[]:BASES){
         // A different sort each time, so each refresh or tap on a category brings other videos.
         const extra=tiktok?"":"&sort="+["","d","w"][Math.floor(Math.random()*3)];   // TikTok: let the edge cache spare tikwm
-        try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;break;}if(j.detail)why=(why?why+" ":"")+j.detail;}catch(e){}
+        try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;next=j.next||"";break;}if(j.detail)why=(why?why+" ":"")+j.detail;}catch(e){}
       }
       if(my!==seq)return;
       if(items.length){try{localStorage.setItem(key,JSON.stringify(items.slice(0,24)));}catch(e){}}
@@ -1258,7 +1293,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-q";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-r";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

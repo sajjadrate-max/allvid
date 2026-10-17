@@ -8,5 +8,8 @@
     "deploymentEnabled": {
       "ccr-31001607-1noc66": false
     }
-  }
+  },
+  "regions": [
+    "bom1"
+  ]
 }
