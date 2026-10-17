@@ -261,8 +261,18 @@ html[dir="ltr"] .fi .mt{text-align:left}
   function mark(){const hit=platform(link.value);document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c.dataset.p===hit));}
   link.addEventListener("input",mark);
 
-  function openSheet(){root.classList.add("open");}
-  function closeSheet(){root.classList.remove("open");}
+  // Phone back button: each layer that opens (sheet, player, my files, language menu) adds a
+  // history entry, and "back" closes the top one. Closing from the UI goes back too, so the
+  // entries stay in step.
+  const NAV={
+    at:n=>(history.state||{}).vdl===n,
+    push(n){if(!NAV.at(n))history.pushState({vdl:n},"");},
+    pop(n,hide){if(NAV.at(n))history.back();else hide();}
+  };
+  try{if(!history.state||!history.state.vdl)history.replaceState({vdl:"home"},"");}catch(e){}
+  function hideSheet(){root.classList.remove("open");}
+  function openSheet(){root.classList.add("open");NAV.push("sheet");}
+  function closeSheet(){if(root.classList.contains("open"))NAV.pop("sheet",hideSheet);}
   $("scrim").onclick=closeSheet;
   document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet();});
 
@@ -289,7 +299,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
     if(list.length) $("dl").onclick=()=>{
       const sel=sheet.querySelector('input[name=fmt]:checked');
       const pick=list[sel?Number(sel.value):0];
-      closeSheet();
+      hideSheet();   // its history entry becomes the "my files" one (see show)
       DL.start({src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0});
     };
   }
@@ -424,9 +434,10 @@ html[dir="ltr"] .fi .mt{text-align:left}
       const m=$("plStage").firstChild;
       // CDN addresses expire; then play through our API, and if that fails point to the phone's copy.
       m.onerror=()=>{if(r.local&&r.direct&&m.src.indexOf(r.direct)!==0&&m.src.indexOf(r.src)!==0){m.src=r.direct;}else if(!NATIVE&&r.direct&&m.src.indexOf(r.direct)===0&&r.src){m.src=r.src;}else{$("plStage").innerHTML='<p style="color:#fff;text-align:center;padding:20px">'+esc(t("cantPlay"))+'</p>';}};
-      m.src=u;$("player").hidden=false;
+      m.src=u;$("player").hidden=false;NAV.push("player");
     }
-    function closePlayer(){const m=$("plStage").firstChild;if(m&&m.pause)m.pause();$("plStage").innerHTML="";$("player").hidden=true;}
+    function hidePlayer(){const m=$("plStage").firstChild;if(m&&m.pause)m.pause();$("plStage").innerHTML="";$("player").hidden=true;}
+    function closePlayer(){if(!$("player").hidden)NAV.pop("player",hidePlayer);}
     $("plClose").onclick=closePlayer;
     document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("player").hidden)closePlayer();});
     list.addEventListener("click",async e=>{
@@ -447,15 +458,22 @@ html[dir="ltr"] .fi .mt{text-align:left}
       if(NATIVE)recs.forEach(r=>{if(r.status==="busy")poll(r);});   // DownloadManager kept going
       recs.forEach(r=>{if(r.status!=="fail")makeThumb(r);});   // older entries without a kept picture
     })();
-    return {start,redraw:draw};
+    return {start,redraw:draw,hidePlayer};
   })();
 
   let toastT=0;
   function toast(t){const el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),2600);}
-  function show(v){
+  function showView(v){
     document.querySelectorAll("[data-view]").forEach(el=>el.hidden=el.dataset.view!==v);
     document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t.dataset.tab===v)));
     scrollTo(0,0);
+  }
+  function show(v){
+    if(v==="files"){
+      if(NAV.at("sheet"))history.replaceState({vdl:"files"},"");else NAV.push("files");
+      showView("files");
+    }else if(NAV.at("files")){history.back();}   // popstate brings the download screen back
+    else showView("home");
   }
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.tab));
 
@@ -555,11 +573,20 @@ html[dir="ltr"] .fi .mt{text-align:left}
     langPanel.hidden=!open;langBtn.setAttribute("aria-expanded",String(open));
     if(open){langSearch.value="";buildLangs("");langSearch.focus();const sel=langList.querySelector('[aria-selected="true"]');if(sel)sel.scrollIntoView({block:"center"});}
   }
-  langBtn.onclick=e=>{e.stopPropagation();openLangs(langPanel.hidden);};
+  function closeLangs(){if(!langPanel.hidden)NAV.pop("lang",()=>openLangs(false));}
+  langBtn.onclick=e=>{e.stopPropagation();if(langPanel.hidden){openLangs(true);NAV.push("lang");}else closeLangs();};
   langSearch.oninput=()=>buildLangs(langSearch.value);
-  langList.onclick=e=>{const b=e.target.closest(".lang-item");if(!b)return;I18N.set(b.dataset.code);openLangs(false);applyLang();scrollTo(0,0);};
-  document.addEventListener("click",e=>{if(!langPanel.hidden&&!e.target.closest(".lang-wrap"))openLangs(false);});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!langPanel.hidden){openLangs(false);langBtn.focus();}});
+  langList.onclick=e=>{const b=e.target.closest(".lang-item");if(!b)return;I18N.set(b.dataset.code);closeLangs();applyLang();scrollTo(0,0);};
+  document.addEventListener("click",e=>{if(!langPanel.hidden&&!e.target.closest(".lang-wrap"))closeLangs();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!langPanel.hidden){closeLangs();langBtn.focus();}});
+
+  // Phone back button: close whatever is on top.
+  window.addEventListener("popstate",()=>{
+    if(!$("player").hidden){DL.hidePlayer();return;}
+    if(root.classList.contains("open")){hideSheet();return;}
+    if(!langPanel.hidden){openLangs(false);return;}
+    if(!$("filesView").hidden){showView("home");return;}
+  });
   applyLang();
 })();
 </script>
