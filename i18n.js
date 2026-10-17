@@ -1193,7 +1193,8 @@ const STR={
 "share": {"ur": "شیئر کریں", "en": "Share", "hi": "शेयर करें", "ar": "مشاركة"},
 "msgCopied": {"ur": "مکمل پیغام کاپی ہو گیا!", "en": "Full message copied!", "hi": "पूरा संदेश कॉपी हो गया!", "ar": "تم نسخ الرسالة كاملة!"},
 "hevcNote": {"ur": "(H.265 — اس فون میں شاید نہ چلے)", "en": "(H.265 — may not play on this phone)", "hi": "(H.265 — इस फ़ोन में शायद न चले)", "ar": "(H.265 — قد لا يعمل على هذا الهاتف)"},
-"pickSite": {"ur": "اب نیچے سائٹ چنیں، وہاں یہی تلاش کھلے گی", "en": "Now pick a site below; it opens with this search", "hi": "अब नीचे साइट चुनें, वहाँ यही खोज खुलेगी", "ar": "اختر موقعًا بالأسفل؛ سيفتح بهذا البحث"}
+"pickSite": {"ur": "اب نیچے سائٹ چنیں، وہاں یہی تلاش کھلے گی", "en": "Now pick a site below; it opens with this search", "hi": "अब नीचे साइट चुनें, वहाँ यही खोज खुलेगी", "ar": "اختر موقعًا بالأسفل؛ سيفتح بهذا البحث"},
+"upNext": {"ur": "اگلی ویڈیو", "en": "Up next", "hi": "अगला वीडियो", "ar": "التالي"}
 };
 let cur="en";
 try{cur=localStorage.getItem("vdlLang")||"en";}catch(e){}

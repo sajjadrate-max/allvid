@@ -283,6 +283,17 @@ html{overscroll-behavior-y:contain}
 .psearch input::-webkit-search-cancel-button{display:none}
 .psearch button{flex:none;width:40px;height:40px;border-radius:999px;background:var(--cta);color:var(--cta-ink);display:grid;place-items:center}
 .psearch button svg{width:20px;height:20px}
+.vc .new{position:absolute;top:8px;left:8px;background:#e11d2a;color:#fff;font:700 .7rem/1 system-ui,sans-serif;padding:4px 7px;border-radius:4px;letter-spacing:.5px}
+.vc .pi2{position:absolute;inset:auto auto 50% 50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:999px;background:rgba(0,0,0,.45);opacity:0;transition:opacity .15s}
+.vc .pi2::after{content:"";position:absolute;left:21px;top:16px;border-style:solid;border-width:10px 0 10px 16px;border-color:transparent transparent transparent #fff}
+.vc .th2:hover .pi2,.vc .th2:active .pi2{opacity:1}
+.vc .th2 img{transition:transform .25s}
+.vc .th2:active img{transform:scale(1.03)}
+.sk{aspect-ratio:16/9;border-radius:12px;background:linear-gradient(90deg,var(--line) 25%,var(--surface) 50%,var(--line) 75%);background-size:200% 100%;animation:sk 1.2s linear infinite}
+.vgrid.tall .sk{aspect-ratio:9/16}
+@keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+.watch .upnext{margin:14px 16px 0;font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.watch .upnext:empty{display:none}
 </style>
 </head>
 <body>
@@ -1044,7 +1055,12 @@ html{overscroll-behavior-y:contain}
   }
   const DLI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
   const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-  const cards=items=>items.map((v,i)=>'<div class="vc" data-i="'+i+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" src="'+esc(v.thumb)+'" alt="" referrerpolicy="no-referrer">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+'</button>'+
+  // Sharp pictures: YouTube's 1280×720 one (hq720; older videos fall back to the 480 one).
+  const hdThumb=u=>String(u||"").replace(/\/(mq|hq|sd)default\.jpg$/,"/hq720.jpg");
+  const SKEL='<div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>';
+  const fresh=v=>/minute|hour|just now/i.test(v.ago||"");   // uploaded today
+  window.thumbFail=img=>{const u=img.src;if(/hq720\.jpg$/.test(u))img.src=u.replace("hq720.jpg","hqdefault.jpg");else img.onerror=null;};
+  const cards=items=>items.map((v,i)=>'<div class="vc" data-i="'+i+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" decoding="async" src="'+esc(hdThumb(v.thumb))+'" alt="" referrerpolicy="no-referrer" onerror="thumbFail(this)">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+(fresh(v)?'<span class="new">NEW</span>':'')+'<span class="pi2" aria-hidden="true"></span></button>'+
     '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div></div>'+
     '<button type="button" class="dlb" data-act="dl" aria-label="'+esc(t("downloadBtn"))+'">'+DLI+'</button></div></div>').join("");
   function feed(pre,CATS,mp3,tiktok){
@@ -1058,7 +1074,7 @@ html{overscroll-behavior-y:contain}
       const my=++seq;head.textContent=label;
       const key="vdlFeed_"+pre+"_"+ci;let had=false;
       if(!force){try{const c=JSON.parse(localStorage.getItem(key)||"null");if(c&&c.length){show(shuffle(c));had=true;}}catch(e){}}
-      if(!had)list.innerHTML='<p class="empty2">'+esc(t("loading"))+'</p>';
+      if(!had)list.innerHTML=SKEL;
       let items=[],why="";
       for(const b of BASES){
         // A different sort each time (and a cache-busting bucket for TikTok), so each refresh
@@ -1085,7 +1101,7 @@ html{overscroll-behavior-y:contain}
       // TikTok watch page, like YouTube's: the video on top, Download under it (sizes open
       // right there), then the other videos of this list; tapping one plays it in place.
       const pl=$("player"),st=$("plStage");pl.classList.add("yt");
-      st.innerHTML='<div class="watch tt"><div class="wv"><video controls autoplay playsinline loop></video></div>'+
+      st.innerHTML='<div class="watch tt"><div class="wv"><video controls autoplay playsinline></video></div>'+
         '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div>'+
         '<div class="wact"><button type="button" class="go" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button></div></div>'+
         '<div class="vgrid wrel" id="wrel"></div></div>';   // one video per row, like YouTube's
@@ -1095,6 +1111,7 @@ html{overscroll-behavior-y:contain}
       if(pl.hidden){pl.hidden=false;NAV.push("player");}
       $("ytdl").onclick=()=>{if(!busy){toast(t("searching"));download(v);}};
       const more=(list._items||[]).filter(w=>w.id!==v.id),rel=$("wrel");
+      m.onended=()=>{if(more[0]&&!root.classList.contains("open"))watch(more[0]);};   // next one plays by itself
       rel.innerHTML=more.length?cards(more):"";
       rel.onclick=e=>{
         const b=e.target.closest("[data-act]");if(!b)return;
@@ -1129,15 +1146,24 @@ html{overscroll-behavior-y:contain}
   // so its frame sends the site's address; ▶ opens YouTube for videos that block embedding.
   // YouTube watch page: player on top, title and Download under it, then related videos
   // (YouTube's own "up next" list); tapping one plays it here.
-  let relSeq=0;
+  let relSeq=0,ytNext=null;
+  // The YouTube player reports its state when asked ("listening"); 0 = the video ended.
+  addEventListener("message",e=>{
+    if(!/youtube\.com$/.test((()=>{try{return new URL(e.origin).hostname;}catch(x){return "";}})()))return;
+    let d=e.data;try{if(typeof d==="string")d=JSON.parse(d);}catch(x){return;}
+    const ended=d&&((d.event==="onStateChange"&&d.info===0)||(d.event==="infoDelivery"&&d.info&&d.info.playerState===0));
+    if(ended&&ytNext&&!$("player").hidden&&!root.classList.contains("open")){const n=ytNext;ytNext=null;n();}
+  });
+  const ytListen=()=>{const f=$("ytf");if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*");};
   function watchYT(v,mp3){
     const pl=$("player"),st=$("plStage");
     $("plTitle").textContent=v.title;pl.classList.add("yt");
-    st.innerHTML='<div class="watch"><div class="wv"><iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
+    st.innerHTML='<div class="watch"><div class="wv"><iframe id="ytf" src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&enablejsapi=1&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
       '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div>'+
       '<div class="wact"><button type="button" class="go" id="ytdl">⬇ '+esc(t("downloadBtn"))+'</button><a class="wyt" href="https://www.youtube.com/watch?v='+v.id+'" target="_blank" rel="noopener" aria-label="YouTube">▶</a></div></div>'+
-      '<div class="vgrid wrel" id="wrel"><p class="empty2">'+esc(t("loading"))+'</p></div></div>';
-    st.scrollTop=0;
+      '<p class="upnext" id="upnext"></p><div class="vgrid wrel" id="wrel">'+SKEL+'</div></div>';
+    st.scrollTop=0;ytNext=null;
+    $("ytf").addEventListener("load",()=>{ytListen();setTimeout(ytListen,1500);});
     if(pl.hidden){pl.hidden=false;NAV.push("player");}
     // Download from the watch page: the list of sizes opens right here, over the player.
     $("ytdl").onclick=()=>ytSheet(v.id,v.title,mp3);
@@ -1149,6 +1175,9 @@ html{overscroll-behavior-y:contain}
       }
       if(my!==relSeq||!document.body.contains(rel))return;
       rel.innerHTML=items.length?cards(items):'<p class="empty2">'+esc(t("noResults"))+'</p>';
+      // Up next: when this video ends the first one below starts by itself (like YouTube).
+      ytNext=items[0]?()=>watchYT(items[0],mp3):null;
+      if(items[0])$("upnext").textContent=t("upNext")+": "+items[0].title;
       rel.onclick=e=>{
         const b=e.target.closest("[data-act]");if(!b)return;
         const w=items[+b.closest(".vc").dataset.i];if(!w)return;
@@ -1197,7 +1226,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-o";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-p";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
