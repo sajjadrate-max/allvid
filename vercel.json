@@ -3,5 +3,10 @@
     "api/convert.js": {
       "includeFiles": "node_modules/ffmpeg-static/ffmpeg"
     }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "ccr-31001607-1noc66": false
+    }
   }
 }
