@@ -65,12 +65,20 @@ async function stream(req, res) {
   if (req.query.audio) return convert(req, res, file, 0);
   const scale = Number(req.query.scale);
   if (scale === 720 || scale === 1080) return convert(req, res, file, scale);
-  const up = await fetch(file, { headers: mediaHeaders(file) });
+  // Pass a Range request through, so a paused download can continue where it stopped.
+  const h = mediaHeaders(file);
+  const range = req.headers && req.headers.range;
+  if (range && /^bytes=\d+-\d*$/.test(range)) h.Range = range;
+  const up = await fetch(file, { headers: h });
   if (!up.ok || !up.body) { res.status(502).json({ error: 'fetch.fail' }); return; }
   const name = String(req.query.name || 'video.mp4');
+  res.statusCode = up.status === 206 ? 206 : 200;
   res.setHeader('Content-Type', up.headers.get('content-type') || 'application/octet-stream');
   const len = up.headers.get('content-length');
   if (len) res.setHeader('Content-Length', len);
+  const cr = up.headers.get('content-range');
+  if (cr && up.status === 206) res.setHeader('Content-Range', cr);
+  res.setHeader('Accept-Ranges', 'bytes');
   res.setHeader('Content-Disposition', attachment(name));
   res.setHeader('Cache-Control', 'private, max-age=3600');
   Readable.fromWeb(up.body).pipe(res);

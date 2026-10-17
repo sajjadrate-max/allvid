@@ -111,6 +111,11 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 [data-view][hidden]{display:none}
 .files h2{font-family:var(--display);font-size:1.5rem;line-height:2.2;margin:0}
 .empty{color:var(--muted);text-align:center;padding:40px 10px}
+.par{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.92rem;color:var(--muted)}
+.par-opts{display:flex;gap:6px}
+.par-opts button{min-width:38px;padding:5px 10px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line);color:var(--fg);font-weight:600;font-size:.9rem}
+.par-opts button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.bar.idle i{background:var(--muted)}
 .fl{display:flex;flex-direction:column;gap:10px;list-style:none;margin:0;padding:0}
 .fi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;gap:12px;align-items:center}
 .fi .th{width:104px;height:104px;border-radius:10px;background:var(--line);flex:none;position:relative;overflow:hidden;border:0;padding:0;display:grid;place-items:center;color:var(--fg)}
@@ -209,6 +214,9 @@ html[dir="ltr"] .fi .mt{text-align:left}
 
 <section class="wrap files" data-view="files" id="filesView" hidden>
   <h2 data-i18n="tabFiles">میری فائلیں</h2>
+  <div class="par"><span data-i18n="atOnce">ایک وقت میں ڈاؤن لوڈ</span>
+    <div class="par-opts" id="parOpts"><button type="button" data-n="1">1</button><button type="button" data-n="2">2</button><button type="button" data-n="3">3</button><button type="button" data-n="4">4</button><button type="button" data-n="5">5</button><button type="button" data-n="99" data-i18n="allAtOnce">سب</button></div>
+  </div>
   <ul class="fl" id="fileList"></ul>
   <p class="empty" id="noFiles" data-i18n="empty">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
 </section>
@@ -336,24 +344,32 @@ html[dir="ltr"] .fi .mt{text-align:left}
     let db=null;
     const open=()=>new Promise(res=>{try{const r=indexedDB.open("vdl",1);r.onupgradeneeded=()=>r.result.createObjectStore("files",{keyPath:"id"});r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);}catch(e){res(null);}});
     const tx=(mode,fn)=>new Promise(res=>{if(!db)return res(null);try{const t=db.transaction("files",mode);const q=fn(t.objectStore("files"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>res(null);}catch(e){res(null);}});
-    const put=r=>tx("readwrite",s=>s.put(r));
+    const put=r=>{const o={};for(const k in r)if(k[0]!=="_")o[k]=r[k];return tx("readwrite",s=>s.put(o));};
     const nameOf=r=>{try{return new URL(r.src,location.href).searchParams.get("name")||"video.mp4";}catch(e){return "video.mp4";}};
     const blobUrl=r=>{if(!r.blob)return "";if(!urls.has(r.id))urls.set(r.id,URL.createObjectURL(r.blob));return urls.get(r.id);};
     function phoneSave(r){const a=document.createElement("a");a.href=r.src;a.download="";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();}
     function toPhone(r){const a=document.createElement("a");a.href=blobUrl(r);a.download=nameOf(r);document.body.appendChild(a);a.click();a.remove();}
-    function row(r){
+    function metaOf(r){
       const total=r.size||r.est||0;
       const pct=total?Math.min(99,Math.round(r.got/total*100)):0;
-      const playable=r.status==="done"||r.status==="phone";
       const site=SITE[r.site||siteOf(r)]||"";
       const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size):"MP4"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
-        :r.status==="fail"?t("stopped")+" "+(r.why?"("+r.why+")":"")
+:r.status==="fail"?t("stopped")+" "+(r.why?"("+r.why+")":"")
+        :r.status==="queued"?t("queued")+(r.got?" · "+(total?pct+"% · ":"")+mb(r.got):"")
+        :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
         :(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
+      return {meta,pct,total,site};
+    }
+    function row(r){
+      const {meta,pct,total,site}=metaOf(r);
+      const playable=r.status==="done"||r.status==="phone";
       return '<li class="fi'+(r.status==="fail"?' fail':'')+'" data-id="'+r.id+'">'+
         '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="'+t("play")+'">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
         '<div class="bd"><div class="tt" dir="auto">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" "+t("video"))+'</div><div class="mt">'+esc(meta)+'</div>'+
-        (r.status==="busy"?'<div class="bar"><i style="width:'+(total?pct:8)+'%"></i></div>':'')+
+        (/busy|paused|queued/.test(r.status)?'<div class="bar'+(r.status==="busy"?'':' idle')+'"><i style="width:'+(total?pct:(r.status==="busy"?8:0))+'%"></i></div>':'')+
         '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>'):'')+
+        (r.status==="busy"||r.status==="queued"?'<button type="button" data-act="pause">'+t("pause")+'</button>':'')+
+        (r.status==="paused"?'<button class="pri" type="button" data-act="resume">'+t("resume")+'</button>':'')+
         (r.status==="fail"?'<button class="pri" type="button" data-act="retry">'+t("retry")+'</button>'+(r.direct||r.src?'<button type="button" data-act="open">'+t("openDirect")+'</button>':''):'')+
         '<button type="button" data-act="del">'+t("remove")+'</button></div></div></li>';
     }
@@ -387,8 +403,13 @@ html[dir="ltr"] .fi .mt{text-align:left}
       const all=[...recs.values()].sort((a,b)=>b.created-a.created);
       list.innerHTML=all.map(row).join("");
       noFiles.hidden=all.length>0;
-      const busyList=all.filter(r=>r.status==="busy"),busy=busyList.length;
+      const busyList=all.filter(r=>r.status==="busy"),busy=busyList.length+all.filter(r=>r.status==="queued").length;
       badge.hidden=!busy;badge.textContent=busy;
+      drawBar();
+    }
+    function drawBar(){
+      const all=[...recs.values()];
+      const busyList=all.filter(r=>r.status==="busy"),busy=busyList.length+all.filter(r=>r.status==="queued").length;
       // Bar above the tabs while something downloads (hidden on "my files", which shows it anyway).
       const bar=$("dlbar"),cur=busyList[busyList.length-1];
       bar.hidden=!cur||!$("filesView").hidden;
@@ -399,37 +420,78 @@ html[dir="ltr"] .fi .mt{text-align:left}
         $("dlbarI").style.width=(tot?p:8)+"%";
       }
     }
-    let pending=0;const soon=()=>{if(!pending)pending=requestAnimationFrame(()=>{pending=0;draw();});};
+    function progress(){
+      recs.forEach(r=>{
+        if(r.status!=="busy")return;
+        const li=list.querySelector('.fi[data-id="'+r.id+'"]');if(!li){draw();return;}
+        const m=metaOf(r);li.querySelector(".mt").textContent=m.meta;
+        const bar=li.querySelector(".bar i");if(bar)bar.style.width=(m.total?m.pct:8)+"%";
+      });
+      drawBar();
+    }
+    let pending=0;const soon=()=>{if(!pending)pending=requestAnimationFrame(()=>{pending=0;progress();});};
     // One attempt: fetch with progress; a short or failed body throws with a reason.
+    // Fetch with progress. Continues from what already arrived (Range request) when it can;
+    // a server that can't resume answers 200 and the file starts over.
+    const CHECKPOINT=8*1048576;
     async function grab(r,url,tag){
-      const res=await fetch(url,{referrerPolicy:"no-referrer"});
+      const parts=r._parts||(r.partial?[r.partial]:[]);
+      let got=parts.reduce((n,p)=>n+(p.size!==undefined?p.size:p.byteLength),0);
+      const ctl=new AbortController();r._ctl=ctl;
+      const res=await fetch(url,{referrerPolicy:"no-referrer",headers:got?{Range:"bytes="+got+"-"}:{},signal:ctl.signal});
       if(!res.ok||!res.body)throw new Error(tag+":http "+res.status);
-      const len=Number(res.headers.get("content-length"));if(len)r.size=len;
-      const reader=res.body.getReader(),parts=[];let got=0;r.got=0;
-      for(;;){const {done,value}=await reader.read();if(done)break;parts.push(value);got+=value.length;r.got=got;soon();}
-      if(!got||(len&&got<len))throw new Error(tag+":cut "+(got/1048576).toFixed(1)+"/"+(len/1048576).toFixed(1)+"MB");
+      if(got&&res.status!==206){parts.length=0;got=0;}
+      const len=Number(res.headers.get("content-length"));if(len)r.size=got+len;
+      r._parts=parts;r.got=got;r.via=tag;
+      const reader=res.body.getReader();let since=0;
+      for(;;){
+        const {done,value}=await reader.read();if(done)break;
+        parts.push(value);got+=value.length;r.got=got;since+=value.length;soon();
+        if(since>=CHECKPOINT){since=0;r.partial=new Blob(parts);put(r);}   // survives the app being closed
+      }
+      if(!got||(r.size&&got<r.size))throw new Error(tag+":cut "+(got/1048576).toFixed(1)+"/"+((r.size||0)/1048576).toFixed(1)+"MB");
       return new Blob(parts,{type:res.headers.get("content-type")||(r.type==="audio"?"audio/mpeg":"video/mp4")});
     }
     async function run(r){
-      r.status="busy";r.got=0;r.why="";soon();
+      r.status="busy";r.why="";draw();
       try{
         // Straight from the CDN first (no size limits); through our API if the CDN blocks it.
         let blob=null,why=[];
-        for(const [url,tag] of [[r.direct,"cdn"],[r.src,"api"]]){
+        const order=r.via==="api"?[[r.src,"api"]]:[[r.direct,"cdn"],[r.src,"api"]];
+        for(const [url,tag] of order){
           if(!url||blob)continue;
-          try{blob=await grab(r,url,tag);}catch(e){why.push(String(e.message||e).replace(/^Failed to fetch$/,tag+":blocked"));}
+          try{blob=await grab(r,url,tag);}
+          catch(e){if(r._pausing||r._gone)throw e;why.push(String(e.message||e).replace(/^Failed to fetch$/,tag+":blocked"));}
         }
         if(!blob)throw new Error(why.join(" "));
-        r.blob=blob;
+        r.blob=blob;r.partial=null;r._parts=null;
         if(r.type==="video"){const t=await frame(r.blob);if(t)r.thumb=t;}   // remote thumbnails expire
         r.status="done";await put(r);draw();toPhone(r);toast(t("toastDone"));
       }catch(e){
-        if(!NATIVE&&r.src){   // fall back to the phone's download manager
-          r.status="phone";r.why="";const {blob,...m}=r;await put(m);draw();phoneSave(r);toast(t("toastStart"));return;
+        if(r._gone){return;}
+        if(r._pausing){   // keep what arrived; "resume" continues from here
+          r._pausing=false;r.status="paused";if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;await put(r);draw();
+        }else if(!NATIVE&&r.src){   // fall back to the phone's download manager
+          r.status="phone";r.why="";r.partial=null;r._parts=null;await put(r);draw();phoneSave(r);toast(t("toastStart"));
+        }else{
+          r.status="fail";r.why=String(e.message||e);r._parts=null;await put(r);draw();
         }
-        r.status="fail";r.why=String(e.message||e);const {blob,...m}=r;await put(m);draw();
-      }
+      }finally{r._ctl=null;pump();}
     }
+    // Queue: start as many as the "at once" setting allows; the rest wait their turn.
+    function parLimit(){let n=2;try{n=+localStorage.getItem("vdlPar")||2;}catch(e){}return n;}
+    function pump(){
+      if(NATIVE)return;
+      let active=[...recs.values()].filter(r=>r.status==="busy").length;
+      [...recs.values()].filter(r=>r.status==="queued").sort((a,b)=>a.created-b.created)
+        .forEach(r=>{if(active<parLimit()){active++;run(r);}});
+      draw();
+    }
+    function pause(r){
+      if(r.status==="busy"){r._pausing=true;if(r._ctl)r._ctl.abort();}
+      else if(r.status==="queued"){r.status="paused";put(r);draw();}
+    }
+    function resume(r){r.status="queued";put(r);pump();}
     // First frame of a video as a small JPEG, for files that came without a thumbnail.
     function frame(blob){return frameAt(URL.createObjectURL(blob),true);}
     function frameAt(u,revoke){
@@ -463,10 +525,10 @@ html[dir="ltr"] .fi .mt{text-align:left}
       // The app fetches the file itself so its progress shows here (bar above the tabs and in
       // "my files"); when done it is kept for offline playback and saved to the phone.
       // If that fails, the phone's own download manager takes over (see run).
-      const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:"busy",...o};
-      recs.set(r.id,r);put({...r});makeThumb(r);
+      const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:NATIVE?"busy":"queued",...o};
+      recs.set(r.id,r);put(r);makeThumb(r);
       if(NATIVE){nativeStart(r);draw();show("files");toast(t("toastStarted"));return;}
-      draw();show("files");toast(t("toastStarted"));run(r);
+      show("files");toast(t("toastStarted"));pump();
     }
     function play(r){
       const u=r.blob?blobUrl(r):(r.local&&NATIVE?CAP.convertFileSrc(r.local):(r.direct||r.src));$("plTitle").textContent=r.title;
@@ -486,18 +548,25 @@ html[dir="ltr"] .fi .mt{text-align:left}
       const act=b.dataset.act;
       if(act==="play"&&(r.status==="done"||r.status==="phone"))play(r);
       else if(act==="save"){if(r.blob)toPhone(r);else{phoneSave(r);toast(t("toastStart"));}}
-      else if(act==="retry"){if(NATIVE)nativeStart(r);else run(r);}
+      else if(act==="retry"){if(NATIVE)nativeStart(r);else{r.why="";resume(r);}}
+      else if(act==="pause")pause(r);
+      else if(act==="resume")resume(r);
       else if(act==="open")window.open(r.direct||r.src,"_blank","noopener");
-      else if(act==="del"){recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}await tx("readwrite",s=>s.delete(r.id));draw();}
+      else if(act==="del"){r._gone=true;if(r._ctl)r._ctl.abort();recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}await tx("readwrite",s=>s.delete(r.id));draw();}
     });
     (async()=>{
       db=await open();
       const all=await tx("readonly",s=>s.getAll())||[];
-      all.forEach(r=>{if(r.status==="busy"&&!(NATIVE&&r.dlId))r.status="fail";if(!recs.has(r.id))recs.set(r.id,r);});   // closed mid-download
-      draw();
+      // Closed mid-download: continue from the last saved part (every 8 MB).
+      all.forEach(r=>{if(r.status==="busy"&&!(NATIVE&&r.dlId)){r.status="queued";r.got=r.partial?r.partial.size:0;}if(!recs.has(r.id))recs.set(r.id,r);});
+      draw();pump();
       if(NATIVE)recs.forEach(r=>{if(r.status==="busy")poll(r);});   // DownloadManager kept going
       recs.forEach(r=>{if(r.status!=="fail")makeThumb(r);});   // older entries without a kept picture
     })();
+    const parOpts=$("parOpts");
+    function markPar(){parOpts.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.n===parLimit())));}
+    parOpts.onclick=e=>{const b=e.target.closest("button");if(!b)return;try{localStorage.setItem("vdlPar",b.dataset.n);}catch(x){}markPar();pump();};
+    markPar();
     return {start,redraw:draw,hidePlayer};
   })();
 
