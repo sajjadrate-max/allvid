@@ -1,7 +1,7 @@
 {
-  "name": "ویڈیو ڈاؤن لوڈر",
-  "short_name": "ڈاؤن لوڈر",
-  "description": "لنک ڈالیں، فارمیٹ چنیں، اور ویڈیو اپنے موبائل میں محفوظ کریں۔",
+  "name": "All Video Downloader",
+  "short_name": "Video Downloader",
+  "description": "Download videos from TikTok, Facebook, Instagram, X and more. لنک ڈالیں اور ویڈیو محفوظ کریں۔",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -12,14 +12,33 @@
   "lang": "ur",
   "dir": "rtl",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "share_target": {
     "action": "./",
     "method": "GET",
     "enctype": "application/x-www-form-urlencoded",
-    "params": { "title": "title", "text": "text", "url": "url" }
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
   }
 }
