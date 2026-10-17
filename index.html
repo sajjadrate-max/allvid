@@ -351,7 +351,7 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
       const sel=sheet.querySelector('input[name=fmt]:checked');
       const pick=list[sel?Number(sel.value):0];
       hideSheet();   // its history entry becomes the "my files" one (see show)
-      DL.start({src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0,est:pick.est||0});
+      DL.start({src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0,est:pick.est||0,prep:!!pick.prep});
     };
   }
 
@@ -378,6 +378,7 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
 :r.status==="fail"?t("stopped")+" "+(r.why?"("+r.why+")":"")
         :r.status==="queued"?t("queued")+(r.got?" · "+(total?pct+"% · ":"")+mb(r.got):"")
         :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
+        :r.prep?"⏳ "+(r.prepPct||0)+"%"
         :(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
       return {meta,pct,total,site};
     }
@@ -473,9 +474,31 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
       if(!got||(r.size&&got<r.size))throw new Error(tag+":cut "+(got/1048576).toFixed(1)+"/"+((r.size||0)/1048576).toFixed(1)+"MB");
       return new Blob(parts,{type:res.headers.get("content-type")||(r.type==="audio"?"audio/mpeg":"video/mp4")});
     }
+    // YouTube through a converter site: start the job, wait until its file is ready,
+    // then download that file like any other.
+    const sleep=ms=>new Promise(res=>setTimeout(res,ms));
+    async function prepare(r){
+      const api=r.src.replace(/\?.*$/,"");
+      const get=async u=>{const x=await fetch(u);const j=await x.json().catch(()=>({}));if(!x.ok||j.error)throw new Error("cv:"+(j.detail||j.error||x.status));return j;};
+      const {job}=await get(r.src);
+      for(let i=0;i<200;i++){
+        if(r._pausing||r._gone)throw new Error("stopped");
+        await sleep(3000);
+        const j=await get(api+"?yt=1&job="+encodeURIComponent(job));
+        r.prepPct=j.pct||0;soon();
+        if(j.url){
+          const name=nameOf(r);
+          r.direct=j.url;r.prep=false;r.prepPct=0;
+          r.src=/(^|\.)(loader\.to|oceansaver\.in|savenow\.to)$/.test(new URL(j.url).hostname)?api+"?file="+encodeURIComponent(j.url)+"&name="+encodeURIComponent(name):j.url;
+          await put(r);return;
+        }
+      }
+      throw new Error("cv:timeout");
+    }
     async function run(r){
       r.status="busy";r.why="";draw();
       try{
+        if(r.prep)await prepare(r);
         // Straight from the CDN first (no size limits); through our API if the CDN blocks it.
         let blob=null,why=[];
         const order=r.via==="api"?[[r.src,"api"]]:[[r.direct,"cdn"],[r.src,"api"]];
@@ -492,7 +515,7 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
         if(r._gone||r._handoff||r.status==="bg"){return;}
         if(r._pausing){   // keep what arrived; "resume" continues from here
           r._pausing=false;r.status="paused";if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;await put(r);draw();
-        }else if(!NATIVE&&r.src){   // fall back to the phone's download manager
+        }else if(!NATIVE&&r.src&&!r.prep){   // fall back to the phone's download manager
           r.status="phone";r.why="";r.partial=null;r._parts=null;await put(r);draw();phoneSave(r);toast(t("toastStart"));
         }else{
           r.status="fail";r.why=String(e.message||e);r._parts=null;await put(r);draw();
@@ -530,7 +553,7 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
     }
     document.addEventListener("visibilitychange",()=>{
       if(!BG||document.visibilityState!=="hidden")return;
-      [...recs.values()].filter(r=>r.status==="busy"||r.status==="queued").forEach(handOff);
+      [...recs.values()].filter(r=>(r.status==="busy"||r.status==="queued")&&!r.prep).forEach(handOff);
     });
     // A background download finished (sw.js wrote it to the database): show it.
     async function reload(id){

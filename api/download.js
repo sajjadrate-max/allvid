@@ -6,9 +6,11 @@
 // (MP3 and enlarged copies are made by api/convert.js.)
 
 import { Readable } from 'node:stream';
-import { UserError, allowedMedia, mediaHeaders, resolve, addSizes } from '../lib/resolve.js';
+import { UserError, allowedMedia, mediaHeaders, resolve, addSizes, ytJob } from '../lib/resolve.js';
 
 export const config = { maxDuration: 60 };
+
+const attachment = name => "attachment; filename=\"" + name.replace(/[^\x20-\x7e]|"/g, '_') + "\"; filename*=UTF-8''" + encodeURIComponent(name);
 
 async function stream(req, res) {
   const file = String(req.query.file || '');
@@ -47,6 +49,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   try {
     if (req.method === 'GET' && req.query && req.query.file) return await stream(req, res);
+    if (req.method === 'GET' && req.query && req.query.yt) { res.status(200).json(await ytJob(req.query)); return; }
     if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
     const url = String((req.body && req.body.url) || '').trim();
     const m = url.match(/https?:\/\/\S+/);
