@@ -1,7 +1,7 @@
 {
   "name": "AllVid",
   "short_name": "AllVid",
-  "description": "Download videos from TikTok, Facebook, Instagram, X and more. لنک ڈالیں اور ویڈیو محفوظ کریں۔",
+  "description": "Download videos from TikTok, Facebook, Instagram, X and YouTube.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -9,8 +9,8 @@
   "orientation": "portrait",
   "background_color": "#EDF2EE",
   "theme_color": "#0F7458",
-  "lang": "ur",
-  "dir": "rtl",
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
     {
       "src": "icon-192.png",

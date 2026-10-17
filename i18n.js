@@ -1190,9 +1190,9 @@ const STR={
 "downloadBtn": {"ur": "ڈاؤن لوڈ", "en": "Download", "ar": "تنزيل", "hi": "डाउनलोड"},
 "clipPasted": {"ur": "AllVid نے کلپ بورڈ سے لنک لے لیا", "en": "AllVid pasted from your clipboard", "ar": "لصق AllVid الرابط من الحافظة", "hi": "AllVid ने क्लिपबोर्ड से लिंक ले लिया"}
 };
-let cur="ur";
-try{cur=localStorage.getItem("vdlLang")||"ur";}catch(e){}
-if(!LANGS.some(l=>l.code===cur))cur="ur";
+let cur="en";
+try{cur=localStorage.getItem("vdlLang")||"en";}catch(e){}
+if(!LANGS.some(l=>l.code===cur))cur="en";
 function t(key){const v=STR[key];if(!v)return key;return v[cur]||v[cur.split("-")[0]]||v.en||v.ur||key;}
 function set(code){cur=code;try{localStorage.setItem("vdlLang",code);}catch(e){}}
 return {LANGS,RTL,t,set,get lang(){return cur;},get rtl(){return RTL.includes(cur);}};
