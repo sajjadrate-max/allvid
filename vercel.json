@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/download.js": {
+      "includeFiles": "node_modules/ffmpeg-static/ffmpeg"
+    }
+  }
+}

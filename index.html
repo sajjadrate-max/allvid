@@ -331,7 +331,7 @@ html[dir="ltr"] .fi .mt{text-align:left}
       c.width=w;c.height=Math.min(h,480);c.getContext("2d").drawImage(img,0,0,w,h);return c.toDataURL("image/jpeg",.75);
     }
     async function makeThumb(r){
-      if(making.has(r.id)||(r.thumb&&r.thumb.indexOf("data:")===0)||r.type==="audio")return;
+      if(making.has(r.id)||(r.thumb&&r.thumb.indexOf("data:")===0)||(r.type==="audio"&&!r.thumb))return;
       making.add(r.id);let t="";
       if(r.thumb){
         try{
