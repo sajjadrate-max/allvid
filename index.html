@@ -901,6 +901,37 @@ html{overscroll-behavior-y:contain}
     msg.innerHTML='<div class="status err">'+esc(ERR[k]||ERR["fetch.fail"])+(detail||k&&!ERR[k]?'<br><small dir="ltr" style="opacity:.75;font-family:var(--mono)">'+esc((ERR[k]?"":k+" ")+(detail||""))+'</small>':'')+'</div>';
   }
   let last="",busy=false;
+  // TikTok through tikwm straight from the phone: tikwm limits/blocks busy servers (ours
+  // included), not phones. If the phone can't reach it (or the browser blocks it), our server
+  // is asked as before.
+  const TKW="https://www.tikwm.com";
+  const tkAbs=u=>!u?"":/^https?:/.test(u)?u:TKW+u;
+  async function tikwmPost(path,params){
+    const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),8000);
+    try{const r=await fetch(TKW+path,{method:"POST",body:new URLSearchParams(params),signal:ctl.signal,credentials:"omit"});return await r.json();}
+    finally{clearTimeout(tm);}
+  }
+  async function tiktokFeedDirect(q){
+    const j=q?await tikwmPost("/api/feed/search",{keywords:q,count:"20",cursor:"0",hd:"1"}):await tikwmPost("/api/feed/list",{region:"PK",count:"20"});
+    const list=Array.isArray(j.data)?j.data:(j.data&&j.data.videos)||[];
+    const mmss=x=>x?Math.floor(x/60)+":"+String(x%60).padStart(2,"0"):"";
+    const short=n=>!n?"":n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,"")+"M views":n>=1e3?Math.round(n/1e3)+"K views":n+" views";
+    const ago=x=>{if(!x)return "";const d=Date.now()/1000-x;for(const [n,w] of [[31536000,"year"],[2592000,"month"],[604800,"week"],[86400,"day"],[3600,"hour"],[60,"minute"]])if(d>=n){const k=Math.floor(d/n);return k+" "+w+(k>1?"s":"")+" ago";}return "just now";};
+    return list.filter(v=>v.video_id||v.id).map(v=>{const id=v.video_id||v.id,a=v.author||{};return {id,title:v.title||"",ch:a.nickname||a.unique_id||"",dur:mmss(v.duration),views:short(v.play_count),ago:ago(v.create_time),
+      thumb:tkAbs(v.cover||v.origin_cover),play:tkAbs(v.play||v.wmplay),link:"https://www.tiktok.com/@"+(a.unique_id||"user")+"/video/"+id};});
+  }
+  async function tiktokDirect(url){
+    const j=await tikwmPost("/api/",{url,hd:"1"});
+    if(!j||j.code!==0||!j.data)return null;
+    const d=j.data,title=d.title||(d.author&&d.author.unique_id)||"tiktok";
+    const nm=ext=>encodeURIComponent((String(title).replace(/[^\p{L}\p{M}\p{N} ._-]+/gu," ").replace(/\s+/g," ").trim().slice(0,60)||"tiktok")+"."+ext);
+    const it=(type,u,ext,hd)=>({type,hd,url:"/api/download?file="+encodeURIComponent(tkAbs(u))+"&name="+nm(ext),direct:tkAbs(u)});
+    const items=[];
+    if(Array.isArray(d.images)&&d.images.length)d.images.forEach(img=>items.push({type:"photo",url:tkAbs(img),thumb:tkAbs(img)}));
+    else{if(d.hdplay)items.push(it("video",d.hdplay,"mp4",true));if(d.play)items.push(it("video",d.play,"mp4",false));}
+    if(d.music)items.push(it("audio",d.music,"mp3"));
+    return items.length?{title,thumb:tkAbs(d.cover||d.origin_cover),items,duration:+d.duration||undefined}:null;
+  }
   async function analyze(){
     const url=findUrl(link.value);
     if(!url){
@@ -918,6 +949,7 @@ html{overscroll-behavior-y:contain}
         try{j=await lib.resolve(url);await lib.addSizes(j.items);}
         catch(e){j={error:e&&e.code||"fetch.fail",detail:e&&e.detail||String(e&&e.message||e)};}
       }
+      if(!NATIVE&&platform(url)==="tiktok"){try{j=await tiktokDirect(url);}catch(e){j=null;}}
       for(const b of NATIVE||j?[]:BASES){
         try{
           const r=await fetch(b+"/api/download",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url})});
@@ -1076,11 +1108,11 @@ html{overscroll-behavior-y:contain}
       if(!force){try{const c=JSON.parse(localStorage.getItem(key)||"null");if(c&&c.length){show(shuffle(c));had=true;}}catch(e){}}
       if(!had)list.innerHTML=SKEL;
       let items=[],why="";
-      for(const b of BASES){
-        // A different sort each time (and a cache-busting bucket for TikTok), so each refresh
-        // or tap on a category brings other videos.
-        const extra=tiktok?"&r="+Math.floor(Math.random()*6):"&sort="+["","d","w"][Math.floor(Math.random()*3)];
-        try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;break;}if(j.detail)why=j.detail;}catch(e){}
+      if(tiktok){try{items=await tiktokFeedDirect(q);}catch(e){why="ph:"+(e&&e.name==="AbortError"?"timeout":"blocked");}}
+      for(const b of items.length?[]:BASES){
+        // A different sort each time, so each refresh or tap on a category brings other videos.
+        const extra=tiktok?"":"&sort="+["","d","w"][Math.floor(Math.random()*3)];   // TikTok: let the edge cache spare tikwm
+        try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;break;}if(j.detail)why=(why?why+" ":"")+j.detail;}catch(e){}
       }
       if(my!==seq)return;
       if(items.length){try{localStorage.setItem(key,JSON.stringify(items.slice(0,24)));}catch(e){}}
@@ -1226,7 +1258,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-p";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-q";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
