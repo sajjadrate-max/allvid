@@ -283,8 +283,20 @@ html[dir="ltr"] .fi .mt{text-align:left}
     const host=(()=>{try{return new URL(findUrl(link.value)).hostname.replace(/^www\./,"")}catch(e){return ""}})();
     const aud=j.items.filter(i=>i.type==="audio"), vid=j.items.filter(i=>i.type==="video"), pho=j.items.filter(i=>i.type==="photo");
     const def=vid.find(i=>!i.up)||vid[0]||aud[0];   // the original quality, not an enlarged copy
+    // Files the API makes on request (MP3, enlarged sizes) have no size yet: estimate it.
+    const src=vid.filter(i=>!i.up&&i.size&&parseInt(i.label,10)>0).sort((a,b)=>parseInt(b.label,10)-parseInt(a.label,10))[0]||vid.find(i=>!i.up&&i.size);
+    const dur=+j.duration||0;
+    j.items.forEach(i=>{
+      if(i.size)return;
+      if(i.type==="audio"&&/&audio=1/.test(i.url)){ if(dur)i.est=dur*160000/8; else if(src)i.est=src.size*0.12; }
+      if(i.up&&src){
+        const h=parseInt(i.label,10),sh=parseInt(src.label,10)||h/2;
+        i.est=dur?dur*(h>=1080?4.5e6:2.5e6)/8:src.size*Math.pow(h/sh,2)*1.3;
+        i.est=Math.max(i.est,src.size*Math.pow(h/sh,2));   // never smaller than the original scaled up
+      }
+    });
     const list=[];
-    const opt=(i,label)=>{list.push(i);return '<label class="opt"><input type="radio" name="fmt" value="'+(list.length-1)+'"'+(i===def?' checked':'')+'>'+ICON[i.type]+'<span class="n">'+label+'</span><span class="s">'+mb(i.size)+'</span><span class="c"></span></label>';};
+    const opt=(i,label)=>{list.push(i);return '<label class="opt"><input type="radio" name="fmt" value="'+(list.length-1)+'"'+(i===def?' checked':'')+'>'+ICON[i.type]+'<span class="n">'+label+'</span><span class="s">'+(i.size?mb(i.size):i.est?"≈ "+mb(i.est):"")+'</span><span class="c"></span></label>';};
     let h='<div class="handle"></div><div class="sh-head"><h2 id="sheetTitle">Download</h2><button class="sh-x" type="button" id="shx" aria-label="'+t("close")+'">×</button></div>'+
       '<div class="pv">'+(j.thumb?'<img src="'+esc(j.thumb)+'" alt="" referrerpolicy="no-referrer">':'')+'<div><div class="t" dir="auto">'+esc(j.title)+'</div><div class="d">'+esc(host)+'</div></div></div>';
     if(aud.length){h+='<p class="sec">Music</p>';aud.forEach(i=>{h+=opt(i,i.label?"Audio ("+i.label+")":"Classic MP3");});}

@@ -1,6 +1,6 @@
 // App shell cache for the video downloader. Only same-origin GETs inside this
 // app's folder are cached; API calls and downloads always go to the network.
-const CACHE = "video-dl-v18";
+const CACHE = "video-dl-v19";
 const BASE = new URL("./", self.location).pathname;
 const SHELL = [BASE, BASE + "i18n.js", BASE + "manifest.json", BASE + "icon-192.png", BASE + "icon-512.png"];
 
@@ -25,5 +25,9 @@ self.addEventListener("fetch", e => {
     }).catch(() => caches.match(BASE)));
     return;
   }
-  e.respondWith(caches.match(req).then(hit => hit || fetch(req)));
+  // Everything else too: network first (so a new page never meets an old i18n.js), cache offline.
+  e.respondWith(fetch(req).then(r => {
+    if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
+    return r;
+  }).catch(() => caches.match(req)));
 });
