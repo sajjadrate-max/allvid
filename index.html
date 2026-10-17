@@ -495,6 +495,13 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   let deferred=null;
   if(!standalone&&!NATIVE) inst.hidden=false;
   if(!NATIVE&&/android/i.test(ua)) $("apk").hidden=false;   // the app gets Facebook/Instagram videos the server can't
+  // Opened from the installed web app, links land in a small in-app tab where Chrome's
+  // "Download anyway" prompt for APKs never shows, so the download hangs at 100%.
+  // An intent:// link opens the file in the full Chrome app instead.
+  if(!NATIVE&&/android/i.test(ua)){
+    const apk=$("apk"),plain=apk.href.replace(/^https:\/\//,"");
+    apk.href="intent://"+plain+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(apk.href)+";end";
+  }
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;});
   const steps=l=>{hint.innerHTML='<ol class="steps">'+l.map(x=>'<li>'+x+'</li>').join("")+'</ol>';instBtn.hidden=true;};
   instBtn.addEventListener("click",async()=>{
