@@ -51,7 +51,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET' && req.query && req.query.file) return await stream(req, res);
     if (req.method === 'GET' && req.query && req.query.tt !== undefined) {
       const out = await tiktokFeed(req.query.tt);
-      res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=3600');
+      res.setHeader('Cache-Control', 'public, s-maxage=120');   // the trending list changes; keep it fresh
       res.status(200).json(out); return;
     }
     if (req.method === 'GET' && req.query && req.query.related) {
@@ -60,7 +60,7 @@ export default async function handler(req, res) {
       res.status(200).json(out); return;
     }
     if (req.method === 'GET' && req.query && req.query.search) {
-      const out = await ytSearch(req.query.search);
+      const out = await ytSearch(req.query.search, req.query.sort);
       res.setHeader('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600');   // the same lists are asked for often
       res.status(200).json(out); return;
     }

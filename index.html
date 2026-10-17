@@ -1048,6 +1048,7 @@ a.site.on{border-color:var(--accent)}
     if(name==="tiktok")TK.start();
   }
   const DLI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+  const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
   const cards=items=>items.map((v,i)=>'<div class="vc" data-i="'+i+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" src="'+esc(v.thumb)+'" alt="" referrerpolicy="no-referrer">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+'</button>'+
     '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views].filter(Boolean).join(" · "))+'</div></div>'+
     '<button type="button" class="dlb" data-act="dl" aria-label="'+esc(t("downloadBtn"))+'">'+DLI+'</button></div></div>').join("");
@@ -1060,14 +1061,19 @@ a.site.on{border-color:var(--accent)}
       list.innerHTML='<p class="empty2">'+esc(t("loading"))+'</p>';
       let items=[];
       for(const b of BASES){
-        try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q));const j=await r.json();if(j.items){items=j.items;break;}}catch(e){}
+        // A different sort each time (and a cache-busting bucket for TikTok), so each refresh
+        // or tap on a category brings other videos.
+        const extra=tiktok?"&r="+Math.floor(Math.random()*6):"&sort="+["","d","w"][Math.floor(Math.random()*3)];
+        try{const r=await fetch(b+"/api/download?"+(tiktok?"tt=":"search=")+encodeURIComponent(q)+extra);const j=await r.json();if(j.items){items=j.items;break;}}catch(e){}
       }
       if(my!==seq)return;
       if(!items.length){list.innerHTML='<p class="empty2">'+esc(t("noResults"))+'</p>';return;}
+      items=shuffle(items);
       list.innerHTML=cards(items);
       list._items=items;
     }
-    function pick(i){[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));load(CATS[i][1],CATS[i][0]);}
+    // Each category has several searches; one is picked at random each time.
+    function pick(i){[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));const q=[].concat(CATS[i][1]);load(q[Math.floor(Math.random()*q.length)],CATS[i][0]);}
     cats.onclick=e=>{const b=e.target.closest("button");if(b)pick(+b.dataset.i);};
     function download(v){if(mp3)nextPref="mp3";link.value=v.link||"https://youtu.be/"+v.id;mark();last="";analyze();}
     function watch(v){
@@ -1123,9 +1129,17 @@ a.site.on{border-color:var(--accent)}
       };
     })();
   }
-  const YT=feed("yt",[["🔥 Trending","trending pakistan today"],["📰 News","pakistan news today"],["🕌 Naat","naat sharif"],["📺 Drama","pakistani drama latest episode"],["😂 Comedy","funny videos"],["🏏 Cricket","cricket highlights"],["🍳 Food","pakistani food recipe"],["🎓 Islamic","islamic bayan"]]);
-  const TK=feed("tk",[["🔥 Trending",""],["😂 Funny","funny pakistan"],["🎵 Songs","urdu songs"],["🕌 Islamic","islamic bayan"],["🏏 Cricket","cricket"],["🍳 Food","food recipe"],["💪 Motivation","motivation urdu"],["💄 Beauty","makeup tutorial"]],false,true);
-  const MU=feed("mu",[["🎵 New","new songs 2026"],["🕌 Naat","naat sharif"],["🎤 Qawwali","qawwali"],["💔 Sad","sad songs urdu"],["🎶 Punjabi","punjabi songs"],["🌙 Ghazal","ghazal"],["🇮🇳 Bollywood","bollywood songs"],["🎧 Pashto","pashto songs"]],true);
+  const YT=feed("yt",[
+    ["🔥 Trending",["trending pakistan today","viral video pakistan","latest pakistan","trending urdu","new video today pakistan","most viewed today"]],
+    ["📰 News",["pakistan news today","breaking news urdu","headlines today","geo news live","ary news today","talk show today"]],
+    ["🕌 Naat",["naat sharif","new naat 2026","naat urdu beautiful","manqabat","hamd","kalam"]],
+    ["📺 Drama",["pakistani drama latest episode","drama episode today","hum tv drama","geo drama new","ary digital drama","drama ost"]],
+    ["😂 Comedy",["funny videos","comedy pakistani","funny clips urdu","stand up comedy urdu","prank video pakistan","funny moments"]],
+    ["🏏 Cricket",["cricket highlights","pakistan cricket","psl highlights","cricket match today","babar azam","t20 highlights"]],
+    ["🍳 Food",["pakistani food recipe","street food pakistan","easy recipe urdu","biryani recipe","bbq recipe","desserts recipe urdu"]],
+    ["🎓 Islamic",["islamic bayan","quran tilawat","bayan urdu new","islamic lecture","dua","hadith urdu"]]]);
+  const TK=feed("tk",[["🔥 Trending",["","","pakistan","viral"]],["😂 Funny",["funny pakistan","comedy urdu","funny video"]],["🎵 Songs",["urdu songs","punjabi song","sad song"]],["🕌 Islamic",["islamic bayan","naat","quran"]],["🏏 Cricket",["cricket","psl","babar azam"]],["🍳 Food",["food recipe","street food","cooking"]],["💪 Motivation",["motivation urdu","success motivation","life lessons"]],["💄 Beauty",["makeup tutorial","skin care","hair style"]]],false,true);
+  const MU=feed("mu",[["🎵 New",["new songs 2026","latest songs","new urdu song","top songs this week"]],["🕌 Naat",["naat sharif","new naat","naat audio"]],["🎤 Qawwali",["qawwali","nusrat fateh ali khan","sabri brothers","rahat fateh ali khan"]],["💔 Sad",["sad songs urdu","sad song hindi","broken heart songs"]],["🎶 Punjabi",["punjabi songs","new punjabi song","punjabi folk"]],["🌙 Ghazal",["ghazal","mehdi hassan","ghulam ali ghazal","jagjit singh"]],["🇮🇳 Bollywood",["bollywood songs","arijit singh","hindi songs new","90s hindi songs"]],["🎧 Pashto",["pashto songs","pashto new song","pashto tapay"]]],true);
   document.querySelectorAll(".htabs button").forEach(b=>b.onclick=()=>hpane(b.dataset.h));
   // Typed text that isn't a link: search YouTube.
   const SEARCH={search(q){hpane("youtube");YT.search(q);scrollTo(0,0);}};
@@ -1134,7 +1148,7 @@ a.site.on{border-color:var(--accent)}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-e";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-f";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
