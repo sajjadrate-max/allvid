@@ -237,6 +237,7 @@ a.site{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14p
 a.site .ic2{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.4rem}
 a.site[data-p="snapchat"] .ic2{color:#000}
 a.site.on{border-color:var(--accent)}
+.share-pill{align-self:center;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#f0d878,#c9a84c);color:#1a2b4a;font-weight:700;font-size:15px;padding:11px 30px;border-radius:999px;box-shadow:0 4px 14px rgba(201,168,76,.35)}
 </style>
 </head>
 <body>
@@ -269,6 +270,8 @@ a.site.on{border-color:var(--accent)}
       <button class="sbtn" id="go" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></button>
     </form>
     <div id="msg" aria-live="polite"></div>
+
+    <button type="button" class="share-pill" id="shareBtn">🔗 <span data-i18n="share">Share</span></button>
 
     <div class="install" id="install" hidden>
       <img src="icon-192.png" alt="">
@@ -1063,11 +1066,16 @@ a.site.on{border-color:var(--accent)}
   $("qOpts").onclick=e=>{const b=e.target.closest("button");if(!b)return;try{localStorage.setItem("vdlQ",b.dataset.q);}catch(x){}fillSettings();};
   $("setLang").onclick=()=>{show("home");setTimeout(()=>{scrollTo(0,0);langBtn.click();},80);};
   $("clearAll").onclick=async()=>{if(!DL.count()||!confirm(t("clearConfirm")))return;await DL.clearAll();fillSettings();toast(t("cleared"));};
-  $("shareApp").onclick=async()=>{
+  // Share AllVid with friends (like the calculator): the phone's share sheet with a full
+  // message and the link, or the message copied when the phone has no share sheet.
+  async function shareAllVid(){
     const url=location.origin+location.pathname;
-    try{if(navigator.share){await navigator.share({title:"AllVid",text:t("aboutText"),url});return;}}catch(e){return;}
-    try{await navigator.clipboard.writeText(url);toast(t("linkCopied"));}catch(e){}
-  };
+    const text=t("shareMsg")+"\n"+url;
+    try{if(navigator.share){await navigator.share({title:"AllVid",text});return;}}catch(e){return;}
+    try{await navigator.clipboard.writeText(text);toast(t("msgCopied"));}catch(e){prompt("",url);}
+  }
+  $("shareApp").onclick=shareAllVid;
+  $("shareBtn").onclick=shareAllVid;
 
   window.addEventListener("popstate",()=>{
     if(!$("player").hidden){DL.hidePlayer();return;}
