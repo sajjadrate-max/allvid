@@ -133,14 +133,40 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .player video,.player img{max-width:100%;max-height:100%}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:12;background:var(--fg);color:var(--bg);border-radius:12px;padding:10px 14px;text-align:center;font-weight:600;opacity:0;transform:translateY(10px);transition:all .2s;pointer-events:none}
 .toast.on{opacity:1;transform:none}
+/* language menu (same idea as the calculator: search box + scrolling list) */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.lang-wrap{position:relative;flex:none;margin-top:8px}
+.lang-btn{background:var(--surface);border:1.5px solid var(--line);color:var(--fg);border-radius:999px;padding:5px 12px;font-size:.88rem;font-weight:600;white-space:nowrap;max-width:46vw;overflow:hidden;text-overflow:ellipsis}
+.lang-panel{position:absolute;top:calc(100% + 6px);inset-inline-end:0;z-index:30;width:min(280px,86vw);background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:10px;display:flex;flex-direction:column;gap:8px}
+.lang-panel[hidden]{display:none}
+.lang-panel input{width:100%;font:inherit;font-size:.92rem;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px}
+.lang-list{max-height:300px;overflow-y:auto;display:flex;flex-direction:column}
+.lang-item{text-align:start;background:none;color:var(--fg);border-radius:8px;padding:8px 10px;font-size:.95rem;line-height:1.5;unicode-bidi:plaintext}
+.lang-item:hover,.lang-item:focus-visible{background:var(--bg)}
+.lang-item[aria-selected="true"]{color:var(--accent);font-weight:700}
+.lang-none{color:var(--muted);text-align:center;padding:12px;font-size:.9rem}
+/* non-Urdu languages: plain fonts instead of Nastaliq; left-to-right ones use the system font */
+html:not([lang="ur"]) h1,html:not([lang="ur"]) .files h2{font-family:var(--body);line-height:1.4;font-size:1.6rem;padding:6px 0}
+html[dir="ltr"] body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;line-height:1.6}
+html[dir="ltr"] .steps{padding-right:0;padding-left:18px}
+html[dir="ltr"] .fi .mt{text-align:left}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap" data-view="home" id="homeView">
   <header>
-    <h1>ویڈیو ڈاؤن لوڈر</h1>
-    <p class="lead">لنک ڈالیں، فارمیٹ چنیں، اور ویڈیو اپنے موبائل میں محفوظ کریں۔</p>
+    <div class="topbar">
+      <h1 data-i18n="title">ویڈیو ڈاؤن لوڈر</h1>
+      <div class="lang-wrap">
+        <button type="button" class="lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false">🌐 <span id="langName">اردو</span></button>
+        <div class="lang-panel" id="langPanel" hidden>
+          <input type="text" id="langSearch" autocomplete="off" data-i18n-ph="langSearch" placeholder="زبان تلاش کریں...">
+          <div class="lang-list" id="langList" role="listbox"></div>
+        </div>
+      </div>
+    </div>
+    <p class="lead" data-i18n="lead">لنک ڈالیں، فارمیٹ چنیں، اور ویڈیو اپنے موبائل میں محفوظ کریں۔</p>
     <div class="chips">
       <span class="chip" data-p="instagram">Instagram</span>
       <span class="chip" data-p="facebook">Facebook</span>
@@ -151,40 +177,40 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 
   <div class="install" id="install" hidden>
     <img src="icon-192.png" alt="">
-    <div class="txt"><b>ایپ انسٹال کریں</b><small id="installHint">ہوم اسکرین پر لگائیں، ایک ٹچ میں کھولیں۔</small></div>
-    <button class="btn" type="button" id="installBtn">انسٹال</button>
-    <button class="x" type="button" id="installClose" aria-label="بند کریں">×</button>
+    <div class="txt"><b data-i18n="installTitle">ایپ انسٹال کریں</b><small id="installHint" data-i18n="installHint">ہوم اسکرین پر لگائیں، ایک ٹچ میں کھولیں۔</small></div>
+    <button class="btn" type="button" id="installBtn" data-i18n="installBtn">انسٹال</button>
+    <button class="x" type="button" id="installClose" data-i18n-aria="close" aria-label="بند کریں">×</button>
   </div>
 
   <form class="card" id="form" novalidate>
-    <label class="l" for="link">ویڈیو کا لنک</label>
+    <label class="l" for="link" data-i18n="linkLabel">ویڈیو کا لنک</label>
     <div class="linkbox">
       <input type="url" id="link" placeholder="https://www.instagram.com/reel/..." autocomplete="off" inputmode="url">
-      <button class="paste" type="button" id="paste">پیسٹ</button>
+      <button class="paste" type="button" id="paste" data-i18n="paste">پیسٹ</button>
     </div>
     <button class="go" id="go" type="submit">⬇ Download</button>
     <div id="msg" aria-live="polite"></div>
   </form>
 
-  <p class="note">Instagram، Facebook، TikTok یا X میں ویڈیو پر <b>شیئر</b> دبائیں، <b>Copy link</b> چنیں، پھر یہاں <b>پیسٹ</b> دبائیں۔ ایپ انسٹال ہو تو Android پر شیئر کی فہرست سے سیدھا یہ ایپ بھی چن سکتے ہیں۔</p>
-  <footer>صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
+  <p class="note" data-i18n-html="note">Instagram، Facebook، TikTok یا X میں ویڈیو پر <b>شیئر</b> دبائیں، <b>Copy link</b> چنیں، پھر یہاں <b>پیسٹ</b> دبائیں۔</p>
+  <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
 </div>
 
 <section class="wrap files" data-view="files" id="filesView" hidden>
-  <h2>میری فائلیں</h2>
+  <h2 data-i18n="tabFiles">میری فائلیں</h2>
   <ul class="fl" id="fileList"></ul>
-  <p class="empty" id="noFiles">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
+  <p class="empty" id="noFiles" data-i18n="empty">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
 </section>
 
 <nav class="tabs" role="tablist">
   <button class="tab" role="tab" type="button" data-tab="home" aria-selected="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>ڈاؤن لوڈ</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span data-i18n="tabHome">ڈاؤن لوڈ</span></button>
   <button class="tab" role="tab" type="button" data-tab="files" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M10 9v6l5-3z" fill="currentColor"/></svg>میری فائلیں<span class="badge" id="badge" hidden>0</span></button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M10 9v6l5-3z" fill="currentColor"/></svg><span data-i18n="tabFiles">میری فائلیں</span><span class="badge" id="badge" hidden>0</span></button>
 </nav>
 
-<div class="player" id="player" hidden role="dialog" aria-modal="true" aria-label="پلیئر">
-  <div class="top"><b id="plTitle"></b><button type="button" id="plClose" aria-label="بند کریں">×</button></div>
+<div class="player" id="player" hidden role="dialog" aria-modal="true" data-i18n-aria="player" aria-label="پلیئر">
+  <div class="top"><b id="plTitle"></b><button type="button" id="plClose" data-i18n-aria="close" aria-label="بند کریں">×</button></div>
   <div class="stage" id="plStage"></div>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -196,8 +222,10 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   </div>
 </div>
 
+<script src="i18n.js"></script>
 <script>
 (function(){
+  const t=I18N.t;
   // GitHub Pages can't run server code, so that copy uses the ilme-jafar API on Vercel.
   // Each base is tried in turn until one answers like our API.
   // The first address that answers like our API wins and is remembered for next time.
@@ -213,17 +241,9 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   const Downloader=NATIVE?(CAP.registerPlugin?CAP.registerPlugin("Downloader"):CAP.Plugins.Downloader):null;
   const $=id=>document.getElementById(id);
   const P=[["instagram",/instagram\.com|instagr\.am/i],["facebook",/facebook\.com|fb\.watch|fb\.com/i],["tiktok",/tiktok\.com/i],["twitter",/(^|[\/.])(twitter|x)\.com\//i]];
-  const ERR={
-    "link.invalid":"یہ لنک درست نہیں لگ رہا۔ پورا لنک دوبارہ کاپی کر کے ڈالیں۔",
-    "unsupported":"ابھی Instagram، Facebook، TikTok اور X (Twitter) کے لنک چلتے ہیں۔",
-    "unavailable":"یہ ویڈیو نہیں ملی۔ شاید ہٹا دی گئی ہے۔",
-    "private":"یہ پوسٹ پرائیویٹ ہے یا ابھی نہیں کھل رہی۔ صرف پبلک پوسٹ ڈاؤن لوڈ ہوتی ہے۔",
-    "empty":"اس پوسٹ میں کوئی ویڈیو یا تصویر نہیں ملی۔",
-    "fetch.fail":"ویڈیو لانے میں مسئلہ آیا۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔",
-    "ig.blocked":"Instagram نے اس وقت ویڈیو نہیں دی۔ صرف پبلک پوسٹ ڈاؤن لوڈ ہوتی ہے، یا تھوڑی دیر بعد دوبارہ کوشش کریں۔",
-    "fb.blocked":"Facebook نے یہ ویڈیو نہیں دی۔ صرف پبلک ویڈیو ڈاؤن لوڈ ہوتی ہے، یا تھوڑی دیر بعد دوبارہ کوشش کریں۔",
-    "no.api":"ڈاؤن لوڈ والا سرور (API) نہیں مل رہا۔"
-  };
+  // Error texts come from i18n.js (keys "e_<code>"); unknown codes fall back to the generic one.
+  const ERR=new Proxy({},{get:(_,k)=>typeof k==="string"&&I18N.t("e_"+k)!=="e_"+k?I18N.t("e_"+k):undefined});
+
   const ICON={
     audio:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>',
     video:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>'
@@ -250,13 +270,13 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
     const def=vid[0]||aud[0];
     const list=[];
     const opt=(i,label)=>{list.push(i);return '<label class="opt"><input type="radio" name="fmt" value="'+(list.length-1)+'"'+(i===def?' checked':'')+'>'+ICON[i.type]+'<span class="n">'+label+'</span><span class="s">'+mb(i.size)+'</span><span class="c"></span></label>';};
-    let h='<div class="handle"></div><div class="sh-head"><h2 id="sheetTitle">Download</h2><button class="sh-x" type="button" id="shx" aria-label="بند کریں">×</button></div>'+
-      '<div class="pv">'+(j.thumb?'<img src="'+esc(j.thumb)+'" alt="" referrerpolicy="no-referrer">':'')+'<div><div class="t">'+esc(j.title)+'</div><div class="d">'+esc(host)+'</div></div></div>';
+    let h='<div class="handle"></div><div class="sh-head"><h2 id="sheetTitle">Download</h2><button class="sh-x" type="button" id="shx" aria-label="'+t("close")+'">×</button></div>'+
+      '<div class="pv">'+(j.thumb?'<img src="'+esc(j.thumb)+'" alt="" referrerpolicy="no-referrer">':'')+'<div><div class="t" dir="auto">'+esc(j.title)+'</div><div class="d">'+esc(host)+'</div></div></div>';
     if(aud.length){h+='<p class="sec">Music</p>';aud.forEach(i=>{h+=opt(i,"Classic MP3");});}
-    if(vid.length){h+='<p class="sec">Video</p>';vid.forEach(i=>{h+=opt(i,"MP4"+(vid.length>1?(i.hd?" HD":" (چھوٹی فائل)"):""));});}
+    if(vid.length){h+='<p class="sec">Video</p>';vid.forEach(i=>{h+=opt(i,"MP4"+(vid.length>1?(i.hd?" HD":" ("+t("smaller")+")"):""));});}
     if(pho.length){
       h+='<p class="sec">Photos</p><div class="photos">';
-      pho.forEach(p=>{h+='<a href="'+esc(abs(p.url))+'" download aria-label="تصویر"><img src="'+esc(p.thumb)+'" alt="" referrerpolicy="no-referrer"></a>';});
+      pho.forEach(p=>{h+='<a href="'+esc(abs(p.url))+'" download aria-label="'+t("photo")+'"><img src="'+esc(p.thumb)+'" alt="" referrerpolicy="no-referrer"></a>';});
       h+='</div>';
     }
     if(list.length) h+='<button class="go" type="button" id="dl">Download</button>';
@@ -287,16 +307,16 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       const pct=r.size?Math.min(100,Math.round(r.got/r.size*100)):0;
       const playable=r.status==="done"||r.status==="phone";
       const site=SITE[r.site||siteOf(r)]||"";
-      const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size):"MP4"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?"تصویر":(nameOf(r).split(".").pop()||"mp4").toUpperCase())
-        :r.status==="fail"?"ڈاؤن لوڈ رک گیا "+(r.why?"("+r.why+")":"")
-        :(r.size?pct+"% · "+mb(r.got)+" / "+mb(r.size):mb(r.got)||"شروع ہو رہا ہے..."));
+      const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size):"MP4"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
+        :r.status==="fail"?t("stopped")+" "+(r.why?"("+r.why+")":"")
+        :(r.size?pct+"% · "+mb(r.got)+" / "+mb(r.size):mb(r.got)||t("starting")));
       return '<li class="fi'+(r.status==="fail"?' fail':'')+'" data-id="'+r.id+'">'+
-        '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="چلائیں">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
-        '<div class="bd"><div class="tt">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" ویڈیو")+'</div><div class="mt">'+esc(meta)+'</div>'+
+        '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="'+t("play")+'">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
+        '<div class="bd"><div class="tt" dir="auto">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" "+t("video"))+'</div><div class="mt">'+esc(meta)+'</div>'+
         (r.status==="busy"?'<div class="bar"><i style="width:'+(r.size?pct:8)+'%"></i></div>':'')+
-        '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">▶ دیکھیں</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?"دوبارہ ڈاؤن لوڈ":"فون میں محفوظ")+'</button>'):'')+
-        (r.status==="fail"?'<button class="pri" type="button" data-act="retry">دوبارہ</button>'+(r.direct||r.src?'<button type="button" data-act="open">سیدھا کھولیں</button>':''):'')+
-        '<button type="button" data-act="del">ہٹائیں</button></div></div></li>';
+        '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>'):'')+
+        (r.status==="fail"?'<button class="pri" type="button" data-act="retry">'+t("retry")+'</button>'+(r.direct||r.src?'<button type="button" data-act="open">'+t("openDirect")+'</button>':''):'')+
+        '<button type="button" data-act="del">'+t("remove")+'</button></div></div></li>';
     }
     // Picture for the list: the post's own thumbnail (fetched through our API so it can be
     // kept as a small JPEG; CDN links expire), else a frame from the video itself.
@@ -354,7 +374,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
         if(!blob)throw new Error(why.join(" "));
         r.blob=blob;
         if(r.type==="video"){const t=await frame(r.blob);if(t)r.thumb=t;}   // remote thumbnails expire
-        r.status="done";await put(r);draw();toPhone(r);toast("✓ ڈاؤن لوڈ مکمل — فون کے Downloads میں بھی محفوظ");
+        r.status="done";await put(r);draw();toPhone(r);toast(t("toastDone"));
       }catch(e){r.status="fail";r.why=String(e.message||e);const {blob,...m}=r;await put(m);draw();}
     }
     // First frame of a video as a small JPEG, for files that came without a thumbnail.
@@ -382,7 +402,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       if(!r.dlId||r.status!=="busy")return;
       let st;try{st=await Downloader.status({id:r.dlId});}catch(e){st={status:"missing"};}
       if(st.total>0)r.size=st.total;r.got=st.got||0;
-      if(st.status==="done"){r.status="done";r.local=st.uri;await put(r);draw();toast("✓ ڈاؤن لوڈ مکمل — Downloads/VideoDownloader میں");return;}
+      if(st.status==="done"){r.status="done";r.local=st.uri;await put(r);draw();toast(t("toastDoneApp"));return;}
       if(st.status==="failed"||st.status==="missing"){r.status="fail";r.why="dm:"+(st.reason||st.status);await put(r);draw();return;}
       soon();setTimeout(()=>poll(r),1000);
     }
@@ -391,15 +411,15 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       // the list keeps an entry that can be played from the internet.
       const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:NATIVE?"busy":"phone",...o};
       recs.set(r.id,r);put({...r});makeThumb(r);
-      if(NATIVE){nativeStart(r);draw();show("files");toast("ڈاؤن لوڈ شروع ہو گیا");return;}
-      phoneSave(r);draw();show("files");toast("ڈاؤن لوڈ شروع — اوپر نوٹیفکیشن میں دیکھیں");
+      if(NATIVE){nativeStart(r);draw();show("files");toast(t("toastStarted"));return;}
+      phoneSave(r);draw();show("files");toast(t("toastStart"));
     }
     function play(r){
       const u=r.blob?blobUrl(r):(r.local&&NATIVE?CAP.convertFileSrc(r.local):(r.direct||r.src));$("plTitle").textContent=r.title;
       $("plStage").innerHTML=r.type==="photo"?'<img alt="">':r.type==="audio"?'<audio controls autoplay></audio>':'<video controls autoplay playsinline></video>';
       const m=$("plStage").firstChild;
       // CDN addresses expire; then play through our API, and if that fails point to the phone's copy.
-      m.onerror=()=>{if(r.local&&r.direct&&m.src.indexOf(r.direct)!==0&&m.src.indexOf(r.src)!==0){m.src=r.direct;}else if(!NATIVE&&r.direct&&m.src.indexOf(r.direct)===0&&r.src){m.src=r.src;}else{$("plStage").innerHTML='<p style="color:#fff;text-align:center;padding:20px">یہ ویڈیو اب یہاں نہیں چل رہی۔ فون کی Gallery یا Downloads فولڈر میں دیکھیں۔</p>';}};
+      m.onerror=()=>{if(r.local&&r.direct&&m.src.indexOf(r.direct)!==0&&m.src.indexOf(r.src)!==0){m.src=r.direct;}else if(!NATIVE&&r.direct&&m.src.indexOf(r.direct)===0&&r.src){m.src=r.src;}else{$("plStage").innerHTML='<p style="color:#fff;text-align:center;padding:20px">'+esc(t("cantPlay"))+'</p>';}};
       m.src=u;$("player").hidden=false;
     }
     function closePlayer(){const m=$("plStage").firstChild;if(m&&m.pause)m.pause();$("plStage").innerHTML="";$("player").hidden=true;}
@@ -410,7 +430,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       const r=recs.get(b.closest(".fi").dataset.id);if(!r)return;
       const act=b.dataset.act;
       if(act==="play"&&(r.status==="done"||r.status==="phone"))play(r);
-      else if(act==="save"){if(r.blob)toPhone(r);else{phoneSave(r);toast("ڈاؤن لوڈ شروع — نوٹیفکیشن میں دیکھیں");}}
+      else if(act==="save"){if(r.blob)toPhone(r);else{phoneSave(r);toast(t("toastStart"));}}
       else if(act==="retry"){if(NATIVE)nativeStart(r);else run(r);}
       else if(act==="open")window.open(r.direct||r.src,"_blank","noopener");
       else if(act==="del"){recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}await tx("readwrite",s=>s.delete(r.id));draw();}
@@ -423,7 +443,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       if(NATIVE)recs.forEach(r=>{if(r.status==="busy")poll(r);});   // DownloadManager kept going
       recs.forEach(r=>{if(r.status!=="fail")makeThumb(r);});   // older entries without a kept picture
     })();
-    return {start};
+    return {start,redraw:draw};
   })();
 
   let toastT=0;
@@ -441,10 +461,10 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   let last="",busy=false;
   async function analyze(){
     const url=findUrl(link.value);
-    if(!url){msg.innerHTML='<div class="status err">پہلے ویڈیو کا لنک ڈالیں۔</div>';link.focus();return;}
+    if(!url){msg.innerHTML='<div class="status err">'+esc(t("needLink"))+'</div>';link.focus();return;}
     if(!platform(url)){msg.innerHTML='<div class="status err">'+ERR.unsupported+'</div>';return;}
     last=url;busy=true;msg.innerHTML="";
-    go.disabled=true;go.innerHTML='<span class="spin"></span> ویڈیو تلاش ہو رہی ہے...';
+    go.disabled=true;go.innerHTML='<span class="spin"></span> '+esc(t("searching"));
     try{
       let j=null,code="";
       if(NATIVE){
@@ -463,14 +483,14 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       if(!j){showErr("no.api","page:"+location.host+" "+code.trim());return;}
       if(!j.items){showErr(j.error,j.detail);return;}
       render(j);
-    }catch(e){showErr("fetch.fail",String(e&&e.message||e));}
+    }catch(e){showErr("net",String(e&&e.message||e));}
     finally{busy=false;go.disabled=false;go.textContent="⬇ Download";}
   }
   function maybeAuto(){const u=findUrl(link.value);if(u&&u!==last&&platform(u)&&!busy){link.value=u;mark();analyze();}}
   link.addEventListener("paste",()=>setTimeout(maybeAuto,0));
   $("paste").onclick=async()=>{
     try{const t=await navigator.clipboard.readText();if(t){link.value=findUrl(t)||t.trim();mark();last="";maybeAuto();return;}}catch(e){}
-    link.focus();msg.innerHTML='<div class="status info">لنک والے خانے کو دبا کر رکھیں اور "Paste" چنیں۔</div>';
+    link.focus();msg.innerHTML='<div class="status info">'+esc(t("pasteHint"))+'</div>';
   };
   $("form").addEventListener("submit",e=>{e.preventDefault();last="";analyze();});
 
@@ -500,12 +520,43 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   const steps=l=>{hint.innerHTML='<ol class="steps">'+l.map(x=>'<li>'+x+'</li>').join("")+'</ol>';instBtn.hidden=true;};
   instBtn.addEventListener("click",async()=>{
     if(deferred){deferred.prompt();const c=await deferred.userChoice;deferred=null;if(c.outcome==="accepted")inst.hidden=true;return;}
-    if(inApp) return steps(['اوپر کونے میں <b>⋮</b> دبائیں','<b>Open in browser</b> چنیں','وہاں دوبارہ "انسٹال" دبائیں']);
-    if(ios) return steps(['Safari میں نیچے <b>شیئر</b> ⬆️ دبائیں','<b>Add to Home Screen</b> چنیں','<b>Add</b> دبائیں']);
-    steps(['Chrome میں اوپر <b>⋮</b> دبائیں','<b>Install app</b> یا <b>Add to Home screen</b> چنیں','<b>Install</b> دبائیں']);
+    if(inApp) return steps(t("stepsInApp").split("|"));
+    if(ios) return steps(t("stepsIos").split("|"));
+    steps(t("stepsChrome").split("|"));
   });
   window.addEventListener("appinstalled",()=>{inst.hidden=true;});
   $("installClose").onclick=()=>{inst.hidden=true;};
+
+  // --- Language ---
+  const langBtn=$("langBtn"),langPanel=$("langPanel"),langSearch=$("langSearch"),langList=$("langList");
+  const shortName=n=>n.replace(/\s*\([^)]*\)\s*$/,"");
+  function applyLang(){
+    const root=document.documentElement;root.lang=I18N.lang;root.dir=I18N.rtl?"rtl":"ltr";
+    document.querySelectorAll("[data-i18n]").forEach(el=>{el.textContent=t(el.dataset.i18n);});
+    document.querySelectorAll("[data-i18n-html]").forEach(el=>{el.innerHTML=t(el.dataset.i18nHtml);});
+    document.querySelectorAll("[data-i18n-ph]").forEach(el=>{el.placeholder=t(el.dataset.i18nPh);});
+    document.querySelectorAll("[data-i18n-aria]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAria));});
+    document.title=t("title");
+    const cur=I18N.LANGS.find(l=>l.code===I18N.lang);$("langName").textContent=cur?shortName(cur.name):"Language";
+    langBtn.setAttribute("aria-label",t("language"));
+    instBtn.hidden=false;
+    msg.innerHTML="";closeSheet();DL.redraw();
+  }
+  function buildLangs(q){
+    q=(q||"").trim().toLowerCase();
+    const hits=I18N.LANGS.filter(l=>!q||l.name.toLowerCase().includes(q)||l.code.includes(q));
+    langList.innerHTML=hits.length?hits.map(l=>'<button type="button" class="lang-item" role="option" data-code="'+l.code+'" aria-selected="'+(l.code===I18N.lang)+'">'+esc(l.name)+'</button>').join(""):'<div class="lang-none">'+esc(t("noLang"))+'</div>';
+  }
+  function openLangs(open){
+    langPanel.hidden=!open;langBtn.setAttribute("aria-expanded",String(open));
+    if(open){langSearch.value="";buildLangs("");langSearch.focus();const sel=langList.querySelector('[aria-selected="true"]');if(sel)sel.scrollIntoView({block:"center"});}
+  }
+  langBtn.onclick=e=>{e.stopPropagation();openLangs(langPanel.hidden);};
+  langSearch.oninput=()=>buildLangs(langSearch.value);
+  langList.onclick=e=>{const b=e.target.closest(".lang-item");if(!b)return;I18N.set(b.dataset.code);openLangs(false);applyLang();scrollTo(0,0);};
+  document.addEventListener("click",e=>{if(!langPanel.hidden&&!e.target.closest(".lang-wrap"))openLangs(false);});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!langPanel.hidden){openLangs(false);langBtn.focus();}});
+  applyLang();
 })();
 </script>
 </body>
