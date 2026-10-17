@@ -158,7 +158,9 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:12;background:var(--fg);color:var(--bg);border-radius:12px;padding:10px 14px;text-align:center;font-weight:600;opacity:0;transform:translateY(10px);transition:all .2s;pointer-events:none}
 .toast.on{opacity:1;transform:none}
 /* language menu (same idea as the calculator: search box + scrolling list) */
-.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-bottom:6px}
+.topbar h1{grid-column:2;text-align:center}
+.topbar .lang-wrap{grid-column:3;justify-self:end}
 .lang-wrap{position:relative;flex:none;margin-top:8px}
 .lang-btn{background:var(--surface);border:1.5px solid var(--line);color:var(--fg);border-radius:999px;padding:5px 12px;font-size:.88rem;font-weight:600;white-space:nowrap;max-width:46vw;overflow:hidden;text-overflow:ellipsis}
 .lang-panel{position:absolute;top:calc(100% + 6px);inset-inline-end:0;z-index:30;width:min(280px,86vw);background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:10px;display:flex;flex-direction:column;gap:8px}
