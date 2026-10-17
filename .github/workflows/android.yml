@@ -2,10 +2,8 @@ name: Android APK
 
 # Builds the Android app (Capacitor wrapper around index.html + lib/resolve.js)
 # and publishes it as the "latest" release: .../releases/download/latest/VideoDownloader.apk
+# Manual only (Actions tab -> Run workflow); the site no longer links the APK.
 on:
-  push:
-    branches: [main]
-    paths: ['index.html', 'lib/**', 'app/**', '.github/workflows/android.yml']
   workflow_dispatch:
 
 permissions:

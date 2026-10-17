@@ -57,12 +57,6 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-left-color:transparent;border-radius:50%;animation:r .8s linear infinite}
 @keyframes r{to{transform:rotate(360deg)}}
 
-/* Android app download */
-.apk{display:flex;align-items:center;gap:12px;background:var(--accent);color:var(--accent-ink);border-radius:14px;padding:10px 12px;text-decoration:none}
-.apk[hidden]{display:none}
-.apk img{width:42px;height:42px;border-radius:10px;flex:none;background:#fff}
-.apk .txt{display:flex;flex-direction:column;line-height:1.6;min-width:0}
-.apk small{opacity:.9;font-size:.82rem}
 /* install banner */
 .install{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--accent);border-radius:14px;padding:10px 12px}
 .install[hidden]{display:none}
@@ -165,11 +159,6 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
     <button class="x" type="button" id="installClose" aria-label="بند کریں">×</button>
   </div>
 
-  <a class="apk" id="apk" hidden href="https://github.com/sajjadrate-max/video-downloader/releases/download/latest/VideoDownloader.apk">
-    <img src="icon-192.png" alt="">
-    <span class="txt"><b>Android ایپ ڈاؤن لوڈ کریں</b><small>Facebook اور Instagram کی ویڈیوز کے لیے سب سے بہتر — ویڈیو فون کے اپنے انٹرنیٹ سے آتی ہے۔</small></span>
-  </a>
-
   <form class="card" id="form" novalidate>
     <label class="l" for="link">ویڈیو کا لنک</label>
     <div class="linkbox">
@@ -235,8 +224,8 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
     "private":"یہ پوسٹ پرائیویٹ ہے یا ابھی نہیں کھل رہی۔ صرف پبلک پوسٹ ڈاؤن لوڈ ہوتی ہے۔",
     "empty":"اس پوسٹ میں کوئی ویڈیو یا تصویر نہیں ملی۔",
     "fetch.fail":"ویڈیو لانے میں مسئلہ آیا۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔",
-    "ig.blocked":NATIVE?"Instagram نے یہ ویڈیو نہیں دی۔ صرف پبلک پوسٹ ڈاؤن لوڈ ہوتی ہے۔":"Instagram ہمارے سرور کو یہ ویڈیو نہیں دے رہا۔ اوپر سے Android ایپ لیں، وہ فون سے سیدھا ڈاؤن لوڈ کرتی ہے۔",
-    "fb.blocked":NATIVE?"Facebook نے یہ ویڈیو نہیں دی۔ صرف پبلک ویڈیو ڈاؤن لوڈ ہوتی ہے۔":"Facebook ہمارے سرور کو یہ ویڈیو نہیں دے رہا۔ اوپر سے Android ایپ لیں، وہ فون سے سیدھا ڈاؤن لوڈ کرتی ہے۔",
+    "ig.blocked":"Instagram نے اس وقت ویڈیو نہیں دی۔ صرف پبلک پوسٹ ڈاؤن لوڈ ہوتی ہے، یا تھوڑی دیر بعد دوبارہ کوشش کریں۔",
+    "fb.blocked":"Facebook نے یہ ویڈیو نہیں دی۔ صرف پبلک ویڈیو ڈاؤن لوڈ ہوتی ہے، یا تھوڑی دیر بعد دوبارہ کوشش کریں۔",
     "no.api":"ڈاؤن لوڈ والا سرور (API) نہیں مل رہا۔"
   };
   const ICON={
@@ -433,7 +422,6 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.tab));
 
   function showErr(k,detail){
-    if(!NATIVE&&(k==="fb.blocked"||k==="ig.blocked")){$("apk").hidden=false;detail=(detail||"")+"";}
     msg.innerHTML='<div class="status err">'+esc(ERR[k]||ERR["fetch.fail"])+(detail||k&&!ERR[k]?'<br><small dir="ltr" style="opacity:.75;font-family:var(--mono)">'+esc((ERR[k]?"":k+" ")+(detail||""))+'</small>':'')+'</div>';
   }
   let last="",busy=false;
@@ -494,14 +482,6 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   const inApp=/FBAN|FBAV|Instagram|Line\/|WhatsApp|TikTok|musical_ly|Snapchat|; wv\)/i.test(ua);
   let deferred=null;
   if(!standalone&&!NATIVE) inst.hidden=false;
-  if(!NATIVE&&/android/i.test(ua)) $("apk").hidden=false;   // the app gets Facebook/Instagram videos the server can't
-  // Opened from the installed web app, links land in a small in-app tab where Chrome's
-  // "Download anyway" prompt for APKs never shows, so the download hangs at 100%.
-  // An intent:// link opens the file in the full Chrome app instead.
-  if(!NATIVE&&/android/i.test(ua)){
-    const apk=$("apk"),plain=apk.href.replace(/^https:\/\//,"");
-    apk.href="intent://"+plain+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(apk.href)+";end";
-  }
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;});
   const steps=l=>{hint.innerHTML='<ol class="steps">'+l.map(x=>'<li>'+x+'</li>').join("")+'</ol>';instBtn.hidden=true;};
   instBtn.addEventListener("click",async()=>{
