@@ -1,11 +1,11 @@
 // App shell cache for the video downloader. Only same-origin GETs inside this
 // app's folder are cached; API calls and downloads always go to the network.
-const CACHE = "video-dl-v27";
+const CACHE = "video-dl-v28";
 const BASE = new URL("./", self.location).pathname;
 const SHELL = [BASE, BASE + "i18n.js", BASE + "manifest.json", BASE + "icon-192.png", BASE + "icon-512.png"];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", e => {

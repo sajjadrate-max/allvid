@@ -740,6 +740,17 @@ html[dir="ltr"] .fi .mt{text-align:left}
 
   // --- Install as app ---
   if(!NATIVE && "serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(()=>{});
+  // A new version was installed: reload once into it, unless that would interrupt something
+  // (a download running in the page, a link being looked up, or the download sheet open).
+  if(!NATIVE&&"serviceWorker" in navigator&&navigator.serviceWorker.controller){
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{
+      const tryReload=()=>{
+        if(busy||root.classList.contains("open")||document.querySelector('.fi .bar:not(.idle)')){setTimeout(tryReload,5000);return;}
+        location.reload();
+      };
+      tryReload();
+    });
+  }
   // Opened from a download notification: go straight to "my files".
   if(location.hash==="#files"){history.replaceState({vdl:"home"},"",location.pathname);show("files");}
   const inst=$("install"),instBtn=$("installBtn"),hint=$("installHint");
