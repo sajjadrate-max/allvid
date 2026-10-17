@@ -745,13 +745,18 @@ h1[dir="ltr"]{font-family:var(--body);line-height:1.25;font-size:1.55rem;font-we
       if(!j){showErr("no.api","page:"+location.host+" "+code.trim());return;}
       if(!j.items){showErr(j.error,((j.detail||"")+" "+ph).trim());return;}
       render(j);
-      // Opened from another app's Share button: download the best version straight away.
+      // Pasted or shared link: download the best version straight away (the yellow
+      // Download button still opens the list of formats to choose from).
       if(autoShare){autoShare=false;const b=$("dl");if(b)b.click();}
     }catch(e){showErr("net",String(e&&e.message||e));}
-    finally{busy=false;go.disabled=false;go.textContent="⬇ Download";}
+    finally{autoShare=false;busy=false;go.disabled=false;go.textContent="⬇ Download";}
   }
-  function maybeAuto(){const u=findUrl(link.value);if(u&&u!==last&&platform(u)&&!busy){link.value=u;mark();analyze();}}
+  function maybeAuto(){const u=findUrl(link.value);if(u&&u!==last&&platform(u)&&!busy){link.value=u;mark();autoShare=true;analyze();}}
   link.addEventListener("paste",()=>setTimeout(maybeAuto,0));
+  // The keyboard's clipboard suggestion (e.g. Gboard) inserts the whole link at once without
+  // a "paste" event: treat a jump of many characters as a paste.
+  let prevLen=0;
+  link.addEventListener("input",e=>{const n=link.value.length,jump=n-prevLen;prevLen=n;if(e.inputType==="insertFromPaste"||jump>=10)setTimeout(maybeAuto,0);});
   $("paste").onclick=async()=>{
     try{const t=await navigator.clipboard.readText();if(t){link.value=findUrl(t)||t.trim();mark();last="";maybeAuto();return;}}catch(e){}
     link.focus();msg.innerHTML='<div class="status info">'+esc(t("pasteHint"))+'</div>';
