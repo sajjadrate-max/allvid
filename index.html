@@ -286,7 +286,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
     function row(r){
       const pct=r.size?Math.min(100,Math.round(r.got/r.size*100)):0;
       const playable=r.status==="done"||r.status==="phone";
-      const site=SITE[r.site]||(r.src&&r.src.charAt(0)==="?"?"":"");
+      const site=SITE[r.site||siteOf(r)]||"";
       const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size):"MP4"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?"تصویر":(nameOf(r).split(".").pop()||"mp4").toUpperCase())
         :r.status==="fail"?"ڈاؤن لوڈ رک گیا "+(r.why?"("+r.why+")":"")
         :(r.size?pct+"% · "+mb(r.got)+" / "+mb(r.size):mb(r.got)||"شروع ہو رہا ہے..."));
@@ -317,6 +317,12 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
       }
       if(!t&&r.type==="video"){const u=r.blob?"":(NATIVE?r.direct:r.src);if(u)t=await frameAt(u,false);}
       if(t){r.thumb=t;await put(r);draw();}
+    }
+    // Older entries didn't store the source; tell it from the title or the video's own address.
+    function siteOf(r){
+      if(/^(facebook|instagram|tiktok|x)$/i.test(r.title||""))return {x:"twitter"}[r.title.toLowerCase()]||r.title.toLowerCase();
+      let u=r.direct||r.link||"";try{u=u||new URL(r.src,location.href).searchParams.get("file")||"";}catch(e){}
+      return /fbcdn|facebook|fb\.watch/i.test(u)?"facebook":/cdninstagram|instagram/i.test(u)?"instagram":/tikwm|tiktok/i.test(u)?"tiktok":/twimg|twitter|x\.com/i.test(u)?"twitter":"";
     }
     function draw(){
       const all=[...recs.values()].sort((a,b)=>b.created-a.created);
