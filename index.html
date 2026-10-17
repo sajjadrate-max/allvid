@@ -277,6 +277,12 @@ html{overscroll-behavior-y:contain}
 .vc .tt2,.watch .wt{overflow-wrap:anywhere;word-break:break-word}
 .vc .sub,.watch .ws{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .player .stage{overflow-x:hidden}
+.psearch{display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:4px 4px 4px 16px;direction:ltr}
+.psearch:focus-within{border-color:var(--cta)}
+.psearch input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:.95rem;color:var(--fg);padding:8px 2px;outline:none;text-align:start}
+.psearch input::-webkit-search-cancel-button{display:none}
+.psearch button{flex:none;width:40px;height:40px;border-radius:999px;background:var(--cta);color:var(--cta-ink);display:grid;place-items:center}
+.psearch button svg{width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -325,33 +331,37 @@ html{overscroll-behavior-y:contain}
   </section>
 
   <section class="hpane yt" data-pane="youtube" id="yt" hidden>
+    <form class="psearch" data-feed="yt" role="search"><input type="search" enterkeyhint="search" placeholder="Search YouTube" aria-label="Search YouTube"><button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></button></form>
     <div class="cats" id="ytCats"></div>
     <h3 class="yt-h" id="ytHead">YouTube</h3>
     <div class="vgrid" id="ytList"></div>
   </section>
 
   <section class="hpane yt" data-pane="tiktok" id="tk" hidden>
+    <form class="psearch" data-feed="tk" role="search"><input type="search" enterkeyhint="search" placeholder="Search TikTok" aria-label="Search TikTok"><button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></button></form>
     <div class="cats" id="tkCats"></div>
     <h3 class="yt-h" id="tkHead">TikTok</h3>
     <div class="vgrid tall" id="tkList"></div>
   </section>
 
   <section class="hpane yt" data-pane="music" id="mu" hidden>
+    <form class="psearch" data-feed="mu" role="search"><input type="search" enterkeyhint="search" placeholder="Search songs, naats, qawwali" aria-label="Search songs, naats, qawwali"><button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></button></form>
     <div class="cats" id="muCats"></div>
     <h3 class="yt-h" id="muHead">Music</h3>
     <div class="vgrid" id="muList"></div>
   </section>
 
   <section class="hpane" data-pane="more" hidden>
+    <form class="psearch" id="siteSearch" role="search"><input type="search" enterkeyhint="search" placeholder="Search Instagram, Facebook, X..." aria-label="Search sites"><button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></button></form>
     <p class="sites-note" data-i18n="sites">سائٹ کھولیں، ویڈیو پر Share دبا کر AllVid چنیں</p>
     <div class="sites">
-      <a class="site chip" data-p="instagram" href="https://www.instagram.com/" target="_blank" rel="noopener"><span class="ic2" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">◎</span><span>Instagram</span></a>
-      <a class="site chip" data-p="facebook" href="https://m.facebook.com/watch/" target="_blank" rel="noopener"><span class="ic2" style="background:#1877F2">f</span><span>Facebook</span></a>
-      <a class="site chip" data-p="tiktok" href="https://www.tiktok.com/" target="_blank" rel="noopener"><span class="ic2" style="background:#111">♪</span><span>TikTok</span></a>
-      <a class="site chip" data-p="twitter" href="https://x.com/" target="_blank" rel="noopener"><span class="ic2" style="background:#000">𝕏</span><span>X</span></a>
-      <a class="site chip" data-p="youtube" href="https://m.youtube.com/" target="_blank" rel="noopener"><span class="ic2" style="background:#FF0000">▶</span><span>YouTube</span></a>
-      <a class="site chip" data-p="snapchat" href="https://www.snapchat.com/spotlight" target="_blank" rel="noopener"><span class="ic2" style="background:#FFFC00">👻</span><span>Snapchat</span></a>
-      <a class="site chip" data-p="pinterest" href="https://www.pinterest.com/" target="_blank" rel="noopener"><span class="ic2" style="background:#E60023">P</span><span>Pinterest</span></a>
+      <a class="site chip" data-p="instagram" data-s="https://www.instagram.com/explore/search/keyword/?q={q}" href="https://www.instagram.com/" target="_blank" rel="noopener"><span class="ic2" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">◎</span><span>Instagram</span></a>
+      <a class="site chip" data-p="facebook" data-s="https://m.facebook.com/search/videos/?q={q}" href="https://m.facebook.com/watch/" target="_blank" rel="noopener"><span class="ic2" style="background:#1877F2">f</span><span>Facebook</span></a>
+      <a class="site chip" data-p="tiktok" data-s="https://www.tiktok.com/search?q={q}" href="https://www.tiktok.com/" target="_blank" rel="noopener"><span class="ic2" style="background:#111">♪</span><span>TikTok</span></a>
+      <a class="site chip" data-p="twitter" data-s="https://x.com/search?f=video&q={q}" href="https://x.com/" target="_blank" rel="noopener"><span class="ic2" style="background:#000">𝕏</span><span>X</span></a>
+      <a class="site chip" data-p="youtube" data-s="https://m.youtube.com/results?search_query={q}" href="https://m.youtube.com/" target="_blank" rel="noopener"><span class="ic2" style="background:#FF0000">▶</span><span>YouTube</span></a>
+      <a class="site chip" data-p="snapchat" data-s="https://www.snapchat.com/explore/{q}" href="https://www.snapchat.com/spotlight" target="_blank" rel="noopener"><span class="ic2" style="background:#FFFC00">👻</span><span>Snapchat</span></a>
+      <a class="site chip" data-p="pinterest" data-s="https://www.pinterest.com/search/videos/?q={q}" href="https://www.pinterest.com/" target="_blank" rel="noopener"><span class="ic2" style="background:#E60023">P</span><span>Pinterest</span></a>
     </div>
   </section>
 </div>
@@ -1132,7 +1142,7 @@ html{overscroll-behavior-y:contain}
     return {
       start(){if(!loaded){loaded=true;pick(cur);}},
       refresh(){pick(cur,true);},
-      search(q){loaded=true;[...cats.children].forEach(b=>b.setAttribute("aria-pressed","false"));load(q,t("results")+": "+q);}
+      search(q){loaded=true;[...cats.children].forEach(b=>b.setAttribute("aria-pressed","false"));load(q,t("results")+": "+q,"s",true);}
     };
   }
   // YouTube's player refuses to start without a Referer (the page sends none, for the CDNs),
@@ -1180,6 +1190,16 @@ html{overscroll-behavior-y:contain}
   const TK=feed("tk",[["🔥 Trending",["","","pakistan","viral"]],["😂 Funny",["funny pakistan","comedy urdu","funny video"]],["🎵 Songs",["urdu songs","punjabi song","sad song"]],["🕌 Islamic",["islamic bayan","naat","quran"]],["🏏 Cricket",["cricket","psl","babar azam"]],["🍳 Food",["food recipe","street food","cooking"]],["💪 Motivation",["motivation urdu","success motivation","life lessons"]],["💄 Beauty",["makeup tutorial","skin care","hair style"]]],false,true);
   const MU=feed("mu",[["🎵 New",["new songs 2026","latest songs","new urdu song","top songs this week"]],["🕌 Naat",["naat sharif","new naat","naat audio"]],["🎤 Qawwali",["qawwali","nusrat fateh ali khan","sabri brothers","rahat fateh ali khan"]],["💔 Sad",["sad songs urdu","sad song hindi","broken heart songs"]],["🎶 Punjabi",["punjabi songs","new punjabi song","punjabi folk"]],["🌙 Ghazal",["ghazal","mehdi hassan","ghulam ali ghazal","jagjit singh"]],["🇮🇳 Bollywood",["bollywood songs","arijit singh","hindi songs new","90s hindi songs"]],["🎧 Pashto",["pashto songs","pashto new song","pashto tapay"]]],true);
   document.querySelectorAll(".htabs button").forEach(b=>b.onclick=()=>hpane(b.dataset.h));
+  // Search bar on each tab: YouTube / TikTok / Music search their own lists; on "More" the
+  // words are taken to the chosen site's own search (Instagram, Facebook, X... have no list for us).
+  const FEEDS={yt:YT,tk:TK,mu:MU};
+  document.querySelectorAll(".psearch[data-feed]").forEach(f=>f.onsubmit=e=>{
+    e.preventDefault();const inp=f.querySelector("input"),q=inp.value.trim();if(!q)return;
+    inp.blur();FEEDS[f.dataset.feed].search(q);
+  });
+  const siteQ=$("siteSearch").querySelector("input");
+  $("siteSearch").onsubmit=e=>{e.preventDefault();siteQ.blur();toast(t("pickSite"));};
+  document.querySelectorAll("a.site[data-s]").forEach(a=>{const home=a.href;a.onclick=()=>{const q=siteQ.value.trim();a.href=q?a.dataset.s.replace("{q}",encodeURIComponent(q)):home;};});
   // Open on the tab that was in use (a shared or pasted link still shows its sizes on top).
   try{const sp=localStorage.getItem("vdlPane");if(sp&&sp!=="search"&&!new URLSearchParams(location.search).get("url"))hpane(sp);}catch(e){}
   // Pull down at the top of YouTube / TikTok / Music for a fresh list (stays on the same tab).
@@ -1198,7 +1218,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-k";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.17-l";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
