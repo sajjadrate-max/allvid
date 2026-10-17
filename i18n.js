@@ -1165,7 +1165,7 @@ const STR={
 "zh": "全部"
 },
 "tabSettings": {"ur": "سیٹنگز", "en": "Settings", "ar": "الإعدادات", "hi": "सेटिंग्स"},
-"searchPh": {"ur": "لنک ڈالیں یا YouTube پر تلاش کریں", "en": "Paste a link or search YouTube", "ar": "الصق رابطًا أو ابحث في YouTube", "hi": "लिंक डालें या YouTube पर खोजें"},
+"searchPh": {"ur": "لنک یا ویڈیو کا نام", "en": "Link or search", "ar": "رابط أو بحث", "hi": "लिंक या वीडियो का नाम"},
 "linkOrSearch": {"ur": "ویڈیو کا لنک یا تلاش", "en": "Video link or search", "ar": "رابط الفيديو أو البحث", "hi": "वीडियो लिंक या खोज"},
 "sites": {"ur": "سائٹ کھولیں، ویڈیو پر Share دبا کر AllVid چنیں", "en": "Open a site, tap Share on a video and pick AllVid", "ar": "افتح موقعًا، اضغط مشاركة على الفيديو واختر AllVid", "hi": "साइट खोलें, वीडियो पर Share दबाकर AllVid चुनें"},
 "loading": {"ur": "لوڈ ہو رہا ہے...", "en": "Loading...", "ar": "جارٍ التحميل...", "hi": "लोड हो रहा है..."},
