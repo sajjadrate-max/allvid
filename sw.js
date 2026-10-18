@@ -1,6 +1,6 @@
 // App shell cache for the video downloader. Only same-origin GETs inside this
 // app's folder are cached; API calls and downloads always go to the network.
-const CACHE = "video-dl-v75";
+const CACHE = "video-dl-v76";
 const BASE = new URL("./", self.location).pathname;
 const SHELL = [BASE, BASE + "i18n.js", BASE + "manifest.json", BASE + "icon-192.png", BASE + "icon-512.png"];
 
@@ -87,4 +87,13 @@ self.addEventListener("backgroundfetchabort", bgStopped);
 // Tapping the download notification opens "my files".
 self.addEventListener("backgroundfetchclick", e => {
   e.waitUntil(self.clients.matchAll({ type: "window" }).then(cs => cs.length ? cs[0].focus() : self.clients.openWindow(BASE + "#files")));
+});
+
+// Tapping our own progress / "done" notification: open "my files" in the app.
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(cs => {
+    if (cs.length) { cs[0].postMessage("vdl-files"); return cs[0].focus(); }
+    return self.clients.openWindow(BASE + "#files");
+  }));
 });

@@ -648,8 +648,20 @@ html{overscroll-behavior-y:contain}
         $("dlbarT").textContent=(busy>1?"("+busy+") ":"")+(cur.title||"");
         $("dlbarP").textContent=tot?p+"% · "+mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):(mb(cur.got)||t("starting"));
         $("dlbarI").style.width=(tot?p:8)+"%";
-      }
+        note((tot?p+"% · ":"")+(cur.title||"AllVid"),(busy>1?"("+busy+") ":"")+(cur.prep?"⏳ "+(cur.prepPct||0)+"%"+(cur.prepText&&!/^\d|%/.test(cur.prepText)?" · "+cur.prepText:""):(tot?mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):mb(cur.got)||t("starting"))));
+      }else noteOff();
     }
+    // Progress in the phone's notification bar too (like other download apps). One notification,
+    // updated every few seconds; Android drops updates that come faster.
+    const canNote=!NATIVE&&"Notification" in window&&"serviceWorker" in navigator;
+    let noteAt=0,noteOn=false;
+    function askNote(){try{if(canNote&&Notification.permission==="default")Notification.requestPermission().catch(()=>{});}catch(e){}}
+    function note(title,body,done){
+      if(!canNote||Notification.permission!=="granted")return;
+      if(!done&&Date.now()-noteAt<2500)return;noteAt=Date.now();noteOn=!done;
+      navigator.serviceWorker.ready.then(g=>g.showNotification(title,{tag:"vdl-progress",body,icon:"icon-192.png",badge:"icon-192.png",silent:!done,renotify:!!done,data:{url:"#files"}})).catch(()=>{});
+    }
+    function noteOff(){if(!noteOn||!canNote)return;noteOn=false;navigator.serviceWorker.ready.then(g=>g.getNotifications({tag:"vdl-progress"})).then(ns=>ns&&ns.forEach(n=>n.close())).catch(()=>{});}
     function progress(){
       recs.forEach(r=>{
         if(!RUN(r))return;
@@ -739,7 +751,7 @@ html{overscroll-behavior-y:contain}
         if(!blob)throw new Error(why.join(" "));
         r.blob=blob;r.partial=null;r._parts=null;
         if(r.type==="video"){const t=await frame(r.blob);if(t)r.thumb=t;}   // remote thumbnails expire
-        r.status="done";await put(r);draw();toPhone(r);toast(t("toastDone"));
+        r.status="done";await put(r);draw();toPhone(r);toast(t("toastDone"));note("✓ "+(r.title||"AllVid"),t("toastDone"),true);
       }catch(e){
         if(r._gone||r._handoff||r.status==="bg"){return;}
         if(r._pausing){   // keep what arrived; "resume" continues from here
@@ -850,7 +862,7 @@ html{overscroll-behavior-y:contain}
       // "my files"); when done it is kept for offline playback and saved to the phone.
       // If that fails, the phone's own download manager takes over (see run).
       const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:NATIVE?"busy":"queued",...o};
-      recs.set(r.id,r);put(r);makeThumb(r);
+      recs.set(r.id,r);put(r);makeThumb(r);askNote();
       if(NATIVE){nativeStart(r);draw();if(!stay)show("files");toast(t("toastStarted"));return;}
       if(!stay)show("files");toast(t("toastStarted"));pump();
     }
@@ -1063,6 +1075,7 @@ html{overscroll-behavior-y:contain}
   }
   // Opened from a download notification: go straight to "my files".
   if(location.hash==="#files"){history.replaceState({vdl:"home"},"",location.pathname);show("files");}
+  try{navigator.serviceWorker.addEventListener("message",e=>{if(e.data==="vdl-files")show("files");});}catch(e){}
   const inst=$("install"),instBtn=$("installBtn"),hint=$("installHint");
   const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
   const ua=navigator.userAgent;
@@ -1371,7 +1384,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-f";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-g";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
