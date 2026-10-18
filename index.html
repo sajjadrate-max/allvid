@@ -573,9 +573,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     // Downloading now: in the page ("busy") or handed to the phone's background download ("bg").
     const RUN=r=>r.status==="busy"||r.status==="bg";
     const blobUrl=r=>{if(!r.blob)return "";if(!urls.has(r.id))urls.set(r.id,URL.createObjectURL(r.blob));return urls.get(r.id);};
-    // Always through our API: opening a converter's own link in the browser lands on its ad
-    // redirects (e.g. tmll7.com) instead of the file.
-    function phoneSave(r){const a=document.createElement("a");a.href=r.src;a.download="";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();}
+    // Saves a finished download (kept in the app) to the phone's Downloads folder.
     function toPhone(r){const a=document.createElement("a");a.href=blobUrl(r);a.download=nameOf(r);document.body.appendChild(a);a.click();a.remove();}
     const canShareFiles=(()=>{try{return !!(navigator.canShare&&navigator.canShare({files:[new File([""],"a.mp4",{type:"video/mp4"})]}));}catch(e){return false;}})();
     function whenOf(ms){
@@ -611,7 +609,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
         '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>')+(r.blob&&canShareFiles?'<button type="button" data-act="share">↗ '+t("share")+'</button>':''):'')+
         (RUN(r)||r.status==="queued"?'<button type="button" data-act="pause">'+t("pause")+'</button>':'')+
         (r.status==="paused"?'<button class="pri" type="button" data-act="resume">'+t("resume")+'</button>':'')+
-        (r.status==="fail"?'<button class="pri" type="button" data-act="retry">'+t("retry")+'</button>'+(r.direct||r.src?'<button type="button" data-act="open">'+t("openDirect")+'</button>':''):'')+
+        (r.status==="fail"?'<button class="pri" type="button" data-act="retry">'+t("retry")+'</button>':'')+
         '<button type="button" data-act="del">'+t("remove")+'</button></div></div></li>';
     }
     // Picture for the list: the post's own thumbnail (fetched through our API so it can be
@@ -779,8 +777,6 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
           if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;r.got=r.partial?r.partial.size:0;
           r.status="queued";r.why="";r.retryAt=navigator.onLine?Date.now()+4000:0;await put(r);draw();
           return;
-        }else if(!NATIVE&&r.src&&!r.prep&&!r.conv&&!/api:(http|page)/.test(String(e.message||""))){   // our server answered with an error: the phone would only save that error (download.json)   // fall back to the phone's download manager
-          r.status="phone";r.why="";r.partial=null;r._parts=null;await put(r);draw();phoneSave(r);toast(t("toastStart"));
         }else{
           r.status="fail";r.why=String(e.message||e);r._parts=null;await put(r);draw();
         }
@@ -896,7 +892,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     function start(stay,o){
       // The app fetches the file itself so its progress shows here (bar above the tabs and in
       // "my files"); when done it is kept for offline playback and saved to the phone.
-      // If that fails, the phone's own download manager takes over (see run).
+      // If that fails, it shows Retry; it continues by itself after a broken line (see run).
       const r={id:Date.now()+"-"+Math.random().toString(36).slice(2,7),created:Date.now(),got:0,status:NATIVE?"busy":"queued",...o};
       recs.set(r.id,r);put(r);makeThumb(r);askNote();
       if(NATIVE){nativeStart(r);draw();if(!stay)show("files");toast(t("toastStarted"));return;}
@@ -931,7 +927,6 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       else if(act==="retry"){if(NATIVE)nativeStart(r);else{r.why="";resume(r);}}
       else if(act==="pause")pause(r);
       else if(act==="resume")resume(r);
-      else if(act==="open")window.open(r.direct||r.src,"_blank","noopener");
       else if(act==="del"){r._gone=true;if(r._ctl)r._ctl.abort();if(r.status==="bg")bgStop(r);recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}await tx("readwrite",s=>s.delete(r.id));draw();}
     });
     (async()=>{
@@ -1423,7 +1418,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-n";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-o";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
