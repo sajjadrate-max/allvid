@@ -510,6 +510,12 @@ const STR={
 "ms": "Buka terus",
 "zh": "直接打开"
 },
+"tooLong": {
+"ur": "YouTube converter صرف {h} گھنٹے تک کی ویڈیو بناتا ہے",
+"en": "the YouTube converter only makes videos up to {h} hours long",
+"ar": "محوّل YouTube يدعم مقاطع حتى {h} ساعات فقط",
+"hi": "YouTube कनवर्टर केवल {h} घंटे तक के वीडियो बनाता है"
+},
 "stopped": {
 "ur": "ڈاؤن لوڈ رک گیا",
 "en": "Download stopped",

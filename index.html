@@ -536,13 +536,18 @@ html{overscroll-behavior-y:contain}
     if(list.length) h+='<button class="go" type="button" id="dl">Download</button>';
     h+='<div class="done" id="done" aria-live="polite"></div>';
     sheet.innerHTML=h; openSheet(); $("shx").onclick=closeSheet;
-    if(list.length) $("dl").onclick=()=>{
+    // YouTube files are made by a converter, which takes a while: start it as soon as a size is
+    // shown or picked, so it is (nearly) ready by the time Download is tapped.
+    const warm=i=>{if(i&&i.prep&&!i.jobP)i.jobP=fetch(abs(i.url)).then(x=>x.json()).then(o=>{if(o&&o.job)i.job=o.job;}).catch(()=>{});};
+    warm(def);sheet.onchange=e=>{if(e.target.name==="fmt")warm(list[+e.target.value]);};
+    if(list.length) $("dl").onclick=async()=>{
       const sel=sheet.querySelector('input[name=fmt]:checked');
       const pick=list[sel?Number(sel.value):0];
       // From a playing video: stay there (the download runs in the background, "My files" shows it).
       const stay=!$("player").hidden;
       if(stay)NAV.pop("sheet",hideSheet);else hideSheet();   // otherwise its history entry becomes the "my files" one (see show)
-      DL.start(stay,{src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0,est:pick.est||0,prep:!!pick.prep});
+      if(pick.jobP&&!pick.job)await Promise.race([pick.jobP,new Promise(r=>setTimeout(r,2500))]);
+      DL.start(stay,{job:pick.job||"",src:abs(pick.url),direct:pick.direct||"",type:pick.type,title:j.title||host,site:platform(findUrl(link.value)),link:findUrl(link.value),thumb:j.thumb||pick.thumb||"",size:pick.size||0,est:pick.est||0,prep:!!pick.prep});
     };
   }
 
@@ -578,7 +583,7 @@ html{overscroll-behavior-y:contain}
       const pct=total?Math.min(99,Math.round(r.got/total*100)):0;
       const site=SITE[r.site||siteOf(r)]||"";
       const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size)+" · ":"")+t("inPhoneDl"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
-:r.status==="fail"?t("stopped")+" "+(r.why?"("+r.why+")":"")
+:r.status==="fail"?t("stopped")+" "+(/only allowed for videos up to (\d+) hours?/i.test(r.why||"")?"— "+t("tooLong").replace("{h}",RegExp.$1):r.why?"("+r.why+")":"")
         :r.status==="queued"?t("queued")+(r.got?" · "+(total?pct+"% · ":"")+mb(r.got):"")
         :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
         :r.prep?"⏳ "+(r.prepPct||0)+"%"+(r.prepText&&!/^\d|%/.test(r.prepText)?" · "+r.prepText:"")
@@ -1406,7 +1411,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-k";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-l";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
