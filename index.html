@@ -709,7 +709,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       for(;;){
         const {done,value}=await reader.read();if(done)break;
         parts.push(value);got+=value.length;r.got=got;since+=value.length;soon();
-        if(since>=CHECKPOINT){since=0;r.partial=new Blob(parts);put(r);}   // survives the app being closed
+        if(since>=CHECKPOINT||(since>=1048576&&Date.now()-(r._ckAt||0)>20000)){since=0;r._ckAt=Date.now();r.partial=new Blob(parts);put(r);}   // survives the app being closed
       }
       if(!got||(r.size&&got<r.size))throw new Error(tag+":cut "+(got/1048576).toFixed(1)+"/"+((r.size||0)/1048576).toFixed(1)+"MB");
       return new Blob(parts,{type:res.headers.get("content-type")||(r.type==="audio"?"audio/mpeg":"video/mp4")});
@@ -789,7 +789,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     // running and waiting downloads are handed to the phone, which finishes them with a
     // notification; sw.js stores the file here when it is done. Pause/resume stay in the app.
     const BG=!NATIVE&&"serviceWorker" in navigator&&"BackgroundFetchManager" in window;
-    const bgReg=()=>navigator.serviceWorker.ready.then(g=>g.backgroundFetch?g:null);
+    const bgReg=()=>Promise.race([navigator.serviceWorker.ready.then(g=>g.backgroundFetch?g:null),new Promise(r=>setTimeout(r,3000,null))]);   // no service worker yet: don't wait forever
     async function bgStop(r){try{const g=await bgReg(),f=g&&await g.backgroundFetch.get("vdl-"+r.id);if(f)await f.abort();}catch(e){}}
     function bgWatch(r,f){
       const off=r.bgOffset||0;
@@ -821,6 +821,9 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       finally{r._handoff=false;draw();}
     }
     document.addEventListener("visibilitychange",()=>{
+      // Leaving the app: save what arrived so far right now; the phone may close the app later.
+      if(document.visibilityState==="hidden")recs.forEach(r=>{if(r.status==="busy"&&r._parts&&r._parts.length){r.partial=new Blob(r._parts);r.got=r.partial.size;put(r);}});
+      else setTimeout(pump,300);   // back: continue anything that waits
       if(!BG)return;
       if(document.visibilityState==="hidden"){[...recs.values()].filter(r=>(r.status==="busy"||r.status==="queued")&&!r.prep).forEach(handOff);return;}
       // Back in the app: take background downloads back (the app itself is faster, shows live
@@ -1421,7 +1424,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-p";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-q";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
