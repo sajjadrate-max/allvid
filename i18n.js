@@ -536,6 +536,12 @@ const STR={
 "ms": "Muat turun terhenti",
 "zh": "下载已停止"
 },
+"keepOpen": {
+"ur": "ڈاؤن لوڈ کے دوران ایپ کھلی رکھیں۔ اگر آپ کسی اور ایپ پر چلے گئے یا سکرین بند ہو گئی تو ڈاؤن لوڈ وہیں رک جائے گا، اور واپس آتے ہی خودبخود وہیں سے دوبارہ شروع ہو جائے گا۔",
+"en": "Keep the app open while downloading. If you switch to another app or the screen turns off, the download pauses where it is and continues by itself from the same point when you come back.",
+"ar": "أبقِ التطبيق مفتوحًا أثناء التنزيل. إذا انتقلت إلى تطبيق آخر أو انطفأت الشاشة يتوقف التنزيل مكانه، ويستأنف تلقائيًا من النقطة نفسها عند عودتك.",
+"hi": "डाउनलोड के दौरान ऐप खुला रखें। किसी और ऐप पर जाने या स्क्रीन बंद होने पर डाउनलोड वहीं रुक जाएगा, और वापस आते ही अपने आप वहीं से फिर शुरू हो जाएगा।"
+},
 "preparing": {
 "ur": "ویڈیو تیار ہو رہی ہے، انتظار کریں…",
 "en": "Getting the video ready, please wait…",

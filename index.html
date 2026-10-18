@@ -136,6 +136,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .fi .bd{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .fi .tt{font-size:.95rem;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;unicode-bidi:plaintext}
 .fi .mt{color:var(--muted);font-size:.82rem;unicode-bidi:plaintext;text-align:right}
+.dlnote{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--fg,inherit);font-size:.9rem;line-height:1.5}
 .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
 .bar.prep i{min-width:18%;background:repeating-linear-gradient(-45deg,var(--accent) 0 8px,color-mix(in srgb,var(--accent) 55%,#fff) 8px 16px);background-size:23px 100%;animation:prepMove .8s linear infinite}
@@ -383,6 +384,7 @@ html{overscroll-behavior-y:contain}
 <section class="wrap files" data-view="files" id="filesView" hidden>
   <h2 data-i18n="tabFiles">میری فائلیں</h2>
   <div class="cats" id="fileFilter"><button type="button" data-f="all" aria-pressed="true" data-i18n="fAll">All</button><button type="button" data-f="video" aria-pressed="false" data-i18n="fVideos">Videos</button><button type="button" data-f="audio" aria-pressed="false" data-i18n="fMusic">Music</button></div>
+  <p class="dlnote" id="dlNote" hidden data-i18n="keepOpen">ڈاؤن لوڈ کے دوران ایپ کھلی رکھیں۔ اگر آپ کسی اور ایپ پر چلے گئے یا سکرین بند ہو گئی تو ڈاؤن لوڈ وہیں رک جائے گا، اور واپس آتے ہی خودبخود وہیں سے دوبارہ شروع ہو جائے گا۔</p>
   <ul class="fl" id="fileList"></ul>
   <p class="empty" id="noFiles" data-i18n="empty">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
 </section>
@@ -648,6 +650,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       const shownRecs=all.filter(r=>fileF==="all"||(fileF==="audio"?r.type==="audio":r.type!=="audio"));
       list.innerHTML=shownRecs.map(row).join("");
       noFiles.hidden=all.length>0;
+      $("dlNote").hidden=NATIVE||!all.some(r=>/busy|bg|queued/.test(r.status));
       const busyList=all.filter(RUN),busy=busyList.length+all.filter(r=>r.status==="queued").length;
       badge.hidden=!busy;badge.textContent=busy;
       drawBar();
@@ -1424,7 +1427,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-q";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-r";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
