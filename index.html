@@ -575,7 +575,7 @@ html{overscroll-behavior-y:contain}
       const total=r.size||r.est||0;
       const pct=total?Math.min(99,Math.round(r.got/total*100)):0;
       const site=SITE[r.site||siteOf(r)]||"";
-      const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size):"MP4"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
+      const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size)+" · ":"")+t("inPhoneDl"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
 :r.status==="fail"?t("stopped")+" "+(r.why?"("+r.why+")":"")
         :r.status==="queued"?t("queued")+(r.got?" · "+(total?pct+"% · ":"")+mb(r.got):"")
         :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
@@ -1364,7 +1364,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-c";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-d";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

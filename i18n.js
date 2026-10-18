@@ -404,6 +404,12 @@ const STR={
 "ms": "▶ Tonton",
 "zh": "▶ 观看"
 },
+"inPhoneDl": {
+"ur": "فون کے Downloads فولڈر میں",
+"en": "In phone's Downloads folder",
+"ar": "في مجلد التنزيلات بالهاتف",
+"hi": "फ़ोन के Downloads फ़ोल्डर में"
+},
 "redownload": {
 "ur": "دوبارہ ڈاؤن لوڈ",
 "en": "Download again",
