@@ -779,7 +779,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
           if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;r.got=r.partial?r.partial.size:0;
           r.status="queued";r.why="";r.retryAt=navigator.onLine?Date.now()+4000:0;await put(r);draw();
           return;
-        }else if(!NATIVE&&r.src&&!r.prep&&!(r.conv&&!/[?&]file=/.test(r.src))){   // fall back to the phone's download manager
+        }else if(!NATIVE&&r.src&&!r.prep&&!r.conv&&!/api:(http|page)/.test(String(e.message||""))){   // our server answered with an error: the phone would only save that error (download.json)   // fall back to the phone's download manager
           r.status="phone";r.why="";r.partial=null;r._parts=null;await put(r);draw();phoneSave(r);toast(t("toastStart"));
         }else{
           r.status="fail";r.why=String(e.message||e);r._parts=null;await put(r);draw();
@@ -1423,7 +1423,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-m";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-n";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
