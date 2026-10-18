@@ -35,6 +35,9 @@ async function stream(req, res) {
   res.setHeader('Content-Type', up.headers.get('content-type') || 'application/octet-stream');
   const len = up.headers.get('content-length');
   if (len) res.setHeader('Content-Length', len);
+  // The platform may stream without Content-Length; this keeps the size (and the %) visible.
+  const total = (up.status === 206 && (up.headers.get('content-range') || '').split('/')[1]) || len;
+  if (total && total !== '*') res.setHeader('X-Size', total);
   const cr = up.headers.get('content-range');
   if (cr && up.status === 206) res.setHeader('Content-Range', cr);
   res.setHeader('Accept-Ranges', 'bytes');
@@ -48,6 +51,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range');
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Range, X-Size');
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   try {
     if (req.method === 'GET' && req.query && req.query.file) return await stream(req, res);

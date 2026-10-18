@@ -514,6 +514,8 @@ html{overscroll-behavior-y:contain}
     j.items.forEach(i=>{
       if(i.size)return;
       if(i.type==="audio"&&/&audio=1/.test(i.url)){ if(dur)i.est=dur*160000/8; else if(src)i.est=src.size*0.12; }
+      // YouTube files are made by the converter on request: estimate from the length.
+      if(i.prep&&dur){const h=parseInt(i.label,10);i.est=dur*(i.type==="audio"?128e3:h>=1080?3e6:h>=720?1.5e6:h>=480?8e5:5e5)/8;}
       if(i.up&&src){
         const h=parseInt(i.label,10),sh=parseInt(src.label,10)||h/2;
         i.est=dur?dur*(h>=1080?4.5e6:2.5e6)/8:src.size*Math.pow(h/sh,2)*1.3;
@@ -670,7 +672,9 @@ html{overscroll-behavior-y:contain}
       if(!res.ok||!res.body)throw new Error(tag+":http "+res.status);
       if(/text\/html/i.test(res.headers.get("content-type")||""))throw new Error(tag+":page");   // an ad/redirect page, not the file
       if(got&&res.status!==206){parts.length=0;got=0;}
-      const len=Number(res.headers.get("content-length"));if(len)r.size=got+len;
+      // Size: Content-Length, else the total in Content-Range, else our API's X-Size.
+      const len=Number(res.headers.get("content-length")),all=Number(((res.headers.get("content-range")||"").split("/")[1])||res.headers.get("x-size"));
+      if(len)r.size=got+len;else if(all)r.size=all;
       r._parts=parts;r.got=got;r.via=tag;
       const reader=res.body.getReader();let since=0;
       for(;;){
@@ -1210,7 +1214,7 @@ html{overscroll-behavior-y:contain}
     try{cur=Math.min(CATS.length-1,+localStorage.getItem("vdlCat_"+pre)||0);}catch(e){}
     function pick(i,force){cur=i;try{localStorage.setItem("vdlCat_"+pre,String(i));}catch(e){}[...cats.children].forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));const q=[].concat(CATS[i][1]);load(q[Math.floor(Math.random()*q.length)],CATS[i][0],i,force);}
     cats.onclick=e=>{const b=e.target.closest("button");if(b)pick(+b.dataset.i,+b.dataset.i===cur);};   // tapping the open one again = fresh list
-    function download(v){if(!tiktok||v.yt){ytSheet(v.id,v.title,mp3);return;}link.value=v.link;mark();last="";analyze();}
+    function download(v){if(!tiktok||v.yt){ytSheet(v.id,v.title,mp3,v.dur);return;}link.value=v.link;mark();last="";analyze();}
     function watch(v){
       $("plTitle").textContent=v.title;
       if(!tiktok||v.yt){watchYT(v,mp3);return;}
@@ -1260,13 +1264,13 @@ html{overscroll-behavior-y:contain}
   }
   // A YouTube video from the lists: its sizes come from the converter, so the list of sizes
   // can open at once (title and picture are already known) without asking the server first.
-  function ytSheet(id,title,mp3){
+  function ytSheet(id,title,mp3,dur){
     if(busy)return;
     const nm=ext=>encodeURIComponent((String(title||"video").replace(/[^\p{L}\p{M}\p{N} ._-]+/gu," ").replace(/\s+/g," ").trim().slice(0,60)||"video")+"."+ext);
     const job=(f,ext)=>abs("/api/download?yt="+f+"&v="+id+"&name="+nm(ext));
     if(mp3)nextPref="mp3";
     link.value="https://youtu.be/"+id;mark();last=link.value;
-    render({title:title||"YouTube video",thumb:"https://i.ytimg.com/vi/"+id+"/hqdefault.jpg",items:[
+    render({title:title||"YouTube video",thumb:"https://i.ytimg.com/vi/"+id+"/hqdefault.jpg",duration:String(dur||"").split(":").reduce((a,x)=>a*60+(+x||0),0),items:[
       {type:"video",hd:true,label:"1080p",url:job("1080","mp4"),prep:true},{type:"video",label:"720p",url:job("720","mp4"),prep:true},
       {type:"video",label:"360p",url:job("360","mp4"),prep:true},{type:"audio",label:"MP3",url:job("mp3","mp3"),prep:true}]});
   }
@@ -1295,7 +1299,7 @@ html{overscroll-behavior-y:contain}
     $("ytf").addEventListener("load",()=>{ytListen();setTimeout(ytListen,1500);});
     if(pl.hidden){pl.hidden=false;NAV.push("player");}
     // Download from the watch page: the list of sizes opens right here, over the player.
-    $("ytdl").onclick=()=>ytSheet(v.id,v.title,mp3);
+    $("ytdl").onclick=()=>ytSheet(v.id,v.title,mp3,v.dur);
     const rel=$("wrel"),my=++relSeq;
     (async()=>{
       let items=[];
@@ -1310,7 +1314,7 @@ html{overscroll-behavior-y:contain}
       rel.onclick=e=>{
         const b=e.target.closest("[data-act]");if(!b)return;
         const w=items[+b.closest(".vc").dataset.i];if(!w)return;
-        if(b.dataset.act==="dl")ytSheet(w.id,w.title,mp3);
+        if(b.dataset.act==="dl")ytSheet(w.id,w.title,mp3,w.dur);
         else watchYT(w,mp3);
       };
       // Endless: near the bottom, the "related" list of a video further down is added.
@@ -1367,7 +1371,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-e";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-f";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
