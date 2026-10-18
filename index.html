@@ -384,7 +384,7 @@ html{overscroll-behavior-y:contain}
 <section class="wrap files" data-view="files" id="filesView" hidden>
   <h2 data-i18n="tabFiles">میری فائلیں</h2>
   <div class="cats" id="fileFilter"><button type="button" data-f="all" aria-pressed="true" data-i18n="fAll">All</button><button type="button" data-f="video" aria-pressed="false" data-i18n="fVideos">Videos</button><button type="button" data-f="audio" aria-pressed="false" data-i18n="fMusic">Music</button></div>
-  <p class="dlnote" id="dlNote" hidden data-i18n="keepOpen">ڈاؤن لوڈ کے دوران ایپ کھلی رکھیں۔ اگر آپ کسی اور ایپ پر چلے گئے یا سکرین بند ہو گئی تو ڈاؤن لوڈ وہیں رک جائے گا، اور واپس آتے ہی خودبخود وہیں سے دوبارہ شروع ہو جائے گا۔</p>
+  <p class="dlnote" id="dlNote" data-i18n="keepOpen">ڈاؤن لوڈ کے دوران ایپ کھلی رکھیں۔ اگر آپ کسی اور ایپ پر چلے گئے یا سکرین بند ہو گئی تو ڈاؤن لوڈ وہیں رک جائے گا، اور واپس آتے ہی خودبخود وہیں سے دوبارہ شروع ہو جائے گا۔</p>
   <ul class="fl" id="fileList"></ul>
   <p class="empty" id="noFiles" data-i18n="empty">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
 </section>
@@ -650,7 +650,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       const shownRecs=all.filter(r=>fileF==="all"||(fileF==="audio"?r.type==="audio":r.type!=="audio"));
       list.innerHTML=shownRecs.map(row).join("");
       noFiles.hidden=all.length>0;
-      $("dlNote").hidden=NATIVE||!all.some(r=>/busy|bg|queued/.test(r.status));
+      $("dlNote").hidden=NATIVE;   // always shown, so it is known before a download starts
       const busyList=all.filter(RUN),busy=busyList.length+all.filter(r=>r.status==="queued").length;
       badge.hidden=!busy;badge.textContent=busy;
       drawBar();
@@ -1427,7 +1427,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-r";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-s";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
