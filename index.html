@@ -685,7 +685,7 @@ html{overscroll-behavior-y:contain}
       const res=await fetch(url,{referrerPolicy:"no-referrer",headers:got?{Range:"bytes="+got+"-"}:{},signal:ctl.signal});
       if(!res.ok||!res.body)throw new Error(tag+":http "+res.status);
       if(/text\/html/i.test(res.headers.get("content-type")||""))throw new Error(tag+":page");   // an ad/redirect page, not the file
-      if(got&&res.status!==206){parts.length=0;got=0;}
+      if(got&&res.status!==206){if(tag!=="api"){ctl.abort();throw new Error(tag+":norange");}parts.length=0;got=0;}   // our API always continues; others: try it
       // Size: Content-Length, else the total in Content-Range, else our API's X-Size.
       const len=Number(res.headers.get("content-length")),all=Number(((res.headers.get("content-range")||"").split("/")[1])||res.headers.get("x-size"));
       if(len)r.size=got+len;else if(all)r.size=all;
@@ -754,11 +754,17 @@ html{overscroll-behavior-y:contain}
         if(!blob)throw new Error(why.join(" "));
         r.blob=blob;r.partial=null;r._parts=null;
         if(r.type==="video"){const t=await frame(r.blob);if(t)r.thumb=t;}   // remote thumbnails expire
-        r.status="done";await put(r);draw();toPhone(r);toast(t("toastDone"));note("✓ "+(r.title||"AllVid"),t("toastDone"),true);
+        r.status="done";r.netTries=0;await put(r);draw();toPhone(r);toast(t("toastDone"));note("✓ "+(r.title||"AllVid"),t("toastDone"),true);
       }catch(e){
         if(r._gone||r._handoff||r.status==="bg"){return;}
         if(r._pausing){   // keep what arrived; "resume" continues from here
           r._pausing=false;r.status="paused";if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;await put(r);draw();
+        }else if(!NATIVE&&(!navigator.onLine||(r._parts&&r._parts.length&&(r.netTries=(r.netTries||0)+1)<=30))){
+          // Internet gone, or the line broke mid-file: keep what arrived and carry on from there
+          // by itself (when the internet is back, or in a few seconds), never from the start.
+          if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;r.got=r.partial?r.partial.size:0;
+          r.status="queued";r.why="";r.retryAt=navigator.onLine?Date.now()+4000:0;await put(r);draw();
+          return;
         }else if(!NATIVE&&r.src&&!r.prep&&!(r.conv&&!/[?&]file=/.test(r.src))){   // fall back to the phone's download manager
           r.status="phone";r.why="";r.partial=null;r._parts=null;await put(r);draw();phoneSave(r);toast(t("toastStart"));
         }else{
@@ -787,9 +793,15 @@ html{overscroll-behavior-y:contain}
       const url=abs(r.via==="api"||r.conv?r.src:(r.direct||r.src));
       const opts={title:r.title||"Video",icons:[{src:"icon-192.png",sizes:"192x192",type:"image/png"}]};
       if(r.size&&r.size>got)opts.downloadTotal=r.size-got;
+      // Through our API: in pieces of 16 MB, so a broken line or the server's time limit only
+      // costs one piece (sw.js joins them). Unknown size: pieces up to the estimate, then the rest.
+      const CH=16*1048576,end=r.size||Math.round((r.est||0)*1.2),reqs=[];
+      if(/[?&]file=/.test(url)&&end>got+CH){
+        for(let a=got;a<end;a+=CH){const last=a+CH>=end;reqs.push(new Request(url,{headers:{Range:"bytes="+a+"-"+(last&&!r.size?"":Math.min(a+CH,end)-1)}}));}
+      }else reqs.push(new Request(url,got?{headers:{Range:"bytes="+got+"-"}}:{}));
       try{
         const g=await bgReg();if(!g)throw 0;let f;
-        try{f=await g.backgroundFetch.fetch("vdl-"+r.id,[new Request(url,got?{headers:{Range:"bytes="+got+"-"}}:{})],opts);}
+        try{f=await g.backgroundFetch.fetch("vdl-"+r.id,reqs,opts);}
         catch(e){r.bgOffset=0;delete opts.downloadTotal;if(r.size)opts.downloadTotal=r.size;f=await g.backgroundFetch.fetch("vdl-"+r.id,[url],opts);}
         await put(r);bgWatch(r,f);
       }catch(e){r._handoff=false;r.status=prev==="busy"?"queued":prev;await put(r);}
@@ -811,10 +823,13 @@ html{overscroll-behavior-y:contain}
     if(BG)navigator.serviceWorker.addEventListener("message",e=>{if(e.data&&e.data.vdl==="bg")reload(e.data.id);});
     // Queue: start as many as the "at once" setting allows; the rest wait their turn.
     function parLimit(){let n=2;try{n=+localStorage.getItem("vdlPar")||2;}catch(e){}return n;}
+    window.addEventListener("online",()=>setTimeout(pump,1000));   // internet back: continue at once
     function pump(){
-      if(NATIVE)return;
+      if(NATIVE||!navigator.onLine)return;
       let active=[...recs.values()].filter(r=>r.status==="busy").length;
-      [...recs.values()].filter(r=>r.status==="queued").sort((a,b)=>a.created-b.created)
+      const later=[...recs.values()].filter(r=>r.status==="queued"&&r.retryAt>Date.now());
+      if(later.length)setTimeout(pump,Math.min(...later.map(r=>r.retryAt))-Date.now()+50);
+      [...recs.values()].filter(r=>r.status==="queued"&&!(r.retryAt>Date.now())).sort((a,b)=>a.created-b.created)
         .forEach(r=>{if(active<parLimit()){active++;run(r);}});
       draw();
     }
@@ -1387,7 +1402,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-i";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-j";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

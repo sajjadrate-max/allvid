@@ -31,6 +31,32 @@ async function stream(req, res) {
   // A web page instead of a file (a converter's ad redirect, a login wall): don't pass it on as a video.
   if (/text\/html/i.test(up.headers.get('content-type') || '')) { res.status(502).json({ error: 'fetch.fail', detail: 'page' }); return; }
   const name = String(req.query.name || 'video.mp4');
+  // A source that ignores Range (e.g. a converter's file) answers with the whole file: skip the
+  // part the phone already has here, so a paused or cut download still continues, not restarts.
+  const m = h.Range && /^bytes=(\d+)-(\d*)$/.exec(h.Range);
+  if (m && up.status === 200 && +m[1] > 0) {
+    const from = +m[1], all = +up.headers.get('content-length') || 0;
+    const to = m[2] ? +m[2] : (all ? all - 1 : Infinity);
+    if (all && from >= all) { try { await up.body.cancel(); } catch {} res.status(416).setHeader('Content-Range', 'bytes */' + all); res.end(); return; }
+    res.statusCode = 206;
+    res.setHeader('Content-Type', up.headers.get('content-type') || 'application/octet-stream');
+    if (to !== Infinity) { res.setHeader('Content-Length', String(to - from + 1)); res.setHeader('Content-Range', 'bytes ' + from + '-' + to + '/' + (all || '*')); }
+    if (all) res.setHeader('X-Size', String(all));
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Content-Disposition', attachment(name));
+    let pos = 0;
+    const rd = up.body.getReader();
+    for (;;) {
+      const { done, value } = await rd.read();
+      if (done) break;
+      const a = Math.max(from - pos, 0), z = Math.min(value.length, to - pos + 1);
+      pos += value.length;
+      if (z > a && !res.write(Buffer.from(value.buffer, value.byteOffset + a, z - a))) await new Promise(r => res.once('drain', r));
+      if (pos > to) { try { await rd.cancel(); } catch {} break; }
+    }
+    res.end();
+    return;
+  }
   res.statusCode = up.status === 206 ? 206 : 200;
   res.setHeader('Content-Type', up.headers.get('content-type') || 'application/octet-stream');
   const len = up.headers.get('content-length');

@@ -1,6 +1,6 @@
 // App shell cache for the video downloader. Only same-origin GETs inside this
 // app's folder are cached; API calls and downloads always go to the network.
-const CACHE = "video-dl-v78";
+const CACHE = "video-dl-v79";
 const BASE = new URL("./", self.location).pathname;
 const SHELL = [BASE, BASE + "i18n.js", BASE + "manifest.json", BASE + "icon-192.png", BASE + "icon-512.png"];
 
@@ -17,6 +17,7 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const req = e.request, u = new URL(req.url);
   if (req.method !== "GET" || u.origin !== location.origin || !u.pathname.startsWith(BASE)) return;
+  if (u.pathname.startsWith(BASE + "api/") || u.pathname.startsWith("/api/") || req.headers.has("range")) return;   // API calls, downloads: always live
   // Saved copy at once (the app opens instantly, even on a slow line); the newest copy is
   // fetched meanwhile for next time. Updates also arrive with each new version of this file,
   // which reloads the app (see index.html).
@@ -43,6 +44,36 @@ const dbDo = (mode, fn) => dbOpen().then(db => new Promise((ok, no) => {
 }));
 const tell = id => self.clients.matchAll({ includeUncontrolled: true }).then(cs => cs.forEach(c => c.postMessage({ vdl: "bg", id })));
 
+// The page may split a background download into pieces (Range requests of 16 MB), so a cut
+// line or the server's time limit only costs one piece. Joins, in order, the pieces that
+// arrived whole, continuing from what the app already had.
+async function pieces(reg, rec, all) {
+  const recs = await reg.matchAll();
+  const items = await Promise.all(recs.map(async x => {
+    const m = /bytes=(\d+)-/.exec(x.request.headers.get("Range") || "");
+    let res = null; try { res = await x.responseReady; } catch {}
+    return { at: m ? +m[1] : 0, ranged: !!m, res };
+  }));
+  items.sort((p, q) => p.at - q.at);
+  // One plain request: the whole file (or nothing).
+  if (items.length === 1 && !items[0].ranged) {
+    const res = items[0].res;
+    return res && res.ok && res.status !== 206 ? { blob: await res.blob(), whole: true } : null;
+  }
+  const have = rec.partial ? [rec.partial] : [];
+  let pos = rec.partial ? rec.partial.size : 0, type = "video/mp4", whole = true;
+  for (const it of items) {
+    if (it.res && it.res.status === 416) break;   // past the end of the file
+    if (!it.res || it.res.status !== 206 || it.at !== pos) { whole = false; break; }
+    const b = await it.res.blob().catch(() => null);
+    if (!b) { whole = false; break; }
+    if (!b.size) break;
+    have.push(b); pos += b.size; type = b.type || type;
+  }
+  if (!all) whole = false;
+  return { blob: new Blob(have, { type }), whole };
+}
+
 self.addEventListener("backgroundfetchsuccess", e => {
   const reg = e.registration;
   if (!reg.id.startsWith("vdl-")) return;
@@ -50,15 +81,13 @@ self.addEventListener("backgroundfetchsuccess", e => {
   e.waitUntil((async () => {
     const rec = await dbDo("readonly", s => s.get(id));
     if (!rec) return;
-    const one = (await reg.matchAll())[0];
-    const res = one && await one.responseReady;
-    let blob = res && res.ok ? await res.blob() : null;
-    if (blob && res.status === 206 && rec.partial) blob = new Blob([rec.partial, blob], { type: blob.type || "video/mp4" });
-    else if (blob && res.status === 206) blob = null;   // only the end of a file we no longer have the start of
-    if (blob && blob.size) {
-      Object.assign(rec, { blob, status: "done", partial: null, got: blob.size, size: blob.size, autoSave: true, bgOffset: 0 });
+    const got = await pieces(reg, rec, true);
+    if (got && got.whole && got.blob.size && (!rec.size || got.blob.size >= rec.size)) {
+      Object.assign(rec, { blob: got.blob, status: "done", partial: null, got: got.blob.size, size: got.blob.size, autoSave: true, bgOffset: 0 });
       await e.updateUI({ title: "✓ " + (rec.title || "Video") });
     } else {
+      if (got && got.blob.size > (rec.partial ? rec.partial.size : 0)) { rec.partial = got.blob; }
+      rec.got = rec.partial ? rec.partial.size : 0;
       rec.status = "queued";   // the app continues it the next time it is opened
     }
     await dbDo("readwrite", s => s.put(rec));
@@ -73,6 +102,9 @@ const bgStopped = e => {
   e.waitUntil((async () => {
     const rec = await dbDo("readonly", s => s.get(id));
     if (rec && rec.status === "bg") {
+      // Keep the pieces that did arrive: the app continues after them, not from the start.
+      const got = await pieces(reg, rec, false).catch(() => null);
+      if (got && !got.whole && got.blob.size > (rec.partial ? rec.partial.size : 0)) rec.partial = got.blob;
       rec.status = e.type === "backgroundfetchabort" ? "paused" : "queued";
       rec.got = rec.partial ? rec.partial.size : 0;
       await dbDo("readwrite", s => s.put(rec));
