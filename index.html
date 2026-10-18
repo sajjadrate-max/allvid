@@ -683,6 +683,7 @@ html{overscroll-behavior-y:contain}
         if(r.prepPct!==lastPct){lastPct=r.prepPct;stuck=0;}else if(++stuck>200){r.job=(await get(r.src)).job;await put(r);stuck=0;}
         if(j.url){
           const name=nameOf(r);
+          r.jobSrc=r.jobSrc||r.src;   // kept: the converter's file link expires, "Download again" starts a new job
           r.direct=j.url;r.prep=false;r.prepPct=0;r.job="";r.conv=true;
           r.src=/(^|\.)(loader\.to|oceansaver\.in|savenow\.to)$/.test(new URL(j.url).hostname)?api+"?file="+encodeURIComponent(j.url)+"&name="+encodeURIComponent(name):j.url;
           await put(r);return;
@@ -778,6 +779,13 @@ html{overscroll-behavior-y:contain}
         .forEach(r=>{if(active<parLimit()){active++;run(r);}});
       draw();
     }
+    function again(r){
+      const yid=(String(r.link||"").match(/(?:youtu\.be\/|v=)([A-Za-z0-9_-]{11})/)||[])[1];
+      const job=r.jobSrc||(yid&&/youtube/.test(r.site||"")?abs("/api/download?yt=720&v="+yid+"&name="+encodeURIComponent((r.title||"video").slice(0,60)+".mp4")):"");
+      if(job){r.src=job;r.prep=true;r.direct="";r.conv=false;r.job="";}
+      Object.assign(r,{status:"queued",why:"",partial:null,got:0,via:""});r._parts=null;
+      put(r);draw();pump();toast(t("toastStarted"));
+    }
     function pause(r){
       if(r.status==="bg"){bgStop(r);r.status="paused";r.got=r.partial?r.partial.size:0;put(r);draw();}
       else if(r.status==="busy"){r._pausing=true;if(r._ctl)r._ctl.abort();}
@@ -838,8 +846,12 @@ html{overscroll-behavior-y:contain}
       const b=e.target.closest("[data-act]");if(!b)return;
       const r=recs.get(b.closest(".fi").dataset.id);if(!r)return;
       const act=b.dataset.act;
-      if(act==="play"&&(r.status==="done"||r.status==="phone"))play(r);
-      else if(act==="save"){if(r.blob)toPhone(r);else{phoneSave(r);toast(t("toastStart"));}}
+      if(act==="play"&&(r.status==="done"||r.status==="phone")){
+        // Not kept in the app (it went to the phone's downloader): a YouTube video plays from YouTube.
+        const yid=!r.blob&&(String(r.link||"").match(/(?:youtu\.be\/|v=)([A-Za-z0-9_-]{11})/)||[])[1];
+        if(yid&&window.watchYT)window.watchYT({id:yid,title:r.title});else play(r);
+      }
+      else if(act==="save"){if(r.blob)toPhone(r);else again(r);}
       else if(act==="retry"){if(NATIVE)nativeStart(r);else{r.why="";resume(r);}}
       else if(act==="pause")pause(r);
       else if(act==="resume")resume(r);
@@ -1245,6 +1257,7 @@ html{overscroll-behavior-y:contain}
     if(ended&&ytNext&&!$("player").hidden&&!root.classList.contains("open")){const n=ytNext;ytNext=null;n();}
   });
   const ytListen=()=>{const f=$("ytf");if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*");};
+  window.watchYT=(v,mp3)=>watchYT(v,mp3);   // also used by "My files"
   function watchYT(v,mp3){
     const pl=$("player"),st=$("plStage");st.onscroll=null;
     $("plTitle").textContent=v.title;pl.classList.add("yt");
@@ -1328,7 +1341,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.17-t";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-a";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
