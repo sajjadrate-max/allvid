@@ -13,7 +13,7 @@ import { join } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { allowedMedia, mediaHeaders } from '../lib/resolve.js';
 
-export const config = { maxDuration: 60 };
+export const config = { maxDuration: 300 };
 
 const attachment = name => "attachment; filename=\"" + name.replace(/[^\x20-\x7e]|"/g, '_') + "\"; filename*=UTF-8''" + encodeURIComponent(name);
 
