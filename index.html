@@ -648,7 +648,9 @@ html{overscroll-behavior-y:contain}
         $("dlbarT").textContent=(busy>1?"("+busy+") ":"")+(cur.title||"");
         $("dlbarP").textContent=tot?p+"% · "+mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):(mb(cur.got)||t("starting"));
         $("dlbarI").style.width=(tot?p:8)+"%";
-        note((tot?p+"% · ":"")+(cur.title||"AllVid"),(busy>1?"("+busy+") ":"")+(cur.prep?"⏳ "+(cur.prepPct||0)+"%"+(cur.prepText&&!/^\d|%/.test(cur.prepText)?" · "+cur.prepText:""):(tot?mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):mb(cur.got)||t("starting"))));
+        // A text bar: notifications from a web app can't carry a real progress bar.
+        const tbar=n=>"▰".repeat(Math.round(n/10))+"▱".repeat(10-Math.round(n/10))+" "+n+"%";
+        note((busy>1?"("+busy+") ":"")+(cur.title||"AllVid"),(cur.prep?tbar(cur.prepPct||0)+" · "+(cur.prepText&&!/^\d|%/.test(cur.prepText)?cur.prepText:"Converting"):tot?tbar(p)+" · "+mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):mb(cur.got)||t("starting")));
       }else noteOff();
     }
     // Progress in the phone's notification bar too (like other download apps). One notification,
@@ -719,6 +721,7 @@ html{overscroll-behavior-y:contain}
         if(j.url){
           const name=nameOf(r);
           r.jobSrc=r.jobSrc||r.src;   // kept: the converter's file link expires, "Download again" starts a new job
+          if(j.size>0)r.size=j.size;
           r.direct=j.url;r.prep=false;r.prepPct=0;r.job="";r.conv=true;
           // Always through our API: the converter's own link opens ad pages when the phone handles it.
           r.src=api+"?file="+encodeURIComponent(j.url)+"&name="+encodeURIComponent(name)+(j.sig?"&sig="+j.sig:"");
@@ -1384,7 +1387,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-g";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-h";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
