@@ -536,6 +536,12 @@ const STR={
 "ms": "Muat turun terhenti",
 "zh": "下载已停止"
 },
+"preparing": {
+"ur": "ویڈیو تیار ہو رہی ہے، انتظار کریں…",
+"en": "Getting the video ready, please wait…",
+"ar": "جارٍ تجهيز الفيديو، انتظر…",
+"hi": "वीडियो तैयार हो रहा है, कृपया रुकें…"
+},
 "starting": {
 "ur": "شروع ہو رہا ہے...",
 "en": "Starting...",

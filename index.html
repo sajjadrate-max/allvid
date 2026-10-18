@@ -138,6 +138,8 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .fi .mt{color:var(--muted);font-size:.82rem;unicode-bidi:plaintext;text-align:right}
 .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.bar.prep i{min-width:18%;background:repeating-linear-gradient(-45deg,var(--accent) 0 8px,color-mix(in srgb,var(--accent) 55%,#fff) 8px 16px);background-size:23px 100%;animation:prepMove .8s linear infinite}
+@keyframes prepMove{to{background-position:23px 0}}
 .fi .acts{display:flex;gap:6px;flex-wrap:wrap}
 .fi .acts button{background:var(--bg);border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:3px 10px;font-size:.82rem}
 .fi .acts .pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
@@ -550,6 +552,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     const warm=i=>{if(i&&i.prep&&!i.jobP)i.jobP=ytWarm(i.url).then(job=>{if(job)i.job=job;});};
     warm(def);sheet.onchange=e=>{if(e.target.name==="fmt")warm(list[+e.target.value]);};
     if(list.length) $("dl").onclick=async()=>{
+      $("dl").disabled=true;$("dl").textContent="⏳ "+t("preparing");
       const sel=sheet.querySelector('input[name=fmt]:checked');
       const pick=list[sel?Number(sel.value):0];
       // From a playing video: stay there (the download runs in the background, "My files" shows it).
@@ -593,8 +596,8 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
 :r.status==="fail"?t("stopped")+" "+(/only allowed for videos up to (\d+) hours?/i.test(r.why||"")?"— "+t("tooLong").replace("{h}",RegExp.$1):r.why?"("+r.why+")":"")
         :r.status==="queued"?t("queued")+(r.got?" · "+(total?pct+"% · ":"")+mb(r.got):"")
         :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
-        :r.prep?"⏳ "+(r.prepPct||0)+"%"+(r.prepText&&!/^\d|%/.test(r.prepText)?" · "+r.prepText:"")
-        :(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
+        :r.prep?"⏳ "+t("preparing")+" "+(r.prepPct||0)+"%"
+        :(total?pct+"% · "+(mb(r.got)||"0 MB")+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
       // When it was downloaded: "2 hours ago" today, else the date and time.
       const when=(r.status==="done"||r.status==="phone")&&r.created?" · "+whenOf(r.created):"";
       return {meta:meta+when,pct,total,site};
@@ -605,7 +608,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       return '<li class="fi'+(r.status==="fail"?' fail':'')+'" data-id="'+r.id+'">'+
         '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="'+t("play")+'">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onload="thumbOk(this)" onerror="/hq720\.jpg$/.test(this.src)?thumbFail(this):this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
         '<div class="bd"><div class="tt" dir="auto">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" "+t("video"))+'</div><div class="mt">'+esc(meta)+'</div>'+
-        (/busy|bg|paused|queued/.test(r.status)?'<div class="bar'+(RUN(r)?'':' idle')+'"><i style="width:'+(total?pct:(RUN(r)?8:0))+'%"></i></div>':'')+
+        (/busy|bg|paused|queued/.test(r.status)?'<div class="bar'+(r.prep&&r.status!=="paused"?' prep':RUN(r)?'':' idle')+'"><i style="width:'+(r.prep?r.prepPct||0:total?pct:(RUN(r)?8:0))+'%"></i></div>':'')+
         '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>')+(r.blob&&canShareFiles?'<button type="button" data-act="share">↗ '+t("share")+'</button>':''):'')+
         (RUN(r)||r.status==="queued"?'<button type="button" data-act="pause">'+t("pause")+'</button>':'')+
         (r.status==="paused"?'<button class="pri" type="button" data-act="resume">'+t("resume")+'</button>':'')+
@@ -658,11 +661,11 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       if(cur){
         const tot=cur.size||cur.est||0,p=tot?Math.min(99,Math.round(cur.got/tot*100)):0;
         $("dlbarT").textContent=(busy>1?"("+busy+") ":"")+(cur.title||"");
-        $("dlbarP").textContent=tot?p+"% · "+mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):(mb(cur.got)||t("starting"));
-        $("dlbarI").style.width=(tot?p:8)+"%";
+        $("dlbarP").textContent=cur.prep?"⏳ "+t("preparing")+" "+(cur.prepPct||0)+"%":tot?p+"% · "+mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):(mb(cur.got)||t("starting"));
+        $("dlbarI").style.width=(cur.prep?cur.prepPct||0:tot?p:8)+"%";$("dlbarI").parentNode.classList.toggle("prep",!!cur.prep);
         // A text bar: notifications from a web app can't carry a real progress bar.
         const tbar=n=>"▰".repeat(Math.round(n/10))+"▱".repeat(10-Math.round(n/10))+" "+n+"%";
-        note((busy>1?"("+busy+") ":"")+(cur.title||"AllVid"),(cur.prep?tbar(cur.prepPct||0)+" · "+(cur.prepText&&!/^\d|%/.test(cur.prepText)?cur.prepText:"Converting"):tot?tbar(p)+" · "+mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):mb(cur.got)||t("starting")));
+        note((busy>1?"("+busy+") ":"")+(cur.title||"AllVid"),(cur.prep?tbar(cur.prepPct||0)+" · "+t("preparing"):tot?tbar(p)+" · "+mb(cur.got)+" / "+(cur.size?"":"≈ ")+mb(tot):mb(cur.got)||t("starting")));
       }else noteOff();
     }
     // Progress in the phone's notification bar too (like other download apps). One notification,
@@ -681,7 +684,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
         if(!RUN(r))return;
         const li=list.querySelector('.fi[data-id="'+r.id+'"]');if(!li){draw();return;}
         const m=metaOf(r);li.querySelector(".mt").textContent=m.meta;
-        const bar=li.querySelector(".bar i");if(bar)bar.style.width=(m.total?m.pct:8)+"%";
+        const bar=li.querySelector(".bar i");if(bar)bar.style.width=(r.prep?r.prepPct||0:m.total?m.pct:8)+"%";if(bar)bar.parentNode.classList.toggle("prep",!!r.prep);
       });
       drawBar();
     }
@@ -1418,7 +1421,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-o";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-p";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
