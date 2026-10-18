@@ -523,7 +523,7 @@ html{overscroll-behavior-y:contain}
     const list=[];
     const opt=(i,label)=>{list.push(i);return '<label class="opt"><input type="radio" name="fmt" value="'+(list.length-1)+'"'+(i===def?' checked':'')+'>'+ICON[i.type]+'<span class="n">'+label+'</span><span class="s">'+(i.size?mb(i.size):i.est?"≈ "+mb(i.est):"")+'</span><span class="c"></span></label>';};
     let h='<div class="handle"></div><div class="sh-head"><h2 id="sheetTitle">Download</h2><button class="sh-x" type="button" id="shx" aria-label="'+t("close")+'">×</button></div>'+
-      '<div class="pv">'+(j.thumb?'<img src="'+esc(j.thumb)+'" alt="" referrerpolicy="no-referrer">':'')+'<div><div class="t" dir="auto">'+esc(j.title)+'</div><div class="d">'+esc(host)+'</div></div></div>';
+      '<div class="pv">'+(j.thumb?'<img src="'+esc(j.thumb)+'" alt="" referrerpolicy="no-referrer" onerror="thumbFail(this)" onload="thumbOk(this)">':'')+'<div><div class="t" dir="auto">'+esc(j.title)+'</div><div class="d">'+esc(host)+'</div></div></div>';
     if(aud.length){h+='<p class="sec">Music</p>';aud.forEach(i=>{h+=opt(i,i.label?"Audio ("+i.label+")":"Classic MP3");});}
     if(vid.length){h+='<p class="sec">Video</p>';vid.forEach(i=>{h+=opt(i,"MP4"+(i.label?" "+i.label:(vid.length>1?(i.hd?" HD":" ("+t("smaller")+")"):""))+(i.up?' <small class="up">'+esc(t("enlarged"))+'</small>':'')+(i.hevc?' <small class="up">'+esc(t("hevcNote"))+'</small>':''));});}
     if(pho.length){
@@ -589,7 +589,7 @@ html{overscroll-behavior-y:contain}
       const {meta,pct,total,site}=metaOf(r);
       const playable=r.status==="done"||r.status==="phone";
       return '<li class="fi'+(r.status==="fail"?' fail':'')+'" data-id="'+r.id+'">'+
-        '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="'+t("play")+'">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
+        '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="'+t("play")+'">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onload="thumbOk(this)" onerror="/hq720\.jpg$/.test(this.src)?thumbFail(this):this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
         '<div class="bd"><div class="tt" dir="auto">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" "+t("video"))+'</div><div class="mt">'+esc(meta)+'</div>'+
         (/busy|bg|paused|queued/.test(r.status)?'<div class="bar'+(RUN(r)?'':' idle')+'"><i style="width:'+(total?pct:(RUN(r)?8:0))+'%"></i></div>':'')+
         '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>')+(r.blob&&canShareFiles?'<button type="button" data-act="share">↗ '+t("share")+'</button>':''):'')+
@@ -704,7 +704,8 @@ html{overscroll-behavior-y:contain}
           const name=nameOf(r);
           r.jobSrc=r.jobSrc||r.src;   // kept: the converter's file link expires, "Download again" starts a new job
           r.direct=j.url;r.prep=false;r.prepPct=0;r.job="";r.conv=true;
-          r.src=/(^|\.)(loader\.to|oceansaver\.in|savenow\.to)$/.test(new URL(j.url).hostname)?api+"?file="+encodeURIComponent(j.url)+"&name="+encodeURIComponent(name):j.url;
+          // Always through our API: the converter's own link opens ad pages when the phone handles it.
+          r.src=api+"?file="+encodeURIComponent(j.url)+"&name="+encodeURIComponent(name)+(j.sig?"&sig="+j.sig:"");
           await put(r);return;
         }
       }
@@ -739,7 +740,7 @@ html{overscroll-behavior-y:contain}
         if(r._gone||r._handoff||r.status==="bg"){return;}
         if(r._pausing){   // keep what arrived; "resume" continues from here
           r._pausing=false;r.status="paused";if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;await put(r);draw();
-        }else if(!NATIVE&&r.src&&!r.prep){   // fall back to the phone's download manager
+        }else if(!NATIVE&&r.src&&!r.prep&&!(r.conv&&!/[?&]file=/.test(r.src))){   // fall back to the phone's download manager
           r.status="phone";r.why="";r.partial=null;r._parts=null;await put(r);draw();phoneSave(r);toast(t("toastStart"));
         }else{
           r.status="fail";r.why=String(e.message||e);r._parts=null;await put(r);draw();
@@ -764,7 +765,7 @@ html{overscroll-behavior-y:contain}
       const got=r.partial?r.partial.size:0;
       r._handoff=true;if(r._ctl)r._ctl.abort();r._parts=null;
       const prev=r.status;r.status="bg";r.bgOffset=got;r.got=got;await put(r);
-      const url=abs(r.via==="api"?r.src:(r.direct||r.src));
+      const url=abs(r.via==="api"||r.conv?r.src:(r.direct||r.src));
       const opts={title:r.title||"Video",icons:[{src:"icon-192.png",sizes:"192x192",type:"image/png"}]};
       if(r.size&&r.size>got)opts.downloadTotal=r.size-got;
       try{
@@ -1127,8 +1128,10 @@ html{overscroll-behavior-y:contain}
   const hdThumb=u=>String(u||"").replace(/\/(mq|hq|sd)default\.jpg$/,"/hq720.jpg");
   const SKEL='<div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>';
   const fresh=v=>/minute|hour|just now/i.test(v.ago||"");   // uploaded today
+  // A missing hq720 comes back as YouTube's small grey "…" picture rather than an error.
+  window.thumbOk=img=>{if(img.naturalWidth&&img.naturalWidth<=120&&/hq720\.jpg$/.test(img.src))thumbFail(img);};
   window.thumbFail=img=>{const u=img.src;if(/hq720\.jpg$/.test(u))img.src=u.replace("hq720.jpg","hqdefault.jpg");else img.onerror=null;};
-  const cards=(items,off)=>items.map((v,i)=>'<div class="vc" data-i="'+((off||0)+i)+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" decoding="async" src="'+esc(hdThumb(v.thumb))+'" alt="" referrerpolicy="no-referrer" onerror="thumbFail(this)">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+(fresh(v)?'<span class="new">NEW</span>':'')+'<span class="pi2" aria-hidden="true"></span></button>'+
+  const cards=(items,off)=>items.map((v,i)=>'<div class="vc" data-i="'+((off||0)+i)+'"><button type="button" class="th2" data-act="watch" aria-label="'+esc(t("play"))+'"><img loading="lazy" decoding="async" src="'+esc(hdThumb(v.thumb))+'" alt="" referrerpolicy="no-referrer" onerror="thumbFail(this)" onload="thumbOk(this)">'+(v.dur?'<span class="du">'+esc(v.dur)+'</span>':'')+(fresh(v)?'<span class="new">NEW</span>':'')+'<span class="pi2" aria-hidden="true"></span></button>'+
     '<div class="meta2"><div class="tx"><button type="button" class="tt2" data-act="watch" dir="auto">'+esc(v.title)+'</button><div class="sub" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div></div>'+
     '<button type="button" class="dlb" data-act="dl" aria-label="'+esc(t("downloadBtn"))+'">'+DLI+'</button></div></div>').join("");
   function feed(pre,CATS,mp3,tiktok){
@@ -1364,7 +1367,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-d";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-e";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

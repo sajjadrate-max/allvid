@@ -14,7 +14,7 @@ const attachment = name => "attachment; filename=\"" + name.replace(/[^\x20-\x7e
 
 async function stream(req, res) {
   const file = String(req.query.file || '');
-  if (!allowedMedia(file)) { res.status(400).json({ error: 'link.invalid' }); return; }
+  if (!allowedMedia(file, String(req.query.sig || ''))) { res.status(400).json({ error: 'link.invalid' }); return; }
   // Older links for MP3 / enlarged copies: those now live in api/convert.js.
   if (req.query.audio || req.query.scale) {
     res.statusCode = 307;
