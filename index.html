@@ -808,14 +808,18 @@ html{overscroll-behavior-y:contain}
       finally{r._handoff=false;draw();}
     }
     document.addEventListener("visibilitychange",()=>{
-      if(!BG||document.visibilityState!=="hidden")return;
-      [...recs.values()].filter(r=>(r.status==="busy"||r.status==="queued")&&!r.prep).forEach(handOff);
+      if(!BG)return;
+      if(document.visibilityState==="hidden"){[...recs.values()].filter(r=>(r.status==="busy"||r.status==="queued")&&!r.prep).forEach(handOff);return;}
+      // Back in the app: take background downloads back (the app itself is faster, shows live
+      // progress, and the phone may not have run them at all). sw.js keeps the pieces that arrived.
+      [...recs.values()].filter(r=>r.status==="bg").forEach(r=>{r._takeBack=true;bgStop(r);setTimeout(()=>reload(r.id),4000);});
     });
     // A background download finished (sw.js wrote it to the database): show it.
     async function reload(id){
       const o=await tx("readonly",s=>s.get(id));if(!o)return;
       const r=recs.get(id);if(!r||r.status!=="bg")return;
       Object.assign(r,o);
+      if(r._takeBack&&r.status!=="done"){r._takeBack=false;if(r.status==="bg"){r.got=r.partial?r.partial.size:0;}r.status="queued";await put(r);}
       if(r.status==="done"&&r.autoSave&&document.visibilityState==="visible"){r.autoSave=false;await put(r);toPhone(r);toast(t("toastDone"));}
       if(r.status==="queued")pump();
       draw();if(r.status==="done")makeThumb(r);
@@ -925,7 +929,7 @@ html{overscroll-behavior-y:contain}
         if(r.status==="done"&&r.autoSave){r.autoSave=false;put(r);setTimeout(()=>toPhone(r),300);}   // finished while closed
         if(r.status!=="bg")continue;
         let f=null;try{const g=await bgReg();f=g&&await g.backgroundFetch.get("vdl-"+r.id);}catch(e){}
-        if(f&&!f.result){r.got=(r.bgOffset||0)+f.downloaded;bgWatch(r,f);}
+        if(f&&!f.result){r.got=(r.bgOffset||0)+f.downloaded;bgWatch(r,f);r._takeBack=true;bgStop(r);setTimeout(()=>reload(r.id),4000);}   // opened again: continue in the app
         else{const o=await tx("readonly",s=>s.get(r.id));if(o)Object.assign(r,o);if(r.status==="bg"){r.status="queued";r.got=r.partial?r.partial.size:0;}}
       }
       draw();pump();
@@ -1402,7 +1406,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-j";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-k";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
