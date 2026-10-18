@@ -380,6 +380,7 @@ html{overscroll-behavior-y:contain}
 
 <section class="wrap files" data-view="files" id="filesView" hidden>
   <h2 data-i18n="tabFiles">میری فائلیں</h2>
+  <div class="cats" id="fileFilter"><button type="button" data-f="all" aria-pressed="true" data-i18n="fAll">All</button><button type="button" data-f="video" aria-pressed="false" data-i18n="fVideos">Videos</button><button type="button" data-f="audio" aria-pressed="false" data-i18n="fMusic">Music</button></div>
   <ul class="fl" id="fileList"></ul>
   <p class="empty" id="noFiles" data-i18n="empty">ابھی کوئی فائل نہیں۔ یہاں سے جو بھی ڈاؤن لوڈ کریں گے وہ خود یہاں آ جائے گا۔</p>
 </section>
@@ -558,6 +559,16 @@ html{overscroll-behavior-y:contain}
     const blobUrl=r=>{if(!r.blob)return "";if(!urls.has(r.id))urls.set(r.id,URL.createObjectURL(r.blob));return urls.get(r.id);};
     function phoneSave(r){const a=document.createElement("a");a.href=r.conv&&r.direct?r.direct:r.src;a.download="";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();}
     function toPhone(r){const a=document.createElement("a");a.href=blobUrl(r);a.download=nameOf(r);document.body.appendChild(a);a.click();a.remove();}
+    const canShareFiles=(()=>{try{return !!(navigator.canShare&&navigator.canShare({files:[new File([""],"a.mp4",{type:"video/mp4"})]}));}catch(e){return false;}})();
+    function whenOf(ms){
+      const d=(Date.now()-ms)/1000,lang=document.documentElement.lang||"en";
+      try{
+        const rtf=new Intl.RelativeTimeFormat(lang,{numeric:"auto"});
+        if(d<3600)return rtf.format(-Math.max(1,Math.round(d/60)),"minute");
+        if(d<86400)return rtf.format(-Math.round(d/3600),"hour");
+        return new Date(ms).toLocaleString(lang,{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"});
+      }catch(e){return new Date(ms).toLocaleString();}
+    }
     function metaOf(r){
       const total=r.size||r.est||0;
       const pct=total?Math.min(99,Math.round(r.got/total*100)):0;
@@ -568,7 +579,9 @@ html{overscroll-behavior-y:contain}
         :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
         :r.prep?"⏳ "+(r.prepPct||0)+"%"+(r.prepText&&!/^\d|%/.test(r.prepText)?" · "+r.prepText:"")
         :(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
-      return {meta,pct,total,site};
+      // When it was downloaded: "2 hours ago" today, else the date and time.
+      const when=(r.status==="done"||r.status==="phone")&&r.created?" · "+whenOf(r.created):"";
+      return {meta:meta+when,pct,total,site};
     }
     function row(r){
       const {meta,pct,total,site}=metaOf(r);
@@ -577,7 +590,7 @@ html{overscroll-behavior-y:contain}
         '<button class="th" type="button" data-act="play"'+(playable?'':' disabled')+' aria-label="'+t("play")+'">'+((r.thumb||(r.type==="photo"&&r.blob&&blobUrl(r)))?'<img src="'+esc(r.thumb||blobUrl(r))+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(r.type==="audio"?ICON.audio:''))+(playable?'<span class="pl"></span>':'')+'</button>'+
         '<div class="bd"><div class="tt" dir="auto">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" "+t("video"))+'</div><div class="mt">'+esc(meta)+'</div>'+
         (/busy|bg|paused|queued/.test(r.status)?'<div class="bar'+(RUN(r)?'':' idle')+'"><i style="width:'+(total?pct:(RUN(r)?8:0))+'%"></i></div>':'')+
-        '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>'):'')+
+        '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>')+(r.blob&&canShareFiles?'<button type="button" data-act="share">↗ '+t("share")+'</button>':''):'')+
         (RUN(r)||r.status==="queued"?'<button type="button" data-act="pause">'+t("pause")+'</button>':'')+
         (r.status==="paused"?'<button class="pri" type="button" data-act="resume">'+t("resume")+'</button>':'')+
         (r.status==="fail"?'<button class="pri" type="button" data-act="retry">'+t("retry")+'</button>'+(r.direct||r.src?'<button type="button" data-act="open">'+t("openDirect")+'</button>':''):'')+
@@ -609,9 +622,12 @@ html{overscroll-behavior-y:contain}
       let u=r.direct||r.link||"";try{u=u||new URL(r.src,location.href).searchParams.get("file")||"";}catch(e){}
       return /fbcdn|facebook|fb\.watch/i.test(u)?"facebook":/cdninstagram|instagram/i.test(u)?"instagram":/tikwm|tiktok/i.test(u)?"tiktok":/twimg|twitter|x\.com/i.test(u)?"twitter":/googlevideo|youtube|ytimg|piped|invidious/i.test(u)?"youtube":/sc-cdn|snapchat/i.test(u)?"snapchat":/pinimg|pinterest/i.test(u)?"pinterest":"";
     }
+    let fileF="all";
+    $("fileFilter").onclick=e=>{const b=e.target.closest("button");if(!b)return;fileF=b.dataset.f;[...e.currentTarget.children].forEach(x=>x.setAttribute("aria-pressed",String(x===b)));draw();};
     function draw(){
       const all=[...recs.values()].sort((a,b)=>b.created-a.created);
-      list.innerHTML=all.map(row).join("");
+      const shownRecs=all.filter(r=>fileF==="all"||(fileF==="audio"?r.type==="audio":r.type!=="audio"));
+      list.innerHTML=shownRecs.map(row).join("");
       noFiles.hidden=all.length>0;
       const busyList=all.filter(RUN),busy=busyList.length+all.filter(r=>r.status==="queued").length;
       badge.hidden=!busy;badge.textContent=busy;
@@ -852,6 +868,10 @@ html{overscroll-behavior-y:contain}
         if(yid&&window.watchYT)window.watchYT({id:yid,title:r.title});else play(r);
       }
       else if(act==="save"){if(r.blob)toPhone(r);else again(r);}
+      else if(act==="share"){
+        try{const f=new File([r.blob],nameOf(r),{type:r.blob.type||"video/mp4"});await navigator.share({files:[f],title:r.title||""});}
+        catch(e){if(e&&e.name!=="AbortError")toast(t("cantShare"));}
+      }
       else if(act==="retry"){if(NATIVE)nativeStart(r);else{r.why="";resume(r);}}
       else if(act==="pause")pause(r);
       else if(act==="resume")resume(r);
@@ -1341,7 +1361,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-a";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-b";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
