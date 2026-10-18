@@ -442,6 +442,15 @@ html{overscroll-behavior-y:contain}
 
 <script src="i18n.js"></script>
 <script>
+// Converter jobs started ahead of time (watch page, size sheet), shared by video + size and
+// kept 15 minutes, so the download can use a job that is already (nearly) done.
+window.ytWarm=(()=>{const jobs=new Map();return url=>{
+  const key=String(url).replace(/[?&]name=[^&]*/,"");const c=jobs.get(key);
+  if(c&&Date.now()-c.t<9e5)return c.p;
+  const p=fetch(url).then(x=>x.json()).then(o=>o&&o.job||"").catch(()=>"");
+  jobs.set(key,{p,t:Date.now()});p.then(j=>{if(!j)jobs.delete(key);});return p;};})();
+</script>
+<script>
 (function(){
   const t=I18N.t;
   // GitHub Pages can't run server code, so that copy uses the ilme-jafar API on Vercel.
@@ -538,7 +547,7 @@ html{overscroll-behavior-y:contain}
     sheet.innerHTML=h; openSheet(); $("shx").onclick=closeSheet;
     // YouTube files are made by a converter, which takes a while: start it as soon as a size is
     // shown or picked, so it is (nearly) ready by the time Download is tapped.
-    const warm=i=>{if(i&&i.prep&&!i.jobP)i.jobP=fetch(abs(i.url)).then(x=>x.json()).then(o=>{if(o&&o.job)i.job=o.job;}).catch(()=>{});};
+    const warm=i=>{if(i&&i.prep&&!i.jobP)i.jobP=ytWarm(i.url).then(job=>{if(job)i.job=job;});};
     warm(def);sheet.onchange=e=>{if(e.target.name==="fmt")warm(list[+e.target.value]);};
     if(list.length) $("dl").onclick=async()=>{
       const sel=sheet.querySelector('input[name=fmt]:checked');
@@ -714,15 +723,15 @@ html{overscroll-behavior-y:contain}
       // (the converter keeps working meanwhile) instead of starting over.
       if(!r.job){r.job=(await get(r.src)).job;await put(r);}
       let stuck=0,lastPct=-1;
-      for(let i=0;i<900;i++){   // big videos can take a while (up to ~45 min)
+      for(let i=0;i<1350;i++){   // big videos can take a while (up to ~45 min)
         if(r._pausing||r._gone)throw new Error("stopped");
-        await sleep(3000);
+        if(i)await sleep(2000);   // first check at once: a job started ahead may be done already
         let j;
         try{j=await get(api+"?yt=1&job="+encodeURIComponent(r.job));}
         catch(e){if(/cv:/.test(e.message)&&!/fetch/i.test(e.message)){r.job="";await put(r);}throw e;}   // failed job: next try starts a new one
         r.prepPct=j.pct||0;r.prepText=j.text||"";soon();
         // No progress for 10 minutes: the job is stuck; start a fresh one.
-        if(r.prepPct!==lastPct){lastPct=r.prepPct;stuck=0;}else if(++stuck>200){r.job=(await get(r.src)).job;await put(r);stuck=0;}
+        if(r.prepPct!==lastPct){lastPct=r.prepPct;stuck=0;}else if(++stuck>300){r.job=(await get(r.src)).job;await put(r);stuck=0;}
         if(j.url){
           const name=nameOf(r);
           r.jobSrc=r.jobSrc||r.src;   // kept: the converter's file link expires, "Download again" starts a new job
@@ -1329,6 +1338,9 @@ html{overscroll-behavior-y:contain}
   const ytListen=()=>{const f=$("ytf");if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*");};
   window.watchYT=(v,mp3)=>watchYT(v,mp3);   // also used by "My files"
   function watchYT(v,mp3){
+    // Start the converter for the usual size while the video plays: Download then starts at once.
+    {let q="720";try{q=localStorage.getItem("vdlQ")||"best";}catch(e){}q=mp3||q==="mp3"?"mp3":/^(360|480|720|1080)$/.test(q)?q:"720";
+     ytWarm(abs("/api/download?yt="+q+"&v="+v.id));}
     const pl=$("player"),st=$("plStage");st.onscroll=null;
     $("plTitle").textContent=v.title;pl.classList.add("yt");
     st.innerHTML='<div class="watch"><div class="wv"><iframe id="ytf" src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&enablejsapi=1&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
@@ -1411,7 +1423,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-l";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-m";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
