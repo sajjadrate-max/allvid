@@ -557,7 +557,9 @@ html{overscroll-behavior-y:contain}
     // Downloading now: in the page ("busy") or handed to the phone's background download ("bg").
     const RUN=r=>r.status==="busy"||r.status==="bg";
     const blobUrl=r=>{if(!r.blob)return "";if(!urls.has(r.id))urls.set(r.id,URL.createObjectURL(r.blob));return urls.get(r.id);};
-    function phoneSave(r){const a=document.createElement("a");a.href=r.conv&&r.direct?r.direct:r.src;a.download="";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();}
+    // Always through our API: opening a converter's own link in the browser lands on its ad
+    // redirects (e.g. tmll7.com) instead of the file.
+    function phoneSave(r){const a=document.createElement("a");a.href=r.src;a.download="";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();}
     function toPhone(r){const a=document.createElement("a");a.href=blobUrl(r);a.download=nameOf(r);document.body.appendChild(a);a.click();a.remove();}
     const canShareFiles=(()=>{try{return !!(navigator.canShare&&navigator.canShare({files:[new File([""],"a.mp4",{type:"video/mp4"})]}));}catch(e){return false;}})();
     function whenOf(ms){
@@ -666,6 +668,7 @@ html{overscroll-behavior-y:contain}
       const ctl=new AbortController();r._ctl=ctl;
       const res=await fetch(url,{referrerPolicy:"no-referrer",headers:got?{Range:"bytes="+got+"-"}:{},signal:ctl.signal});
       if(!res.ok||!res.body)throw new Error(tag+":http "+res.status);
+      if(/text\/html/i.test(res.headers.get("content-type")||""))throw new Error(tag+":page");   // an ad/redirect page, not the file
       if(got&&res.status!==206){parts.length=0;got=0;}
       const len=Number(res.headers.get("content-length"));if(len)r.size=got+len;
       r._parts=parts;r.got=got;r.via=tag;
@@ -1361,7 +1364,7 @@ html{overscroll-behavior-y:contain}
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-b";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.18-c";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

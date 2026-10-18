@@ -28,6 +28,8 @@ async function stream(req, res) {
   if (range && /^bytes=\d+-\d*$/.test(range)) h.Range = range;
   const up = await fetch(file, { headers: h });
   if (!up.ok || !up.body) { res.status(502).json({ error: 'fetch.fail' }); return; }
+  // A web page instead of a file (a converter's ad redirect, a login wall): don't pass it on as a video.
+  if (/text\/html/i.test(up.headers.get('content-type') || '')) { res.status(502).json({ error: 'fetch.fail', detail: 'page' }); return; }
   const name = String(req.query.name || 'video.mp4');
   res.statusCode = up.status === 206 ? 206 : 200;
   res.setHeader('Content-Type', up.headers.get('content-type') || 'application/octet-stream');
