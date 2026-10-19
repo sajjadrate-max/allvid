@@ -1101,7 +1101,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   (function(){
     const q=new URLSearchParams(location.search);
     const u=findUrl([q.get("url"),q.get("text"),q.get("title")].filter(Boolean).join(" "));
-    if(u){link.value=u;mark();history.replaceState({vdl:"home"},"",location.pathname);maybeAuto();}
+    if(u){window.vdlShared=true;link.value=u;mark();history.replaceState({vdl:"home"},"",location.pathname);maybeAuto();}
   })();
 
   // --- Install as app ---
@@ -1184,7 +1184,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     if(name==="youtube")YT.start();
     if(name==="music")MU.start();
     if(name==="tiktok")TK.start();
-    try{localStorage.setItem("vdlPane",name);}catch(e){}   // a refresh or reopen comes back here
+    try{sessionStorage.setItem("vdlPane",name);}catch(e){}   // a refresh comes back here
   }
   const DLI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
   const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -1417,7 +1417,8 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   $("siteSearch").onsubmit=e=>{e.preventDefault();siteQ.blur();toast(t("pickSite"));};
   document.querySelectorAll("a.site[data-s]").forEach(a=>{const home=a.href;a.onclick=()=>{const q=siteQ.value.trim();a.href=q?a.dataset.s.replace("{q}",encodeURIComponent(q)):home;};});
   // Open on the tab that was in use (a shared or pasted link still shows its sizes on top).
-  try{const sp=localStorage.getItem("vdlPane");if(sp&&sp!=="search"&&!new URLSearchParams(location.search).get("url"))hpane(sp);}catch(e){}
+  // Opening the app starts on YouTube; a refresh stays on the tab that was open; a shared link stays on Search.
+  try{const sp=sessionStorage.getItem("vdlPane")||"youtube";if(sp!=="search"&&!window.vdlShared&&!link.value)hpane(sp);}catch(e){}
   // Pull down at the top of YouTube / TikTok / Music for a fresh list (stays on the same tab).
   (function(){
     const ind=document.createElement("div");ind.className="ptr";ind.textContent="↻";document.body.appendChild(ind);
@@ -1434,7 +1435,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.19-a";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.19-b";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
