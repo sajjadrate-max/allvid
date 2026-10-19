@@ -220,6 +220,9 @@ a.chip{text-decoration:none}
 .hero{position:relative;text-align:center;padding:64px 0 6px;overflow:visible}
 .hero .deco{position:absolute;inset:-10px -16px 0;overflow:hidden;pointer-events:none;z-index:0}
 .hero .deco i{position:absolute;width:74px;height:74px;border-radius:20px;opacity:.08;color:#fff;font-style:normal;font-weight:800;font-size:2.2rem;display:grid;place-items:center;transform:rotate(-14deg)}
+.vhead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.vhead h2{margin-bottom:0}
+.vhead .lang-wrap{margin:0}
 .hero .lang-wrap{position:absolute;top:0;inset-inline-end:0;z-index:3;margin:0}
 h1.logo[dir="ltr"]{position:relative;z-index:1;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:900;font-size:3.2rem;line-height:1.1;letter-spacing:-.5px;
   background:linear-gradient(90deg,#FF2E63,#FF8A00);-webkit-background-clip:text;background-clip:text;color:transparent;padding:0}
@@ -382,7 +385,7 @@ html{overscroll-behavior-y:contain}
 </div>
 
 <section class="wrap files" data-view="files" id="filesView" hidden>
-  <h2 data-i18n="tabFiles">میری فائلیں</h2>
+  <div class="vhead"><h2 data-i18n="tabFiles">میری فائلیں</h2><span class="lslot"></span></div>
   <div class="cats" id="fileFilter"><button type="button" data-f="all" aria-pressed="true" data-i18n="fAll">All</button><button type="button" data-f="video" aria-pressed="false" data-i18n="fVideos">Videos</button><button type="button" data-f="audio" aria-pressed="false" data-i18n="fMusic">Music</button></div>
   <p class="dlnote" id="dlNote" data-i18n="keepOpen">ڈاؤن لوڈ کے دوران ایپ کھلی رکھیں۔ اگر آپ کسی اور ایپ پر چلے گئے یا سکرین بند ہو گئی تو ڈاؤن لوڈ وہیں رک جائے گا، اور واپس آتے ہی خودبخود وہیں سے دوبارہ شروع ہو جائے گا۔</p>
   <ul class="fl" id="fileList"></ul>
@@ -390,7 +393,7 @@ html{overscroll-behavior-y:contain}
 </section>
 
 <section class="wrap files settings" data-view="settings" id="settingsView" hidden>
-  <h2 data-i18n="tabSettings">سیٹنگز</h2>
+  <div class="vhead"><h2 data-i18n="tabSettings">سیٹنگز</h2><span class="lslot"></span></div>
   <p class="sec-h" data-i18n="setDownloads">ڈاؤن لوڈ</p>
   <div class="set-card">
     <div class="row col"><span data-i18n="atOnce">ایک وقت میں ڈاؤن لوڈ</span>
@@ -972,8 +975,12 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
 
   let toastT=0;
   function toast(t){const el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),2600);}
+  // The language button goes along to "my files" and "settings" (one button, moved).
+  const langWrap=document.querySelector(".lang-wrap"),langHome=langWrap.parentNode,langAfter=langWrap.nextSibling;
   function showView(v){
     document.querySelectorAll("[data-view]").forEach(el=>el.hidden=el.dataset.view!==v);
+    const slot=document.querySelector('[data-view="'+v+'"] .lslot');
+    if(slot)slot.appendChild(langWrap);else if(langWrap.parentNode!==langHome)langHome.insertBefore(langWrap,langAfter);
     document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t.dataset.tab===v)));
     scrollTo(0,0);DL.redraw();
   }
@@ -1427,7 +1434,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.18-s";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.19-a";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
