@@ -527,7 +527,9 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     if(tt&&!hevc&&vid.length>1)vid.forEach(i=>{if(i.hd)i.hevc=true;});
     // Preferred quality from Settings, else the original quality (not an enlarged copy).
     const pref=nextPref||(()=>{try{return localStorage.getItem("vdlQ")||"best";}catch(e){return "best";}})();nextPref="";
-    const def=(pref==="mp3"&&aud[0])||(pref==="best"&&vid.some(i=>i.hevc)&&vid.find(i=>!i.hevc&&!i.up))||(pref==="best"&&vid.some(i=>i.prep)&&vid.find(i=>parseInt(i.label,10)===720))||(pref!=="best"&&vid.find(i=>parseInt(i.label,10)===+pref))||vid.find(i=>!i.up)||vid[0]||aud[0];
+    // A ready-made (⚡) YouTube size starts at once: chosen first unless a specific bigger size is set.
+    const fastV=vid.find(i=>/⚡/.test(i.label||""));
+    const def=(pref==="mp3"&&aud[0])||(fastV&&(pref==="best"||parseInt(fastV.label,10)>=+pref)&&fastV)||(pref==="best"&&vid.some(i=>i.hevc)&&vid.find(i=>!i.hevc&&!i.up))||(pref==="best"&&vid.some(i=>i.prep)&&vid.find(i=>parseInt(i.label,10)===720))||(pref!=="best"&&vid.find(i=>parseInt(i.label,10)===+pref))||vid.find(i=>!i.up)||vid[0]||aud[0];
     // Files the API makes on request (MP3, enlarged sizes) have no size yet: estimate it.
     const src=vid.filter(i=>!i.up&&i.size&&parseInt(i.label,10)>0).sort((a,b)=>parseInt(b.label,10)-parseInt(a.label,10))[0]||vid.find(i=>!i.up&&i.size);
     const dur=+j.duration||0;
@@ -1459,7 +1461,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.24-c";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.24-d";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

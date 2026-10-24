@@ -26,10 +26,27 @@ async function stream(req, res) {
   const h = mediaHeaders(file);
   const range = req.headers && req.headers.range;
   if (range && /^bytes=\d+-\d*$/.test(range)) h.Range = range;
-  const up = await fetch(file, { headers: h });
+  let up = await fetch(file, { headers: h });
+  // A web page instead of the file (converters do this to visitors that don't come from their own
+  // site, or send an in-between page): ask again as coming from the converter, then follow a file
+  // link or redirect found in the page. Still a page: don't pass it on as a video.
+  const isPage = r => /text\/html/i.test(r.headers.get('content-type') || '');
+  let pageInfo = '';
+  if (up.ok && isPage(up)) {
+    const pages = [await up.text().catch(() => '')];
+    up = await fetch(file, { headers: { ...h, Referer: 'https://loader.to/', Origin: 'https://loader.to', 'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36' } });
+    if (up.ok && isPage(up)) {
+      pages.push(await up.text().catch(() => ''));
+      const html = pages.join('\n');
+      const link = (html.match(/https?:\/\/[^"'\s<>]+?\.(?:mp4|m4a|mp3|webm)(?:\?[^"'\s<>]*)?/i) || [])[0]
+        || (html.match(/http-equiv=["']?refresh["']?[^>]*url=([^"'>\s]+)/i) || [])[1]
+        || (html.match(/location(?:\.href)?\s*=\s*["']([^"']+)["']/i) || [])[1];
+      pageInfo = ((html.match(/<title[^>]*>([^<]{0,60})/i) || [])[1] || '').replace(/[^\w .:-]/g, '').trim();
+      if (link) { try { up = await fetch(new URL(link.replace(/&amp;/g, '&'), up.url || file).href, { headers: h }); } catch {} }
+    }
+  }
   if (!up.ok || !up.body) { res.status(502).json({ error: 'fetch.fail', detail: 'up' + up.status }); return; }
-  // A web page instead of a file (a converter's ad redirect, a login wall): don't pass it on as a video.
-  if (/text\/html/i.test(up.headers.get('content-type') || '')) { res.status(502).json({ error: 'fetch.fail', detail: 'page' }); return; }
+  if (isPage(up)) { try { await up.body.cancel(); } catch {} res.status(502).json({ error: 'fetch.fail', detail: 'page' + (pageInfo ? ':' + pageInfo : '') }); return; }
   const name = String(req.query.name || 'video.mp4');
   // A source that ignores Range (e.g. a converter's file) answers with the whole file: skip the
   // part the phone already has here, so a paused or cut download still continues, not restarts.
