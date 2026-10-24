@@ -68,6 +68,8 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 /* install banner */
 .apk-get{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--fg);text-decoration:none}
 .apk-get[hidden]{display:none}
+nav.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:10px 0 24px;font-size:.85rem}
+nav.legal a{color:var(--muted)}
 .apk-get .ai{font-size:1.6rem}.apk-get .tx{flex:1;display:flex;flex-direction:column;line-height:1.35}.apk-get small{opacity:.8}.apk-get .go2{font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:6px 12px}
 .install{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--accent);border-radius:14px;padding:10px 12px}
 .install[hidden]{display:none}
@@ -346,6 +348,7 @@ html{overscroll-behavior-y:contain}
 
     <p class="note" data-i18n-html="note">Instagram، Facebook، TikTok یا X میں ویڈیو پر <b>شیئر</b> دبائیں، <b>Copy link</b> چنیں، پھر یہاں <b>پیسٹ</b> دبائیں۔</p>
     <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
+    <nav class="legal" dir="ltr"><a href="about.html">About</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="copyright.html">Copyright</a><a href="contact.html">Contact</a></nav>
   </section>
 
   <section class="hpane yt" data-pane="youtube" id="yt" hidden>
@@ -419,6 +422,7 @@ html{overscroll-behavior-y:contain}
     <div class="row"><span>Version</span><span class="val" id="appVer" dir="ltr"></span></div>
   </div>
   <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
+  <nav class="legal" dir="ltr"><a href="about.html">About</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="copyright.html">Copyright</a><a href="contact.html">Contact</a></nav>
 </section>
 
 <button type="button" class="dlbar" id="dlbar" hidden>
@@ -1448,7 +1452,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-b";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-c";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

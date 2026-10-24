@@ -1,6 +1,6 @@
 // App shell cache for the video downloader. Only same-origin GETs inside this
 // app's folder are cached; API calls and downloads always go to the network.
-const CACHE = "video-dl-v97";
+const CACHE = "video-dl-v98";
 const BASE = new URL("./", self.location).pathname;
 const SHELL = [BASE, BASE + "i18n.js", BASE + "manifest.json", BASE + "icon-192.png", BASE + "icon-512.png"];
 
@@ -21,8 +21,8 @@ self.addEventListener("fetch", e => {
   // Saved copy at once (the app opens instantly, even on a slow line); the newest copy is
   // fetched meanwhile for next time. Updates also arrive with each new version of this file,
   // which reloads the app (see index.html).
-  // Pages share one cache entry, so a shared link (?url=...) opens the same saved page.
-  const key = req.mode === "navigate" ? BASE : req;
+  // The app page shares one cache entry, so a shared link (?url=...) opens the same saved page.
+  const key = req.mode === "navigate" && (u.pathname === BASE || u.pathname === BASE + "index.html") ? BASE : req;   // other pages (privacy.html…) are their own
   const fresh = fetch(req).then(r => {
     if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(key, copy)); }
     return r;
