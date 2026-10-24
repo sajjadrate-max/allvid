@@ -3,36 +3,130 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copyright & Removal · AllVid</title>
-<meta name="description" content="How rights holders can ask us to act.">
-<link rel="icon" href="icon-192.png">
-<style>
-:root{--bg:#eef2ef;--fg:#16231d;--muted:#56645d;--surface:#fff;--line:#d6dfda;--accent:#127456}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--fg:#e6eee9;--muted:#9fb0a7;--surface:#17221d;--line:#26342d;--accent:#3fbf8f}}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
-a{color:var(--accent)}
-header a.home{font-weight:800;font-size:1.4rem;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent}
-h1{font-size:1.7rem;line-height:1.25;margin:18px 0 6px}
-h2{font-size:1.15rem;margin:26px 0 6px}
-.upd{color:var(--muted);font-size:.9rem}
-nav.pages{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:.92rem}
-</style>
+<title>Copyright and Removal · AllVid</title>
+<meta name="description" content="AllVid respects creators. Learn how to ask us to block processing of your content, what to include, how we respond, and how to correct a mistake.">
+<link rel="canonical" href="https://allvid.org/copyright.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h2{margin:0 0 4px;font-size:1.12rem}
+.list h2 a{text-decoration:none}
+.list h2 a:hover{text-decoration:underline}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
 </head>
-<body><main>
-<header><a class="home" href="./">AllVid</a></header>
-<h1>Copyright & Removal</h1>
-<p class="upd">Last updated: October 25, 2026</p>
-<p>We respect the rights of creators. AllVid does not host any video or audio files; it only helps users save files that the original sites make available.</p>
-<p>If you own the rights to content and believe AllVid is being used to infringe them, please contact us with:</p>
-<ul>
-<li>your name and how to reach you;</li>
-<li>the address (URL) of the original content;</li>
-<li>a description of the work and of the rights you hold;</li>
-<li>a statement that you believe in good faith the use is not authorized.</li>
-</ul>
-<p>We will review every request and, where appropriate, block the content from being processed by AllVid.</p>
-<p>Send requests through our <a href="contact.html">Contact</a> page.</p>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>Copyright and removal requests</h1>
+<p class="meta">Last updated: October 25, 2026</p>
+<p class="lead">Creators put time, skill and often money into what they make. AllVid is built to help people keep their own videos and content they are allowed to save, not to take work from the people who made it. This page explains how rights holders can ask us to stop processing their content and what happens next.</p>
 
-<nav class="pages"><a href="./">Home</a><a href="about.html">About</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a><a href="copyright.html">Copyright &amp; Removal</a><a href="contact.html">Contact</a></nav>
-</main></body></html>
+<h2>Our respect for creators</h2>
+<p>Our <a href="/terms.html">Terms of Use</a> allow AllVid to be used only for content a person owns or has permission to save. We ask every user to respect creators, and we publish guidance such as <a href="/articles/respect-creators-copyright.html">copyright basics for everyday users</a> to help people understand what that means in practice. When a rights holder tells us that their content is being misused, we take it seriously.</p>
+
+<h2>We do not host content</h2>
+<p>It is important to understand how AllVid works. AllVid does not host, store, index or publish videos or audio. There is no library or catalog of content on our site. When a user submits a link, the file is fetched from the original site, prepared if needed, and delivered to that user's own device. The user's list of downloads stays on their device, and we do not keep copies of files.</p>
+<p>This means we cannot remove a video from the internet, and we cannot delete a file from someone's phone. If your content is posted somewhere without your permission, the most effective step is to report it to the site where it is posted, such as YouTube, TikTok, Instagram, Facebook, X, Snapchat or Pinterest. Each of these platforms has its own copyright reporting process.</p>
+<p>What we <em>can</em> do is stop AllVid from processing specific links to your content.</p>
+
+<h2>How to submit a removal request</h2>
+<p>Requests are made through our public request page. Please open a new request at <a href="https://github.com/sajjadrate-max/allvid/issues" rel="noopener">github.com/sajjadrate-max/allvid/issues</a> (you can also reach it from our <a href="/contact.html">contact page</a>) and include:</p>
+<ol>
+<li><strong>The work.</strong> A short description of the content you own, such as "my cooking video posted on 3 March".</li>
+<li><strong>The exact links.</strong> The full URL of each post you want AllVid to stop processing.</li>
+<li><strong>Who you are.</strong> Your name, or the name of the company or creator you represent, and your relationship to the work.</li>
+<li><strong>A good-faith statement.</strong> A sentence stating that you believe in good faith that use of the content through AllVid is not authorized by the owner, its agent or the law.</li>
+<li><strong>An accuracy statement.</strong> A sentence stating that the information in your request is accurate and that you are the owner or authorized to act for the owner.</li>
+<li><strong>A way to verify.</strong> For example, a link to a post on your official account that mentions the request, or a public profile we can match to your name.</li>
+</ol>
+<p>Because the request page is public, please do not post your home address, phone number or other private details. If we need more information to verify a request, we will ask on the request itself.</p>
+
+<h2>What we do</h2>
+<p>When we receive a complete request and can reasonably verify it, we block AllVid from processing the listed URLs. After that, anyone who submits one of those links to AllVid will not be able to prepare or save it through our service. We will reply on your request to confirm what was done. We aim to handle copyright requests ahead of other requests, but we cannot promise a specific response time.</p>
+<p>If a request is incomplete or we cannot verify it, we will explain what is missing so you can update it.</p>
+
+<h2>Mistakes and counter-notices</h2>
+<p>Sometimes a link is blocked by mistake, for example if a request listed the wrong URL or came from someone who does not actually own the content. If you believe a link to your own content, or content you have permission to use, has been blocked in error, please open a request that includes:</p>
+<ul>
+<li>the blocked link or links;</li>
+<li>why you believe the block is a mistake, such as proof that you are the creator or that you have a license; and</li>
+<li>a statement that the information you give is accurate.</li>
+</ul>
+<p>We will review it and, where appropriate, ask the original requester for their view. If the block was clearly a mistake, we will lift it. Please do not file false requests or false counter-notices; they waste everyone's time and may have legal consequences.</p>
+
+<h2>Repeat misuse</h2>
+<p>AllVid has no accounts, but we still act on clear patterns of abuse. If we see that the service is being used repeatedly to process content that rights holders have asked us to protect, or to copy content in bulk, we may block the links involved, limit or block the traffic responsible, and take other reasonable steps to protect creators and the service.</p>
+
+<h2>Questions</h2>
+<p>If you are unsure whether to send a request, or have a question about this process, please get in touch through our <a href="/contact.html">contact page</a>.</p>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html" aria-current="page">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

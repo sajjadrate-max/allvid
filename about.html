@@ -3,33 +3,133 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>About AllVid · AllVid</title>
-<meta name="description" content="What AllVid is and how it works.">
-<link rel="icon" href="icon-192.png">
-<style>
-:root{--bg:#eef2ef;--fg:#16231d;--muted:#56645d;--surface:#fff;--line:#d6dfda;--accent:#127456}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--fg:#e6eee9;--muted:#9fb0a7;--surface:#17221d;--line:#26342d;--accent:#3fbf8f}}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
-a{color:var(--accent)}
-header a.home{font-weight:800;font-size:1.4rem;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent}
-h1{font-size:1.7rem;line-height:1.25;margin:18px 0 6px}
-h2{font-size:1.15rem;margin:26px 0 6px}
-.upd{color:var(--muted);font-size:.9rem}
-nav.pages{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:.92rem}
-</style>
+<title>About · AllVid</title>
+<meta name="description" content="AllVid is a free, no-account tool for saving videos and audio you own or are allowed to keep to your phone. Learn how it works and who builds it.">
+<link rel="canonical" href="https://allvid.org/about.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h2{margin:0 0 4px;font-size:1.12rem}
+.list h2 a{text-decoration:none}
+.list h2 a:hover{text-decoration:underline}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
 </head>
-<body><main>
-<header><a class="home" href="./">AllVid</a></header>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
 <h1>About AllVid</h1>
-<p class="upd">Last updated: October 25, 2026</p>
-<p>AllVid is a free web tool that helps people save videos and audio they are allowed to keep, such as their own uploads or videos the owner has permitted others to save, from popular sites to their phone for offline viewing.</p>
-<h2>How it works</h2>
-<p>You paste a link or share it to AllVid. AllVid looks up the files the site makes available for that post and lets you choose a size. The file is then saved on your own device. AllVid does not keep a copy of any video on its servers.</p>
-<h2>Responsible use</h2>
-<p>Only save content you own or have permission to save. Respect the creators and the rules of each site. See our <a href="terms.html">Terms of Use</a> and <a href="copyright.html">Copyright &amp; Removal</a> page.</p>
-<h2>Not affiliated</h2>
-<p>AllVid is an independent project. It is not affiliated with, endorsed by, or sponsored by YouTube, Google, TikTok, Meta (Facebook, Instagram), X, Snapchat or Pinterest. All trademarks belong to their owners.</p>
+<p class="meta">Last updated: October 25, 2026</p>
+<p class="lead">AllVid is a free, simple tool that helps you keep a copy of videos and audio you are allowed to save, such as your own uploads or clips a creator has said you may download, right on your phone. It works in your phone's browser and as an Android app, and it never asks you to create an account.</p>
 
-<nav class="pages"><a href="./">Home</a><a href="about.html">About</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a><a href="copyright.html">Copyright &amp; Removal</a><a href="contact.html">Contact</a></nav>
-</main></body></html>
+<h2>Why AllVid exists</h2>
+<p>A lot of personal memories now live inside social apps. The birthday clip you posted, the short you edited for your small business, the cooking video a friend made and sent you permission to keep: they are all stored on someone else's platform. If an account is closed, a post is deleted by mistake, or you simply lose signal on a long trip, those videos can be hard to reach.</p>
+<p>Our mission is to make it easy for everyday people to keep their own content and permitted content on their own device, without complicated software, hidden fees or a pile of sign-up forms. We want the tool to be quick enough for a busy person and clear enough for someone who rarely installs apps.</p>
+
+<h2>How it works, step by step</h2>
+<ol>
+<li><strong>Find the link.</strong> In the app where the video lives, tap Share and choose Copy link. On Android you can also share the link straight to the AllVid app.</li>
+<li><strong>Paste it into AllVid.</strong> Open <a href="/">allvid.org</a> or the AllVid Android app and paste the link into the box.</li>
+<li><strong>Pick a format and size.</strong> AllVid shows the options available for that post, for example MP4 video at 360p, 720p or 1080p, or audio only as MP3 or M4A. Sizes marked with ⚡ are ready-made files that start right away; others may need a short "getting ready" step first.</li>
+<li><strong>Save it.</strong> The file is saved on your device. You can find it later under <strong>My files</strong>, which lists each download with the time you saved it so you can tell recent files apart.</li>
+<li><strong>Watch, share or remove.</strong> From My files you can play the file, share it to another app, or remove it when you no longer need it.</li>
+</ol>
+
+<h2>Features</h2>
+<ul>
+<li><strong>No account, no sign-up.</strong> Open it and use it. There is nothing to log in to.</li>
+<li><strong>Free to use.</strong> There is no paid tier and no trial that runs out.</li>
+<li><strong>Video and audio.</strong> Choose MP4 video in common sizes, or save just the sound as MP3 or M4A.</li>
+<li><strong>My files.</strong> A tidy list of what you have saved, with the date and time of each download.</li>
+<li><strong>Settings that matter.</strong> Choose how many downloads run at once, your preferred quality, a light, dark or automatic theme, and your language from many options. You can also delete all saved files in one step.</li>
+<li><strong>Android app.</strong> Tap the "Get the AllVid Android app" button on the home page to install it. The app hands downloads to your phone's own download manager, so they keep going even when the app is closed or the screen is off.</li>
+</ul>
+
+<h2>Supported sites</h2>
+<p>AllVid can work with links from TikTok, Instagram, Facebook, X, Snapchat, Pinterest and YouTube. Each site changes how it delivers video from time to time, so a particular link may occasionally fail or offer fewer sizes than usual. When that happens, trying again later usually helps, and you are welcome to tell us through the <a href="/contact.html">contact page</a>.</p>
+<p>Some posts simply cannot be saved: private posts, content behind a login, and content the owner has restricted. AllVid does not try to get around those protections.</p>
+
+<h2>A privacy-first approach</h2>
+<p>We designed AllVid to know as little about you as possible. Your list of downloads and your settings are stored only on your own device, in your browser's storage or the app's storage. We do not have a copy of your download history and we cannot see what is in your My files list.</p>
+<p>To find the files for a post, the link you paste has to be sent to our server. The server may use outside services, such as video conversion services and public mirrors, to prepare the file. Our hosting provider keeps basic technical logs for a limited time. You can read the details in our <a href="/privacy.html">Privacy Policy</a>.</p>
+
+<h2>Responsible use</h2>
+<p>AllVid is meant for saving content you own or have permission to keep. That includes your own posts, videos released under a license that allows downloading, and clips a creator has told you that you may save. Please do not use AllVid to copy, re-upload or sell other people's work without permission. Creators put real effort into what they make, and respecting their rights keeps the whole internet healthier.</p>
+<p>If you are a rights holder and believe AllVid is being used to process your content without permission, please see our <a href="/copyright.html">Copyright</a> page. Our <a href="/terms.html">Terms of Use</a> explain the rules in more detail.</p>
+
+<h2>Independent and not affiliated</h2>
+<p>AllVid is an independent project. It is not affiliated with, endorsed by, or sponsored by YouTube, Google, TikTok, Meta (Facebook and Instagram), X, Snap (Snapchat) or Pinterest. Their names are used only to describe which links AllVid can work with, and all trademarks belong to their owners.</p>
+
+<h2>Who builds AllVid</h2>
+<p>AllVid is built and maintained by a small independent team that wanted a clean, honest way to keep personal videos without ads covering every button or forms asking for an email address. We work on it in the open, and bug reports, feature ideas and questions are handled on our public request page.</p>
+<p>If something is not working, or you have an idea that would make AllVid more useful, please <a href="/contact.html">get in touch</a>. You may also find a quick answer in the <a href="/faq.html">FAQ</a> or our <a href="/articles.html">articles</a>.</p>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html" aria-current="page">About</a></li>
+<li><a href="/articles.html">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

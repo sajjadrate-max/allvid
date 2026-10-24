@@ -4,42 +4,157 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy Policy · AllVid</title>
-<meta name="description" content="How AllVid handles your information.">
-<link rel="icon" href="icon-192.png">
-<style>
-:root{--bg:#eef2ef;--fg:#16231d;--muted:#56645d;--surface:#fff;--line:#d6dfda;--accent:#127456}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--fg:#e6eee9;--muted:#9fb0a7;--surface:#17221d;--line:#26342d;--accent:#3fbf8f}}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
-a{color:var(--accent)}
-header a.home{font-weight:800;font-size:1.4rem;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent}
-h1{font-size:1.7rem;line-height:1.25;margin:18px 0 6px}
-h2{font-size:1.15rem;margin:26px 0 6px}
-.upd{color:var(--muted);font-size:.9rem}
-nav.pages{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:.92rem}
-</style>
+<meta name="description" content="How AllVid handles your information: no accounts, downloads and settings stored only on your device, links sent to our server to find files, and how ads and cookies may work.">
+<link rel="canonical" href="https://allvid.org/privacy.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h2{margin:0 0 4px;font-size:1.12rem}
+.list h2 a{text-decoration:none}
+.list h2 a:hover{text-decoration:underline}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
 </head>
-<body><main>
-<header><a class="home" href="./">AllVid</a></header>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
 <h1>Privacy Policy</h1>
-<p class="upd">Last updated: October 25, 2026</p>
-<p>This policy explains what information AllVid ("we") uses when you visit allvid.org or use the AllVid Android app, and why.</p>
-<h2>What we do not collect</h2>
-<p>AllVid has no accounts. We do not ask for your name, email address or phone number, and we do not sell personal information.</p>
-<h2>Links you submit</h2>
-<p>When you paste or share a link, it is sent to our server so we can find the files the site offers for it. Our server may pass the link to third-party services that prepare or provide the file (for example video conversion services). We do not store the links you submit beyond normal, short-lived server logs.</p>
-<h2>Data stored on your device</h2>
-<p>Your downloads, settings (language, theme, preferred quality) and the list of your files are stored only in your own browser or app storage on your device. You can delete them at any time from Settings → Delete all files, or by clearing the site data in your browser.</p>
-<h2>Server logs and hosting</h2>
-<p>Our hosting provider (Vercel) may record technical information such as IP address, browser type and the time of a request in server logs, to keep the service secure and working. These logs are kept for a limited time.</p>
-<h2>Cookies and advertising</h2>
-<p>AllVid itself does not use cookies for tracking. If we show advertising in the future, third-party vendors, including Google, may use cookies to serve ads based on your prior visits to this and other websites. Google's use of advertising cookies enables it and its partners to serve ads based on your visits. You can opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" rel="noopener">Google Ads Settings</a> or <a href="https://www.aboutads.info/choices/" rel="noopener">www.aboutads.info</a>.</p>
-<h2>Children</h2>
-<p>AllVid is not directed to children under 13, and we do not knowingly collect information from children.</p>
-<h2>Changes</h2>
-<p>We may update this policy. The date at the top shows the latest version.</p>
-<h2>Contact</h2>
-<p>Questions about privacy: see our <a href="contact.html">Contact</a> page.</p>
+<p class="meta">Last updated: October 25, 2026</p>
+<p class="lead">This policy explains what information AllVid handles when you use the website at allvid.org or the AllVid Android app, why, and what choices you have. The short version: we do not ask who you are, and the things you save stay on your own device.</p>
 
-<nav class="pages"><a href="./">Home</a><a href="about.html">About</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a><a href="copyright.html">Copyright &amp; Removal</a><a href="contact.html">Contact</a></nav>
-</main></body></html>
+<h2>1. Who we are</h2>
+<p>AllVid ("AllVid", "we", "us") is an independent, free tool that helps people save videos and audio they own or are allowed to keep. AllVid has no user accounts. Questions about this policy can be sent through our <a href="/contact.html">contact page</a>.</p>
+
+<h2>2. Information we do not collect</h2>
+<p>Because there are no accounts and no sign-up, we do not ask for your name, email address, phone number, password or payment details. We do not build a profile of you, and we do not sell personal information.</p>
+
+<h2>3. Information stored only on your device</h2>
+<p>AllVid keeps some information so it can work smoothly for you. This information is stored only on your device, in your browser's storage (for the website) or in the app's own storage (for the Android app). It is not sent to us, and we cannot see it.</p>
+<ul>
+<li><strong>Your downloads list ("My files").</strong> The names of files you saved and the date and time each one was downloaded, so you can find and manage them.</li>
+<li><strong>Your settings.</strong> The number of downloads at once, your preferred quality, your theme (auto, light or dark) and your language.</li>
+<li><strong>The saved files themselves.</strong> Videos and audio you save are written to your device's storage.</li>
+</ul>
+<p>You stay in control of this data. See section 9 for how to delete it.</p>
+
+<h2>4. Links you submit</h2>
+<p>When you paste or share a link into AllVid, the link is sent to our server so it can find the video or audio files available for that post and show you the formats and sizes. To prepare a file, our server may contact the site the link points to and may use third-party services, such as video conversion services and public mirrors. These services receive the link (and, where needed, the media being converted) only so they can return the file you asked for.</p>
+<p>We do not attach links to your identity, because we do not know your identity. We do not keep a history of the links you submit beyond the short-lived technical logs described below.</p>
+
+<h2>5. Hosting and server logs</h2>
+<p>AllVid is hosted on Vercel. Like almost every website, our hosting provider automatically records basic technical information when your device connects, such as your IP address, browser and device type (user agent), the page or address requested, and the date and time. These logs help keep the service running, find errors and protect against abuse. They are kept for a limited time and then deleted under the hosting provider's retention practices. We do not use these logs to identify individual users.</p>
+
+<h2>6. Cookies and similar technologies</h2>
+<p>AllVid does not currently use tracking cookies or analytics cookies. Browser storage is used only to remember your downloads list and settings on your own device, as described in section 3.</p>
+
+<h2>7. Advertising (may be added in the future)</h2>
+<p>To keep AllVid free, we may show ads in the future. If we do, we may work with third-party advertising vendors, including Google. In that case:</p>
+<ul>
+<li>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites.</li>
+<li>Google's use of advertising cookies enables it and its partners to serve ads to users based on their visits to this site and/or other sites on the internet.</li>
+<li>You may opt out of personalized advertising by visiting Google's <a href="https://www.google.com/settings/ads" rel="noopener">Ads Settings</a>. You can also opt out of some third-party vendors' use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info/choices/" rel="noopener">www.aboutads.info/choices</a>.</li>
+<li>Where the law requires it, for example for visitors in the European Economic Area and the United Kingdom, we will ask for your consent before personalized ads or advertising cookies are used.</li>
+</ul>
+<p>If ads are added, we will update this policy and the "Last updated" date above.</p>
+
+<h2>8. The Android app</h2>
+<p>The Android app works the same way as the website. It hands each download to your phone's built-in download manager, which saves the file to your device and lets downloads continue when the app is closed or the screen is off. The download manager is part of your phone's operating system; we do not receive information from it. The app does not ask you to sign in and does not upload your saved files anywhere.</p>
+
+<h2>9. Your choices and rights</h2>
+<p>Privacy laws such as the GDPR in Europe and the CCPA in California give people rights over their personal information, including the right to know what is collected, to get a copy, to correct it, to delete it, and to object to or limit certain uses. Because AllVid holds almost no personal information, most of these rights are something you can exercise yourself, directly on your device:</p>
+<ul>
+<li><strong>Delete all saved files:</strong> open AllVid, go to Settings and use the option to delete all files.</li>
+<li><strong>Remove one file:</strong> open My files and remove it.</li>
+<li><strong>Clear settings and history on the website:</strong> clear site data for allvid.org in your browser settings.</li>
+<li><strong>Clear everything in the Android app:</strong> open your phone's Settings, go to Apps, choose AllVid, then Storage, and clear its storage. Uninstalling the app also removes its stored data.</li>
+<li><strong>Opt out of personalized ads:</strong> use the links in section 7 if ads are shown.</li>
+</ul>
+<p>We do not sell or share personal information for cross-context behavioral advertising today. For anything else, including questions about server logs, please reach us through the <a href="/contact.html">contact page</a>. You also have the right to complain to your local data protection authority.</p>
+
+<h2>10. Legal basis (for visitors in the EEA and UK)</h2>
+<p>We process the link you submit to provide the service you asked for. We process server logs based on our legitimate interest in keeping AllVid secure and working. If personalized advertising is introduced, it will rely on your consent where required.</p>
+
+<h2>11. Children</h2>
+<p>AllVid is not intended for children under 13, and we do not knowingly collect information from children under 13. If you believe a child has provided information to us, please contact us and we will take appropriate steps.</p>
+
+<h2>12. Security</h2>
+<p>Connections to AllVid are encrypted with HTTPS. Because your downloads and settings stay on your device, the security of that data also depends on how you protect your phone, such as using a screen lock and keeping software up to date.</p>
+
+<h2>13. International users</h2>
+<p>Our hosting provider and the third-party services we use may process data in countries other than your own. By using AllVid, you understand that the limited information described here may be processed in those countries.</p>
+
+<h2>14. Changes to this policy</h2>
+<p>We may update this policy as AllVid changes, for example if ads are added. When we do, we will change the "Last updated" date at the top of this page. Please check back from time to time.</p>
+
+<h2>15. Contact</h2>
+<p>For privacy questions, please use our public request page via the <a href="/contact.html">contact page</a>. Please do not post private information there.</p>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html" aria-current="page">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>
