@@ -66,6 +66,7 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 @keyframes r{to{transform:rotate(360deg)}}
 
 /* install banner */
+.home>.install{margin:2px 0 14px}
 .install{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--accent);border-radius:14px;padding:10px 12px}
 .install[hidden]{display:none}
 .install img{width:42px;height:42px;border-radius:10px;flex:none}
@@ -313,6 +314,14 @@ html{overscroll-behavior-y:contain}
     <button type="button" role="tab" data-h="more" aria-selected="false">More</button>
   </div>
 
+  <!-- On every home tab (the app now opens on YouTube), not only on Search. -->
+  <div class="install" id="install" hidden>
+    <img src="icon-192.png" alt="">
+    <div class="txt"><b data-i18n="installTitle">ایپ انسٹال کریں</b><small id="installHint" data-i18n="installHint">ہوم اسکرین پر لگائیں، ایک ٹچ میں کھولیں۔</small></div>
+    <button class="btn" type="button" id="installBtn" data-i18n="installBtn">انسٹال</button>
+    <button class="x" type="button" id="installClose" data-i18n-aria="close" aria-label="بند کریں">×</button>
+  </div>
+
   <section class="hpane" data-pane="search">
     <div class="hero">
       <div class="deco" aria-hidden="true"><i style="background:#1877F2;top:6%;left:6%">f</i><i style="background:#FF0000;top:2%;left:42%">▶</i><i style="background:#111;top:10%;right:4%">♪</i><i style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF);top:46%;left:18%">◎</i><i style="background:#25D366;top:40%;right:22%">✆</i><i style="background:#000;top:58%;right:-2%">𝕏</i></div>
@@ -337,12 +346,6 @@ html{overscroll-behavior-y:contain}
 
     <button type="button" class="share-pill" id="shareBtn">🔗 <span data-i18n="share">Share</span></button>
 
-    <div class="install" id="install" hidden>
-      <img src="icon-192.png" alt="">
-      <div class="txt"><b data-i18n="installTitle">ایپ انسٹال کریں</b><small id="installHint" data-i18n="installHint">ہوم اسکرین پر لگائیں، ایک ٹچ میں کھولیں۔</small></div>
-      <button class="btn" type="button" id="installBtn" data-i18n="installBtn">انسٹال</button>
-      <button class="x" type="button" id="installClose" data-i18n-aria="close" aria-label="بند کریں">×</button>
-    </div>
 
     <p class="note" data-i18n-html="note">Instagram، Facebook، TikTok یا X میں ویڈیو پر <b>شیئر</b> دبائیں، <b>Copy link</b> چنیں، پھر یہاں <b>پیسٹ</b> دبائیں۔</p>
     <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
@@ -413,6 +416,7 @@ html{overscroll-behavior-y:contain}
   </div>
   <p class="sec-h" data-i18n="setAbout">معلومات</p>
   <div class="set-card">
+    <button type="button" class="row link" id="setInstall" hidden><span data-i18n="installTitle">ایپ انسٹال کریں</span><span class="val">⬇</span></button>
     <button type="button" class="row link" id="shareApp"><span data-i18n="shareApp">AllVid شیئر کریں</span><span class="val">↗</span></button>
     <div class="row"><span data-i18n="aboutText">AllVid</span></div>
     <div class="row"><span>Version</span><span class="val" id="appVer" dir="ltr"></span></div>
@@ -1129,7 +1133,8 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   const ios=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
   const inApp=/FBAN|FBAV|Instagram|Line\/|WhatsApp|TikTok|musical_ly|Snapchat|; wv\)/i.test(ua);
   let deferred=null;
-  if(!standalone&&!NATIVE) inst.hidden=false;
+  if(!standalone&&!NATIVE){inst.hidden=false;$("setInstall").hidden=false;}
+  $("setInstall").onclick=()=>{show("home");setTimeout(()=>{inst.hidden=false;instBtn.click();},80);};
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;});
   const steps=l=>{hint.innerHTML='<ol class="steps">'+l.map(x=>'<li>'+x+'</li>').join("")+'</ol>';instBtn.hidden=true;};
   instBtn.addEventListener("click",async()=>{
@@ -1138,7 +1143,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     if(ios) return steps(t("stepsIos").split("|"));
     steps(t("stepsChrome").split("|"));
   });
-  window.addEventListener("appinstalled",()=>{inst.hidden=true;});
+  window.addEventListener("appinstalled",()=>{inst.hidden=true;$("setInstall").hidden=true;});
   $("installClose").onclick=()=>{inst.hidden=true;};
 
   // --- Language ---
@@ -1435,7 +1440,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.19-b";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.24-a";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
