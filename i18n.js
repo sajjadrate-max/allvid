@@ -536,6 +536,18 @@ const STR={
 "ms": "Muat turun terhenti",
 "zh": "下载已停止"
 },
+"apkTitle": {
+"ur": "AllVid اینڈرائیڈ ایپ (APK) ڈاؤن لوڈ کریں",
+"en": "Get the AllVid Android app (APK)",
+"ar": "حمّل تطبيق AllVid لأندرويد (APK)",
+"hi": "AllVid एंड्रॉइड ऐप (APK) डाउनलोड करें"
+},
+"apkHint": {
+"ur": "اس میں ڈاؤن لوڈ ایپ یا سکرین بند ہونے پر بھی مکمل ہوتا رہتا ہے",
+"en": "Downloads keep going even with the app closed or the screen off",
+"ar": "يستمر التنزيل حتى مع إغلاق التطبيق أو الشاشة",
+"hi": "ऐप या स्क्रीन बंद होने पर भी डाउनलोड चलता रहता है"
+},
 "keepOpen": {
 "ur": "ڈاؤن لوڈ کے دوران ایپ کھلی رکھیں۔ اگر آپ کسی اور ایپ پر چلے گئے یا سکرین بند ہو گئی تو ڈاؤن لوڈ وہیں رک جائے گا، اور واپس آتے ہی خودبخود وہیں سے دوبارہ شروع ہو جائے گا۔",
 "en": "Keep the app open while downloading. If you switch to another app or the screen turns off, the download pauses where it is and continues by itself from the same point when you come back.",

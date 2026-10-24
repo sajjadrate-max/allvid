@@ -17,7 +17,7 @@ import java.util.Iterator;
 
 /**
  * Hands downloads to Android's DownloadManager (notification with progress, file in
- * Downloads/VideoDownloader) and passes links shared to the app ("Share" -> this app).
+ * Downloads/AllVid) and passes links shared to the app ("Share" -> this app).
  */
 @CapacitorPlugin(name = "Downloader")
 public class DownloaderPlugin extends Plugin {
@@ -44,7 +44,7 @@ public class DownloaderPlugin extends Plugin {
             }
             req.setTitle(name);
             req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "VideoDownloader/" + name);
+            req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "AllVid/" + name);
             long id = manager().enqueue(req);
             JSObject ret = new JSObject();
             ret.put("id", id);

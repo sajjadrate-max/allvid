@@ -1,8 +1,8 @@
 name: Android APK
 
 # Builds the Android app (Capacitor wrapper around index.html + lib/resolve.js)
-# and publishes it as the "latest" release: .../releases/download/latest/VideoDownloader.apk
-# Manual only (Actions tab -> Run workflow); the site no longer links the APK.
+# and publishes it as the "latest" release: .../releases/download/latest/AllVid.apk
+# Manual only (Actions tab -> Run workflow); the site links it for Android phones.
 on:
   workflow_dispatch:
 
@@ -45,14 +45,14 @@ jobs:
           "$BT/zipalign" -p -f 4 app/build/outputs/apk/release/app-release-unsigned.apk aligned.apk
           # Fixed key so updates install over the old version (public sideload app; key kept in the repo).
           "$BT/apksigner" sign --ks ../native/release.keystore --ks-pass pass:videodl-sideload --key-pass pass:videodl-sideload \
-            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out ../../VideoDownloader.apk aligned.apk
-          "$BT/apksigner" verify --verbose --print-certs ../../VideoDownloader.apk
+            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out ../../AllVid.apk aligned.apk
+          "$BT/apksigner" verify --verbose --print-certs ../../AllVid.apk
 
       - name: Publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest VideoDownloader.apk \
-            --title "Video Downloader for Android" \
-            --notes "Install VideoDownloader.apk on Android. Built from ${GITHUB_SHA::7}."
+          gh release create latest AllVid.apk \
+            --title "AllVid for Android" \
+            --notes "Install AllVid.apk on Android. Built from ${GITHUB_SHA::7}."

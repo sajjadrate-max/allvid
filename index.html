@@ -67,6 +67,9 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 
 /* install banner */
 .home>.install{margin:2px 0 14px}
+.apk-get{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--fg);text-decoration:none}
+.apk-get[hidden]{display:none}
+.apk-get .ai{font-size:1.6rem}.apk-get .tx{flex:1;display:flex;flex-direction:column;line-height:1.35}.apk-get small{opacity:.8}.apk-get .go2{font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:6px 12px}
 .install{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--accent);border-radius:14px;padding:10px 12px}
 .install[hidden]{display:none}
 .install img{width:42px;height:42px;border-radius:10px;flex:none}
@@ -322,6 +325,8 @@ html{overscroll-behavior-y:contain}
     <button class="x" type="button" id="installClose" data-i18n-aria="close" aria-label="بند کریں">×</button>
   </div>
 
+  <a class="apk-get" id="apkGet" href="https://github.com/sajjadrate-max/allvid/releases/download/latest/AllVid.apk" hidden><span class="ai">🤖</span><span class="tx"><b data-i18n="apkTitle">Android ایپ (APK)</b><small data-i18n="apkHint">اس میں ڈاؤن لوڈ ایپ بند ہونے یا سکرین بند ہونے پر بھی چلتا رہتا ہے</small></span><span class="go2">⬇</span></a>
+
   <section class="hpane" data-pane="search">
     <div class="hero">
       <div class="deco" aria-hidden="true"><i style="background:#1877F2;top:6%;left:6%">f</i><i style="background:#FF0000;top:2%;left:42%">▶</i><i style="background:#111;top:10%;right:4%">♪</i><i style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF);top:46%;left:18%">◎</i><i style="background:#25D366;top:40%;right:22%">✆</i><i style="background:#000;top:58%;right:-2%">𝕏</i></div>
@@ -416,6 +421,7 @@ html{overscroll-behavior-y:contain}
   </div>
   <p class="sec-h" data-i18n="setAbout">معلومات</p>
   <div class="set-card">
+    <a class="row link" id="setApk" href="https://github.com/sajjadrate-max/allvid/releases/download/latest/AllVid.apk" hidden><span data-i18n="apkTitle">Android ایپ (APK)</span><span class="val">⬇</span></a>
     <button type="button" class="row link" id="setInstall" hidden><span data-i18n="installTitle">ایپ انسٹال کریں</span><span class="val">⬇</span></button>
     <button type="button" class="row link" id="shareApp"><span data-i18n="shareApp">AllVid شیئر کریں</span><span class="val">↗</span></button>
     <div class="row"><span data-i18n="aboutText">AllVid</span></div>
@@ -603,7 +609,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       const total=r.size||r.est||0;
       const pct=total?Math.min(99,Math.round(r.got/total*100)):0;
       const site=SITE[r.site||siteOf(r)]||"";
-      const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/VideoDownloader":r.status==="phone"?(r.size?mb(r.size)+" · ":"")+t("inPhoneDl"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
+      const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/AllVid":r.status==="phone"?(r.size?mb(r.size)+" · ":"")+t("inPhoneDl"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
 :r.status==="fail"?t("stopped")+" "+(/only allowed for videos up to (\d+) hours?/i.test(r.why||"")?"— "+t("tooLong").replace("{h}",RegExp.$1):r.why?"("+r.why+")":"")
         :r.status==="queued"?t("queued")+(r.got?" · "+(total?pct+"% · ":"")+mb(r.got):"")
         :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
@@ -897,12 +903,18 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     }
     // Android app: DownloadManager does the work; poll it for progress.
     const MEDIA_UA="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36";
+    // Android app: the phone's own download manager fetches the file, so it keeps going with
+    // the app closed, the screen off or another app open. YouTube files are made by the
+    // converter first (the app waits for that), then fetched through our API.
     async function nativeStart(r){
       r.status="busy";r.got=0;r.why="";soon();
-      const headers={"User-Agent":MEDIA_UA};
-      if(/tikwm\.com/.test(r.direct||""))headers.Referer="https://www.tikwm.com/";
-      try{const res=await Downloader.enqueue({url:r.direct,name:nameOf(r),headers});r.dlId=res.id;await put(r);poll(r);}
-      catch(e){r.status="fail";r.why="dm:"+String(e&&e.message||e);await put(r);draw();}
+      try{
+        if(r.prep){await put(r);await prepare(r);}
+        const url=r.conv||!r.direct?abs(r.src):r.direct;
+        const headers={"User-Agent":MEDIA_UA};
+        if(/tikwm\.com/.test(url))headers.Referer="https://www.tikwm.com/";
+        const res=await Downloader.enqueue({url,name:nameOf(r),headers});r.dlId=res.id;await put(r);poll(r);
+      }catch(e){r.status="fail";r.why=(r.prep?"":"dm:")+String(e&&e.message||e);await put(r);draw();}
     }
     async function poll(r){
       if(!r.dlId||r.status!=="busy")return;
@@ -947,7 +959,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
         try{const f=new File([r.blob],nameOf(r),{type:r.blob.type||"video/mp4"});await navigator.share({files:[f],title:r.title||""});}
         catch(e){if(e&&e.name!=="AbortError")toast(t("cantShare"));}
       }
-      else if(act==="retry"){if(NATIVE)nativeStart(r);else if(r.conv&&r.jobSrc){r.cvTries=0;again(r);}else{r.why="";resume(r);}}   // YouTube: a fresh converter link
+      else if(act==="retry"){if(NATIVE){if(r.conv&&r.jobSrc)Object.assign(r,{src:r.jobSrc,prep:true,conv:false,job:"",direct:""});nativeStart(r);}else if(r.conv&&r.jobSrc){r.cvTries=0;again(r);}else{r.why="";resume(r);}}   // YouTube: a fresh converter link
       else if(act==="pause")pause(r);
       else if(act==="resume")resume(r);
       else if(act==="del"){r._gone=true;if(r._ctl)r._ctl.abort();if(r.status==="bg")bgStop(r);recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}await tx("readwrite",s=>s.delete(r.id));draw();}
@@ -1141,6 +1153,8 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   const inApp=/FBAN|FBAV|Instagram|Line\/|WhatsApp|TikTok|musical_ly|Snapchat|; wv\)/i.test(ua);
   let deferred=null;
   if(!standalone&&!NATIVE){inst.hidden=false;$("setInstall").hidden=false;}
+  // Android phones: offer the app, whose downloads go on with the app or screen off.
+  if(!NATIVE&&/Android/i.test(navigator.userAgent)){$("apkGet").hidden=false;$("setApk").hidden=false;}
   $("setInstall").onclick=()=>{show("home");setTimeout(()=>{inst.hidden=false;instBtn.click();},80);};
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;});
   const steps=l=>{hint.innerHTML='<ol class="steps">'+l.map(x=>'<li>'+x+'</li>').join("")+'</ol>';instBtn.hidden=true;};
@@ -1461,7 +1475,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.24-d";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.24-f";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

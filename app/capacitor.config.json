@@ -1,8 +1,14 @@
 {
   "appId": "com.sajjadrate.videodl",
-  "appName": "ڈاؤن لوڈر",
+  "appName": "AllVid",
   "webDir": "www",
   "plugins": {
-    "CapacitorHttp": { "enabled": true }
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  },
+  "server": {
+    "url": "https://allvid.org",
+    "androidScheme": "https"
   }
 }

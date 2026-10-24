@@ -6,6 +6,7 @@
 // (MP3 and enlarged copies are made by api/convert.js.)
 
 import { Readable } from 'node:stream';
+import { createHash } from 'node:crypto';
 import { UserError, allowedMedia, mediaHeaders, resolve, addSizes, ytJob, ytFast, ytSearch, tiktokFeed, ytRelated } from '../lib/resolve.js';
 
 export const config = { maxDuration: 300 };
@@ -48,6 +49,8 @@ async function stream(req, res) {
   if (!up.ok || !up.body) { res.status(502).json({ error: 'fetch.fail', detail: 'up' + up.status }); return; }
   if (isPage(up)) { try { await up.body.cancel(); } catch {} res.status(502).json({ error: 'fetch.fail', detail: 'page' + (pageInfo ? ':' + pageInfo : '') }); return; }
   const name = String(req.query.name || 'video.mp4');
+  // A steady ETag: Android's download manager only continues a broken download when it has one.
+  const etag = up.headers.get('etag') || '"' + createHash('sha1').update(file).digest('hex').slice(0, 20) + '"';
   // A source that ignores Range (e.g. a converter's file) answers with the whole file: skip the
   // part the phone already has here, so a paused or cut download still continues, not restarts.
   const m = h.Range && /^bytes=(\d+)-(\d*)$/.exec(h.Range);
@@ -60,6 +63,7 @@ async function stream(req, res) {
     if (to !== Infinity) { res.setHeader('Content-Length', String(to - from + 1)); res.setHeader('Content-Range', 'bytes ' + from + '-' + to + '/' + (all || '*')); }
     if (all) res.setHeader('X-Size', String(all));
     res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('ETag', etag);
     res.setHeader('Content-Disposition', attachment(name));
     let pos = 0;
     const rd = up.body.getReader();
@@ -84,6 +88,7 @@ async function stream(req, res) {
   const cr = up.headers.get('content-range');
   if (cr && up.status === 206) res.setHeader('Content-Range', cr);
   res.setHeader('Accept-Ranges', 'bytes');
+  res.setHeader('ETag', etag);
   res.setHeader('Content-Disposition', attachment(name));
   res.setHeader('Cache-Control', 'private, max-age=3600');
   Readable.fromWeb(up.body).pipe(res);
