@@ -506,7 +506,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   };
   try{if(!history.state||!history.state.vdl)history.replaceState({vdl:"home"},"");}catch(e){}
   function hideSheet(){root.classList.remove("open");}
-  function openSheet(){root.classList.add("open");$("toast").classList.remove("on");NAV.push("sheet");}
+  function openSheet(){const was=root.classList.contains("open");root.classList.add("open");$("toast").classList.remove("on");if(!was)NAV.push("sheet");}   // drawn again while open: no new history step
   function closeSheet(){if(root.classList.contains("open"))NAV.pop("sheet",hideSheet);}
   $("scrim").onclick=closeSheet;
   document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet();});
@@ -1340,9 +1340,23 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     const job=(f,ext)=>abs("/api/download?yt="+f+"&v="+id+"&name="+nm(ext));
     if(mp3)nextPref="mp3";
     link.value="https://youtu.be/"+id;mark();last=link.value;
-    render({title:title||"YouTube video",thumb:"https://i.ytimg.com/vi/"+id+"/hqdefault.jpg",duration:String(dur||"").split(":").reduce((a,x)=>a*60+(+x||0),0),items:[
+    const base={title:title||"YouTube video",thumb:"https://i.ytimg.com/vi/"+id+"/hqdefault.jpg",duration:String(dur||"").split(":").reduce((a,x)=>a*60+(+x||0),0)};
+    const items=[
       {type:"video",hd:true,label:"1080p",url:job("1080","mp4"),prep:true},{type:"video",label:"720p",url:job("720","mp4"),prep:true},
-      {type:"video",label:"360p",url:job("360","mp4"),prep:true},{type:"audio",label:"MP3",url:job("mp3","mp3"),prep:true}]});
+      {type:"video",label:"360p",url:job("360","mp4"),prep:true},{type:"audio",label:"MP3",url:job("mp3","mp3"),prep:true}];
+    render({...base,items});
+    // Ready-made files (marked ⚡): start at once and have no length limit. They arrive a moment
+    // later; the sheet is drawn again with them if it still shows this video and nothing started.
+    fetch(abs("/api/download?ytfast="+id)).then(x=>x.json()).then(f=>{
+      const fast=(f&&f.items)||[];
+      if(!fast.length||link.value!=="https://youtu.be/"+id||!root.classList.contains("open")||!$("dl")||$("dl").disabled)return;
+      const sel=sheet.querySelector("input[name=fmt]:checked"),was=sel&&sel.closest("label").querySelector(".n").textContent;
+      const fi=fast.map(i=>({type:i.type,label:i.label+" ⚡",size:i.size||0,url:abs("/api/download?file="+encodeURIComponent(i.url)+"&sig="+i.sig+"&name="+nm(i.type==="audio"?"m4a":"mp4"))}));
+      const keep=items.filter(i=>!(i.type==="video"&&fi.some(x=>x.type==="video"&&parseInt(x.label,10)===parseInt(i.label,10))));
+      if(mp3)nextPref="mp3";
+      render({...base,duration:base.duration||f.duration||0,items:[...keep,...fi]});
+      if(was)sheet.querySelectorAll("label.opt").forEach(l=>{if(l.querySelector(".n").textContent===was)l.querySelector("input").checked=true;});
+    }).catch(()=>{});
   }
   // YouTube's player refuses to start without a Referer (the page sends none, for the CDNs),
   // so its frame sends the site's address; ▶ opens YouTube for videos that block embedding.
@@ -1445,7 +1459,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.24-b";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.24-c";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
