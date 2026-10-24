@@ -66,7 +66,6 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 @keyframes r{to{transform:rotate(360deg)}}
 
 /* install banner */
-.home>.install{margin:2px 0 14px}
 .apk-get{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--fg);text-decoration:none}
 .apk-get[hidden]{display:none}
 .apk-get .ai{font-size:1.6rem}.apk-get .tx{flex:1;display:flex;flex-direction:column;line-height:1.35}.apk-get small{opacity:.8}.apk-get .go2{font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:6px 12px}
@@ -317,13 +316,6 @@ html{overscroll-behavior-y:contain}
     <button type="button" role="tab" data-h="more" aria-selected="false">More</button>
   </div>
 
-  <!-- On every home tab (the app now opens on YouTube), not only on Search. -->
-  <div class="install" id="install" hidden>
-    <img src="icon-192.png" alt="">
-    <div class="txt"><b data-i18n="installTitle">ایپ انسٹال کریں</b><small id="installHint" data-i18n="installHint">ہوم اسکرین پر لگائیں، ایک ٹچ میں کھولیں۔</small></div>
-    <button class="btn" type="button" id="installBtn" data-i18n="installBtn">انسٹال</button>
-    <button class="x" type="button" id="installClose" data-i18n-aria="close" aria-label="بند کریں">×</button>
-  </div>
 
   <a class="apk-get" id="apkGet" href="https://github.com/sajjadrate-max/allvid/releases/download/latest/AllVid.apk" hidden><span class="ai">🤖</span><span class="tx"><b data-i18n="apkTitle">Android ایپ (APK)</b><small data-i18n="apkHint">اس میں ڈاؤن لوڈ ایپ بند ہونے یا سکرین بند ہونے پر بھی چلتا رہتا ہے</small></span><span class="go2">⬇</span></a>
 
@@ -422,7 +414,6 @@ html{overscroll-behavior-y:contain}
   <p class="sec-h" data-i18n="setAbout">معلومات</p>
   <div class="set-card">
     <a class="row link" id="setApk" href="https://github.com/sajjadrate-max/allvid/releases/download/latest/AllVid.apk" hidden><span data-i18n="apkTitle">Android ایپ (APK)</span><span class="val">⬇</span></a>
-    <button type="button" class="row link" id="setInstall" hidden><span data-i18n="installTitle">ایپ انسٹال کریں</span><span class="val">⬇</span></button>
     <button type="button" class="row link" id="shareApp"><span data-i18n="shareApp">AllVid شیئر کریں</span><span class="val">↗</span></button>
     <div class="row"><span data-i18n="aboutText">AllVid</span></div>
     <div class="row"><span>Version</span><span class="val" id="appVer" dir="ltr"></span></div>
@@ -497,7 +488,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const findUrl=v=>{const m=String(v||"").match(/https?:\/\/\S+/);return m?m[0]:"";};
   const platform=v=>{for(const [n,r] of P) if(r.test(v)) return n; return /^https?:\/\//i.test(v)?"web":"";};
-  const abs=u=>/^https?:/.test(u)?u:base+u;
+  const abs=u=>/^https?:/.test(u)?u:(base||location.origin)+u;   // always a full address (the Android download manager needs one)
   const mb=n=>n?(n/1048576).toFixed(1)+" MB":"";
   function mark(){const hit=platform(link.value);document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c.dataset.p===hit));}
   link.addEventListener("input",mark);
@@ -1146,26 +1137,8 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   // Opened from a download notification: go straight to "my files".
   if(location.hash==="#files"){history.replaceState({vdl:"home"},"",location.pathname);show("files");}
   try{navigator.serviceWorker.addEventListener("message",e=>{if(e.data==="vdl-files")show("files");});}catch(e){}
-  const inst=$("install"),instBtn=$("installBtn"),hint=$("installHint");
-  const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
-  const ua=navigator.userAgent;
-  const ios=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
-  const inApp=/FBAN|FBAV|Instagram|Line\/|WhatsApp|TikTok|musical_ly|Snapchat|; wv\)/i.test(ua);
-  let deferred=null;
-  if(!standalone&&!NATIVE){inst.hidden=false;$("setInstall").hidden=false;}
   // Android phones: offer the app, whose downloads go on with the app or screen off.
   if(!NATIVE&&/Android/i.test(navigator.userAgent)){$("apkGet").hidden=false;$("setApk").hidden=false;}
-  $("setInstall").onclick=()=>{show("home");setTimeout(()=>{inst.hidden=false;instBtn.click();},80);};
-  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;});
-  const steps=l=>{hint.innerHTML='<ol class="steps">'+l.map(x=>'<li>'+x+'</li>').join("")+'</ol>';instBtn.hidden=true;};
-  instBtn.addEventListener("click",async()=>{
-    if(deferred){deferred.prompt();const c=await deferred.userChoice;deferred=null;if(c.outcome==="accepted")inst.hidden=true;return;}
-    if(inApp) return steps(t("stepsInApp").split("|"));
-    if(ios) return steps(t("stepsIos").split("|"));
-    steps(t("stepsChrome").split("|"));
-  });
-  window.addEventListener("appinstalled",()=>{inst.hidden=true;$("setInstall").hidden=true;});
-  $("installClose").onclick=()=>{inst.hidden=true;};
 
   // --- Language ---
   const langBtn=$("langBtn"),langPanel=$("langPanel"),langSearch=$("langSearch"),langList=$("langList");
@@ -1180,7 +1153,6 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     const cur=I18N.LANGS.find(l=>l.code===I18N.lang);$("langName").textContent=cur?shortName(cur.name):"Language";
     langBtn.setAttribute("aria-label",t("language"));
     $("setLangName").textContent=$("langName").textContent;
-    instBtn.hidden=false;
     msg.innerHTML="";closeSheet();DL.redraw();
   }
   function buildLangs(q){
@@ -1475,7 +1447,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.24-f";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-a";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
