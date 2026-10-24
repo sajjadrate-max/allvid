@@ -548,6 +548,12 @@ const STR={
 "ar": "يستمر التنزيل حتى مع إغلاق التطبيق أو الشاشة",
 "hi": "ऐप या स्क्रीन बंद होने पर भी डाउनलोड चलता रहता है"
 },
+"dmWaiting": {
+"ur": "رکا ہوا، فون خود دوبارہ کوشش کر رہا ہے",
+"en": "Waiting, the phone retries by itself",
+"ar": "متوقف، سيعيد الهاتف المحاولة تلقائيًا",
+"hi": "रुका हुआ, फ़ोन खुद दोबारा कोशिश कर रहा है"
+},
 "keepOpen": {
 "ur": "ڈاؤن لوڈ کے دوران ایپ کھلی رکھیں۔ اگر آپ کسی اور ایپ پر چلے گئے یا سکرین بند ہو گئی تو ڈاؤن لوڈ وہیں رک جائے گا، اور واپس آتے ہی خودبخود وہیں سے دوبارہ شروع ہو جائے گا۔",
 "en": "Keep the app open while downloading. If you switch to another app or the screen turns off, the download pauses where it is and continues by itself from the same point when you come back.",

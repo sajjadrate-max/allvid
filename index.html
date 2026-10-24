@@ -605,7 +605,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
         :r.status==="queued"?t("queued")+(r.got?" · "+(total?pct+"% · ":"")+mb(r.got):"")
         :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
         :r.prep?"⏳ "+t("preparing")+" "+(r.prepPct||0)+"%"
-        :(total?pct+"% · "+(mb(r.got)||"0 MB")+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
+        :(r.dmWait?"⏸ "+t("dmWaiting")+" · ":"")+(total?pct+"% · "+(mb(r.got)||"0 MB")+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
       // When it was downloaded: "2 hours ago" today, else the date and time.
       const when=(r.status==="done"||r.status==="phone")&&r.created?" · "+whenOf(r.created):"";
       return {meta:meta+when,pct,total,site};
@@ -618,7 +618,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
         '<div class="bd"><div class="tt" dir="auto">'+esc(r.title&&!/^(facebook|instagram|tiktok|x)( video)?$/i.test(r.title)?r.title:(site||"")+" "+t("video"))+'</div><div class="mt">'+esc(meta)+'</div>'+
         (/busy|bg|paused|queued/.test(r.status)?'<div class="bar'+(r.prep&&r.status!=="paused"?' prep':RUN(r)?'':' idle')+'"><i style="width:'+(r.prep?r.prepPct||0:total?pct:(RUN(r)?8:0))+'%"></i></div>':'')+
         '<div class="acts">'+(playable?'<button class="pri" type="button" data-act="play">'+t("watch")+'</button>'+(r.src&&r.src.charAt(0)==="?"||NATIVE?"":'<button type="button" data-act="save">'+(r.status==="phone"?t("redownload"):t("saveToPhone"))+'</button>')+(r.blob&&canShareFiles?'<button type="button" data-act="share">↗ '+t("share")+'</button>':''):'')+
-        (RUN(r)||r.status==="queued"?'<button type="button" data-act="pause">'+t("pause")+'</button>':'')+
+        ((RUN(r)||r.status==="queued")&&!(NATIVE&&r.dlId)?'<button type="button" data-act="pause">'+t("pause")+'</button>':'')+
         (r.status==="paused"?'<button class="pri" type="button" data-act="resume">'+t("resume")+'</button>':'')+
         (r.status==="fail"?'<button class="pri" type="button" data-act="retry">'+t("retry")+'</button>':'')+
         '<button type="button" data-act="del">'+t("remove")+'</button></div></div></li>';
@@ -911,6 +911,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       if(!r.dlId||r.status!=="busy")return;
       let st;try{st=await Downloader.status({id:r.dlId});}catch(e){st={status:"missing"};}
       if(st.total>0)r.size=st.total;r.got=st.got||0;
+      r.dmWait=st.status==="paused"||st.status==="pending";   // the phone waits for the line and retries by itself
       if(st.status==="done"){r.status="done";r.local=st.uri;await put(r);draw();toast(t("toastDoneApp"));return;}
       if(st.status==="failed"||st.status==="missing"){r.status="fail";r.why="dm:"+(st.reason||st.status);await put(r);draw();return;}
       soon();setTimeout(()=>poll(r),1000);
@@ -1447,7 +1448,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-a";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-b";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
