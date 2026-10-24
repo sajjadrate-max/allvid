@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Understanding video resolution vs bitrate · AllVid</title>
+<meta name="description" content="Why a 1080p video can look worse than a 720p one: how resolution and bitrate work together to decide video quality and file size, in plain language.">
+<link rel="canonical" href="https://allvid.org/articles/resolution-vs-bitrate.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>Understanding video resolution vs bitrate</h1>
+<p class="meta">Published October 25, 2026 · 4 min read</p>
+<p class="lead">Most people judge video quality by one number: 360p, 720p, 1080p. But have you ever noticed a 1080p video that looked blocky, or a 720p video that looked surprisingly crisp? That is because resolution is only half the story. The other half is bitrate.</p>
+
+<h2>Resolution: how many pixels</h2>
+<p>Resolution is the size of the picture in pixels. A 1080p video is about 1920 by 1080 pixels (or the other way round for vertical video). More pixels can show finer detail, such as individual strands of hair or small text. Our guide to <a href="/articles/video-quality-explained.html">360p vs 720p vs 1080p</a> covers the common sizes.</p>
+<p>Think of resolution as the size of a canvas. A bigger canvas has room for more detail, but it does not guarantee the painting will be detailed.</p>
+
+<h2>Bitrate: how much data describes them</h2>
+<p>Bitrate is how much data the video uses per second, usually measured in megabits per second (Mbps) or kilobits per second (kbps). Because video is compressed, the bitrate decides how much information is available to describe all those pixels in each frame.</p>
+<p>If resolution is the size of the canvas, bitrate is the amount of paint. A big canvas with too little paint looks patchy. A smaller canvas with plenty of paint can look rich and detailed.</p>
+
+<h2>How the two work together</h2>
+<ul>
+<li><strong>High resolution, high bitrate:</strong> sharp and clean. The best quality, and the biggest files.</li>
+<li><strong>High resolution, low bitrate:</strong> the picture has lots of pixels but not enough data to fill them properly. You see blockiness, smearing and banding, especially in motion.</li>
+<li><strong>Lower resolution, good bitrate:</strong> less fine detail, but clean and stable. Often looks better on a phone than a starved high-resolution video.</li>
+<li><strong>Low resolution, low bitrate:</strong> small files, but soft and blocky.</li>
+</ul>
+
+<h2>Why bitrate needs change with content</h2>
+<p>The bitrate a video needs depends on what is happening on screen. Compression works by storing what changes between frames, so:</p>
+<ul>
+<li>a person talking in front of a plain wall needs relatively little bitrate;</li>
+<li>a fast sports match, a concert with flashing lights, or leaves blowing in the wind needs much more; and</li>
+<li>dark scenes and smooth gradients, like a sunset, can show banding if the bitrate is too low.</li>
+</ul>
+<p>That is why two 1080p files of the same length can be very different sizes. Our article on <a href="/articles/video-compression-explained.html">how compression works</a> explains the details.</p>
+
+<h2>Codecs change the maths</h2>
+<p>Newer codecs such as HEVC (H.265), VP9 and AV1 use bits more efficiently than the older H.264. A video using a newer codec can look as good as an H.264 video at a noticeably lower bitrate. So bitrate numbers are only directly comparable between videos that use the same codec. See <a href="/articles/video-formats-mp4-webm-mov.html">video formats explained</a> for how codecs and file types fit together.</p>
+
+<h2>Frame rate adds to the picture</h2>
+<p>Frame rate, the number of frames per second, also affects how much bitrate is needed. A 60 frames-per-second video has twice as many frames to describe as a 30 frames-per-second one, so it needs more data to look equally clean, although the frames are similar and compress well.</p>
+
+<h2>What this means when you save a video</h2>
+<ul>
+<li><strong>You cannot see bitrate in the size list,</strong> but the file size is a good clue. For the same length, a larger file usually means more data per second.</li>
+<li><strong>Saved copies match the platform's version.</strong> Social sites choose the bitrate when they process uploads. Saving the 1080p option gives you their 1080p version, not the original from the camera.</li>
+<li><strong>Higher is not always noticeably better.</strong> On a phone screen, a clean 720p file can look as good as 1080p. If storage or data is tight, 720p is often the smart choice.</li>
+<li><strong>For keepsakes, go high.</strong> If you are saving your own video to keep for years or to watch on a TV, choose the highest size available.</li>
+</ul>
+
+<h2>Checking a file's bitrate</h2>
+<p>If you are curious, many media player apps and computer programs can show file details, including resolution, codec, frame rate and bitrate. You can also estimate the average bitrate: divide the file size by the length. For example, a 60 MB file that lasts two minutes uses about 0.5 MB per second, which is roughly 4 Mbps.</p>
+
+<h2>A note on upscaling</h2>
+<p>Some videos are labelled with a higher resolution than their real detail. If a low-quality video is upscaled to 1080p, it has more pixels but no extra detail; it simply looks like a blurry picture made larger, with a bigger file to match. If the 1080p option of a video does not look clearly better than 720p, the smaller one will save you space.</p>
+
+<h2>The short version</h2>
+<p>Resolution tells you how big the picture is. Bitrate tells you how much information fills it. Good quality needs enough of both for the kind of video you are watching. When in doubt, trust your eyes and the file size, not just the "p" number.</p>
+<aside class="more" aria-label="More articles">
+<h2>More articles</h2>
+<ul>
+<li><a href="/articles/video-quality-explained.html">360p vs 720p vs 1080p: which size should you choose?</a></li>
+<li><a href="/articles/video-compression-explained.html">How video compression works, in plain words</a></li>
+<li><a href="/articles/video-formats-mp4-webm-mov.html">Video file formats explained: MP4, WebM and MOV</a></li>
+</ul>
+<p><a href="/articles.html">See all articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html" aria-current="true">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

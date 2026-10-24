@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organize your phone&#x27;s Downloads folder · AllVid</title>
+<meta name="description" content="A simple system for sorting, renaming and cleaning up the Downloads folder on your phone so you can always find the videos and files you saved.">
+<link rel="canonical" href="https://allvid.org/articles/organize-downloads-folder.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>Organize your phone&#x27;s Downloads folder</h1>
+<p class="meta">Published October 25, 2026 · 3 min read</p>
+<p class="lead">Almost everything you save from the internet lands in the same place: the Downloads folder. Over months it fills with videos, PDFs, tickets, screenshots and installers, many with names like "file(3).mp4". Finding anything becomes a chore, and storage slowly disappears. A simple system takes a few minutes to set up and saves time every week.</p>
+
+<h2>Find your Downloads folder</h2>
+<ul>
+<li><strong>Android:</strong> open Files by Google or your phone's file manager (on Samsung phones it is called My Files) and tap Downloads. Files saved by your browser and by the phone's download manager, which the AllVid Android app uses, normally end up here.</li>
+<li><strong>iPhone:</strong> open the Files app, tap Browse, then On My iPhone or iCloud Drive, and look for the Downloads folder. Safari's download location can be changed under Settings, Apps, Safari, Downloads.</li>
+</ul>
+<p>In AllVid, <strong>My files</strong> shows what you saved with AllVid and when each file was downloaded, which is a handy starting point for sorting recent saves.</p>
+
+<h2>Step 1: Sort before you delete</h2>
+<p>Open Downloads and sort the list by <strong>size</strong>. Large files at the top are usually videos and installers, and they are where most of the space goes. Then sort by <strong>date</strong> to see the oldest files. Anything you have not opened in months is a good candidate for review.</p>
+
+<h2>Step 2: Delete the obvious clutter</h2>
+<ul>
+<li>Installer files (such as .apk files on Android) for apps you have already installed.</li>
+<li>Duplicate downloads, often with (1), (2) or similar added to the name.</li>
+<li>Videos you have already watched and do not want to keep.</li>
+<li>Expired tickets, old boarding passes and one-time documents.</li>
+<li>Partly downloaded files, which may have names ending in .tmp, .part or .crdownload.</li>
+</ul>
+<p>On Android, deleted files may go into a Trash or Recycle bin in the Files app for a while. Empty it to actually free the space.</p>
+
+<h2>Step 3: Create a few simple folders</h2>
+<p>The best system is one you will actually use, so keep it short. For example:</p>
+<ul>
+<li><strong>Videos – keep</strong> for your own clips and anything you want long term.</li>
+<li><strong>Videos – to watch</strong> for things you plan to watch soon and then delete.</li>
+<li><strong>Audio</strong> for MP3 and M4A files such as your own recordings or lectures you are allowed to keep.</li>
+<li><strong>Documents</strong> for PDFs, receipts and forms.</li>
+</ul>
+<p>In most file managers you can tap the three-dot menu and choose New folder, then select files and use Move to place them in it. Folders you create inside Downloads stay easy to reach.</p>
+
+<h2>Step 4: Give important files clear names</h2>
+<p>A good file name tells you what is inside without opening it. A pattern many people find useful is the date first, then a short description:</p>
+<ul>
+<li>2026-06-14 beach day.mp4</li>
+<li>2026-09-02 shop launch reel.mp4</li>
+<li>2026-10-10 guitar practice.m4a</li>
+</ul>
+<p>Putting the year, month and day in that order means files sort themselves into date order automatically. Keep names short, avoid unusual symbols, and do not change the ending (such as .mp4), or the phone may not know how to open the file.</p>
+
+<h2>Step 5: Back up what matters</h2>
+<p>Your Downloads folder is not a safe long-term home. If your phone is lost, broken or reset, everything in it can disappear. Once a month, copy your "keep" folder to a computer or cloud storage. Our guide to <a href="/articles/back-up-videos-computer-cloud.html">backing up your videos</a> explains the options.</p>
+
+<h2>Step 6: Make it a habit</h2>
+<p>A tidy folder stays tidy only with a little regular attention. Try this five-minute routine once a month:</p>
+<ol>
+<li>Sort by size and delete large files you no longer need.</li>
+<li>Move new keepers into the right folder and rename them.</li>
+<li>Empty the trash in your Files app.</li>
+<li>Remove watched videos from AllVid's My files, or use the option in Settings to delete all files when you want a fresh start.</li>
+</ol>
+
+<h2>Tips for fewer files in the first place</h2>
+<ul>
+<li><strong>Choose the right size.</strong> If you will only watch on your phone, 720p often looks just as good as 1080p and uses far less space. See <a href="/articles/video-quality-explained.html">360p vs 720p vs 1080p</a>.</li>
+<li><strong>Save audio only when that is all you need.</strong> A lecture as audio is much smaller than the video.</li>
+<li><strong>Delete as you go.</strong> When you finish watching something you do not want to keep, remove it straight away.</li>
+</ul>
+
+<h2>When storage is still tight</h2>
+<p>If your phone is nearly full even after a clean-up, the space may be used by apps, chat media or your photo library rather than Downloads. Our guide on <a href="/articles/free-up-phone-storage.html">freeing up phone storage</a> covers those areas step by step.</p>
+<aside class="more" aria-label="More articles">
+<h2>More articles</h2>
+<ul>
+<li><a href="/articles/free-up-phone-storage.html">Free up space on your phone for videos</a></li>
+<li><a href="/articles/watch-videos-offline-android.html">How to watch saved videos offline on Android</a></li>
+<li><a href="/articles/back-up-videos-computer-cloud.html">Back up your videos to a computer or cloud storage</a></li>
+</ul>
+<p><a href="/articles.html">See all articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html" aria-current="true">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

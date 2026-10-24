@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why some downloads stop, and how to get them going again · AllVid</title>
+<meta name="description" content="The common reasons a video download stops partway on a phone, from weak signal to full storage and sleeping browsers, and what you can do about each one.">
+<link rel="canonical" href="https://allvid.org/articles/downloads-stop-resume.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>Why some downloads stop, and how to get them going again</h1>
+<p class="meta">Published October 25, 2026 · 4 min read</p>
+<p class="lead">Most downloads finish without any fuss. But now and then one gets stuck, slows to a crawl or fails with an error. The cause is almost always one of a handful of everyday problems, and most of them are easy to fix once you know what to look for.</p>
+
+<h2>1. The connection dropped or got weak</h2>
+<p>This is the most common reason by far. Walking out of Wi-Fi range, entering a lift, switching between Wi-Fi and mobile data, or a busy network in a crowded place can all interrupt a download.</p>
+<p><strong>What to do:</strong> move somewhere with a stronger signal or connect to a stable Wi-Fi network, then try again. For large files, start the download where you plan to stay for a while. See <a href="/articles/mobile-data-vs-wifi.html">mobile data vs Wi-Fi</a> for more.</p>
+
+<h2>2. The browser tab went to sleep</h2>
+<p>Phones work hard to save battery. When you switch to another app, lock the screen or leave a browser tab in the background, the browser may pause or stop what that page was doing. That can interrupt a file that is still being prepared or downloaded from a web page.</p>
+<p><strong>What to do:</strong> when using AllVid in a browser, keep the tab open and the screen on until the download finishes. If you often save long videos, the AllVid Android app is a better fit: it hands each download to your phone's own download manager, which keeps going when the app is closed or the screen is off.</p>
+
+<h2>3. Storage is full</h2>
+<p>If your phone runs out of space partway through, the download cannot finish. Some phones show a clear warning; others just stop quietly or report a general error.</p>
+<p><strong>What to do:</strong> check free space in your phone's Settings, delete files you no longer need, and try again. Our guide to <a href="/articles/free-up-phone-storage.html">freeing up phone storage</a> walks through the quickest wins. Choosing a smaller size, such as 720p instead of 1080p, also helps.</p>
+
+<h2>4. Battery saver or power limits</h2>
+<p>Battery saver modes, and some phone makers' aggressive power management, can restrict apps and background activity. When the battery gets low, the phone may cut background network use to stretch what is left.</p>
+<p><strong>What to do:</strong> plug in for long downloads, or temporarily turn off battery saver while the file finishes. Our <a href="/articles/battery-tips-long-downloads.html">battery tips for long downloads</a> article has more detail.</p>
+
+<h2>5. The file was still "getting ready"</h2>
+<p>Some sizes and formats are not available as a ready-made file, so they have to be prepared first, for example by combining separate video and sound or converting audio to MP3. In AllVid this shows as a "getting ready" step, and it can take a while for long or high-quality videos. Leaving the page during this step can interrupt it.</p>
+<p><strong>What to do:</strong> keep the page or app open until preparation finishes. If you are in a hurry, choose a size marked with ⚡, which is a ready-made file that starts immediately.</p>
+
+<h2>6. The site is busy or has changed</h2>
+<p>Video sites sometimes limit how quickly files are delivered, have temporary problems, or change how they provide video. When that happens, a link that worked an hour ago might be slow or fail.</p>
+<p><strong>What to do:</strong> wait a few minutes and try again, or pick a different size. If a particular site keeps failing for a long time, you can report it through our <a href="/contact.html">contact page</a>.</p>
+
+<h2>7. The post is private or removed</h2>
+<p>If a post has been deleted, made private or restricted by its owner, it can no longer be saved. AllVid does not try to get around those settings.</p>
+
+<h2>Can a stopped download resume?</h2>
+<p>It depends on how the file was being downloaded. Your phone's system download manager, which the AllVid Android app uses, is designed to cope with interruptions and will often try again on its own when the connection comes back. Downloads running inside a web page are more fragile, and if one stops you will usually need to start it again. In AllVid, simply try the download again; a retry very often works.</p>
+<p>If you find leftover files with names ending in .part, .tmp or .crdownload in your Downloads folder, these are unfinished pieces. You can delete them once the full download has succeeded.</p>
+
+<h2>A quick checklist</h2>
+<ol>
+<li>Is your connection stable? Try Wi-Fi.</li>
+<li>Did you keep the browser tab open and the screen on?</li>
+<li>Do you have enough free storage?</li>
+<li>Is battery saver limiting background activity?</li>
+<li>Is the post still public?</li>
+<li>Have you tried again after a few minutes, or picked a ⚡ size?</li>
+</ol>
+
+<h2>Still not working?</h2>
+<p>Check our <a href="/faq.html">FAQ</a> for more answers. If the problem continues, open a request on our <a href="/contact.html">contact page</a> with the site name, whether you used the website or the app, your phone model, and what you saw. Details like these make problems much easier to track down.</p>
+<aside class="more" aria-label="More articles">
+<h2>More articles</h2>
+<ul>
+<li><a href="/articles/mobile-data-vs-wifi.html">Mobile data vs Wi-Fi: saving data when downloading</a></li>
+<li><a href="/articles/battery-tips-long-downloads.html">Battery tips for long downloads</a></li>
+<li><a href="/articles/free-up-phone-storage.html">Free up space on your phone for videos</a></li>
+</ul>
+<p><a href="/articles.html">See all articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html" aria-current="true">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

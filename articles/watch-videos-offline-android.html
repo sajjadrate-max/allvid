@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to watch saved videos offline on Android · AllVid</title>
+<meta name="description" content="Find, play and organise videos saved on your Android phone so you can watch them on a plane, commute or anywhere without signal.">
+<link rel="canonical" href="https://allvid.org/articles/watch-videos-offline-android.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>How to watch saved videos offline on Android</h1>
+<p class="meta">Published October 25, 2026 · 4 min read</p>
+<p class="lead">One of the best reasons to keep a copy of your own videos on your phone is being able to watch them anywhere: on a flight, in the countryside, or on a train that keeps losing signal. A file stored on your phone plays without any internet connection. Here is how to find your saved videos on Android, play them smoothly, and get ready before a trip.</p>
+
+<h2>Where saved videos usually live</h2>
+<p>On most Android phones, files you download go into the <strong>Download</strong> (or Downloads) folder in your phone's internal storage. That is true for files saved through a browser such as Chrome, and for files saved by the phone's built-in download manager, which the AllVid Android app uses.</p>
+<p>You can reach this folder in a few ways:</p>
+<ul>
+<li><strong>Files app:</strong> open Files by Google or your phone's own file manager (often called My Files on Samsung phones) and tap Downloads.</li>
+<li><strong>Gallery or Photos:</strong> many gallery apps show a Downloads album, or include downloaded videos under Videos.</li>
+<li><strong>Browser downloads list:</strong> in Chrome, tap the three-dot menu, then Downloads.</li>
+<li><strong>AllVid:</strong> open <strong>My files</strong>. It lists what you saved with AllVid, along with the time of each download, and lets you play, share or remove each file.</li>
+</ul>
+
+<h2>Check that the file is really on your phone</h2>
+<p>Before relying on a video offline, make sure it is fully downloaded and stored on the device, not just a link or a streaming preview. A simple test is to turn on airplane mode and try to play it. If it plays from start to end, you are ready. If it does not open, or stops partway, the download may not have finished. Our guide on <a href="/articles/downloads-stop-resume.html">why downloads stop</a> can help.</p>
+<p>Be aware that some streaming apps offer their own offline mode, where videos can only be watched inside that app and may expire. Files you have saved to your Downloads folder do not work that way; they stay until you delete them.</p>
+
+<h2>Choosing a video player</h2>
+<p>Your phone's built-in gallery or video player handles most MP4 files well. If you want more control, a dedicated player app can help. Look for features such as:</p>
+<ul>
+<li>support for many formats and codecs, including WebM and HEVC;</li>
+<li>remembering where you stopped in a long video;</li>
+<li>gestures for brightness, volume and skipping;</li>
+<li>playlists or folder browsing; and</li>
+<li>subtitle support, if your files have them.</li>
+</ul>
+<p>Install a player from a trusted source, such as the Google Play Store, and check its reviews and permissions. A player app does not need access to your contacts or messages to play videos. If a file refuses to play, our guide to <a href="/articles/video-formats-mp4-webm-mov.html">video formats</a> explains why.</p>
+
+<h2>Getting ready for a trip</h2>
+<ol>
+<li><strong>Save your videos at home on Wi-Fi.</strong> It is faster and does not use your mobile data allowance. See <a href="/articles/mobile-data-vs-wifi.html">mobile data vs Wi-Fi</a>.</li>
+<li><strong>Pick a sensible size.</strong> On a phone screen, 720p usually looks great and takes far less space than 1080p.</li>
+<li><strong>Check free storage.</strong> A few long videos can take several gigabytes. Clear room first if needed.</li>
+<li><strong>Test in airplane mode.</strong> Play the start of each video once before you leave.</li>
+<li><strong>Make a folder for the trip.</strong> Moving the videos into one folder makes them easy to find later.</li>
+<li><strong>Charge up.</strong> Video playback uses battery, so bring a charger or power bank on long journeys.</li>
+</ol>
+
+<h2>Saving battery while watching</h2>
+<ul>
+<li>Lower the screen brightness, which is one of the biggest battery drains.</li>
+<li>Turn on airplane mode if you do not need a connection; searching for signal uses power.</li>
+<li>Use wired or Bluetooth headphones rather than the speaker at full volume.</li>
+<li>Close other apps that may be running in the background.</li>
+</ul>
+<p>Our <a href="/articles/battery-tips-long-downloads.html">battery tips</a> article has more ideas.</p>
+
+<h2>Watching on a bigger screen</h2>
+<p>Many smart TVs and streaming sticks can play videos from a phone over your home network, using a cast or screen-sharing feature. Away from home, a USB-C to HDMI adapter works with some phones that support video output. You can also copy files to a USB stick that a TV or laptop can read. For bigger screens, a higher resolution such as 1080p looks noticeably better.</p>
+
+<h2>Keeping things tidy afterwards</h2>
+<p>When you get back, remove videos you have finished with to free up space, and move anything you want to keep long term to a computer or cloud storage. Our guides on <a href="/articles/organize-downloads-folder.html">organising your Downloads folder</a> and <a href="/articles/back-up-videos-computer-cloud.html">backing up your videos</a> walk through both.</p>
+
+<h2>A reminder about what to save</h2>
+<p>Offline viewing works best for your own videos and content the creator has said you may keep. Many services offer official offline modes for films and shows; use those for commercial content rather than saving copies yourself.</p>
+<aside class="more" aria-label="More articles">
+<h2>More articles</h2>
+<ul>
+<li><a href="/articles/organize-downloads-folder.html">Organize your phone&#x27;s Downloads folder</a></li>
+<li><a href="/articles/battery-tips-long-downloads.html">Battery tips for long downloads</a></li>
+<li><a href="/articles/video-formats-mp4-webm-mov.html">Video file formats explained: MP4, WebM and MOV</a></li>
+</ul>
+<p><a href="/articles.html">See all articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html" aria-current="true">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

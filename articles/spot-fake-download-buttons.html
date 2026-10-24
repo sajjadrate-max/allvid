@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keep your phone safe: spotting fake download buttons and ad redirects · AllVid</title>
+<meta name="description" content="How to recognise fake download buttons, misleading ads, scary pop-ups and redirects on websites, and what to do if you tapped one by mistake.">
+<link rel="canonical" href="https://allvid.org/articles/spot-fake-download-buttons.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>Keep your phone safe: spotting fake download buttons and ad redirects</h1>
+<p class="meta">Published October 25, 2026 · 4 min read</p>
+<p class="lead">Many free websites are paid for by advertising. Most ads are harmless, but some are designed to trick you: a giant "Download" button that is really an ad, a pop-up claiming your phone has a virus, or a page that suddenly sends you somewhere else. A little awareness goes a long way towards keeping your phone and your information safe.</p>
+
+<h2>Fake download buttons</h2>
+<p>Some ads are made to look exactly like the button you were expecting. They often appear close to the real one and are bigger, brighter or more urgent. Warning signs include:</p>
+<ul>
+<li><strong>Several "Download" or "Start" buttons</strong> on the same page, in different styles.</li>
+<li><strong>A small "Ad", "Sponsored" or ⓘ label</strong> near the button or in a corner.</li>
+<li><strong>A button that appears before you have done anything</strong>, for example before you have pasted a link or picked a size.</li>
+<li><strong>Tapping it opens a new tab, an app store page or a different website</strong> instead of starting your download.</li>
+<li><strong>It asks you to install an app, extension or "player"</strong> to continue.</li>
+</ul>
+<p>The real button almost always sits right where the tool's own controls are, and it does what you expect without asking for anything extra.</p>
+
+<h2>Scareware pop-ups</h2>
+<p>Scareware tries to frighten you into acting quickly. You might see a message such as "Your phone is infected!", "Your battery is damaged" or "You have won a prize", sometimes with vibration, sound or a countdown timer. These messages come from a web page, not from your phone. A website cannot scan your phone for viruses.</p>
+<p><strong>What to do:</strong> do not tap anything inside the message. Close the tab, or close the browser completely. If the page keeps reopening, clear the browser's history and site data for that page in your browser settings.</p>
+
+<h2>Redirects and new tabs</h2>
+<p>A redirect is when a page sends you to a different site you did not ask for. Some aggressive ads open a new tab every time you tap anywhere on the page.</p>
+<ul>
+<li>Check the address bar. If the website name changed to something unfamiliar, go back or close the tab.</li>
+<li>Most modern browsers block many pop-ups by default. Make sure this is turned on in your browser's settings (in Chrome: Settings, Site settings, Pop-ups and redirects).</li>
+<li>Do not allow notifications from websites you do not know well. Fake "click Allow to continue" messages are a common trick to send you spam notifications later.</li>
+</ul>
+
+<h2>Requests you should always question</h2>
+<ul>
+<li><strong>Installing an app to watch or download a video.</strong> A legitimate tool will tell you plainly what it is and where its app comes from. Be wary of surprise installs. Our guide on <a href="/articles/install-apk-safely.html">installing apps from outside the Play Store</a> explains how to stay safe if you choose to.</li>
+<li><strong>Entering a phone number, email or payment details</strong> to "unlock" a free download.</li>
+<li><strong>Logging in with your social media password</strong> on a site that is not the official one.</li>
+<li><strong>Granting unusual permissions,</strong> such as access to SMS, contacts or accessibility services, to an app that has no clear reason to need them.</li>
+</ul>
+
+<h2>How AllVid handles this</h2>
+<p>AllVid does not show ads today. The format and size buttons appear only after you paste a link, and AllVid never asks for an account, password or payment. If we add ads in the future, they will come from third-party ad networks, and our <a href="/privacy.html">Privacy Policy</a> will be updated. AllVid's Android app is offered only through the "Get the AllVid Android app" button on our own website. If another site offers an "AllVid" app or asks you to pay for AllVid, it is not us.</p>
+
+<h2>If you tapped something by mistake</h2>
+<ol>
+<li><strong>Close the tab</strong> and do not enter any information.</li>
+<li><strong>If a file downloaded,</strong> do not open it. Delete it from your Downloads folder, especially if it ends in .apk and you did not intend to install an app.</li>
+<li><strong>If you allowed notifications,</strong> remove that site's permission in your browser's site settings.</li>
+<li><strong>If an app was installed,</strong> uninstall it from your phone's Settings, Apps.</li>
+<li><strong>Run Google Play Protect</strong> on Android (Play Store, your profile icon, Play Protect) to scan installed apps.</li>
+<li><strong>If you entered a password,</strong> change it straight away on the real site and turn on two-step verification.</li>
+</ol>
+
+<h2>Everyday habits that help</h2>
+<ul>
+<li>Keep your phone's system, browser and apps up to date; updates fix security holes.</li>
+<li>Only install apps from sources you trust.</li>
+<li>Take a second look before tapping big, urgent buttons.</li>
+<li>Bookmark the tools you use, rather than finding them through search ads each time.</li>
+</ul>
+<p>Staying safe online is mostly about slowing down for a moment. If something feels pushy, too good to be true or not quite right, it is usually best to close it and walk away.</p>
+<aside class="more" aria-label="More articles">
+<h2>More articles</h2>
+<ul>
+<li><a href="/articles/install-apk-safely.html">Installing an app from outside the Play Store safely (APK basics)</a></li>
+<li><a href="/articles/respect-creators-copyright.html">Saving videos responsibly: copyright basics for everyday users</a></li>
+<li><a href="/articles/share-links-on-android.html">Using the Share button and copying links on Android</a></li>
+</ul>
+<p><a href="/articles.html">See all articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html" aria-current="true">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

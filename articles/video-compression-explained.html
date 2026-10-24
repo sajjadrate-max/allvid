@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How video compression works, in plain words · AllVid</title>
+<meta name="description" content="A friendly explanation of video compression: why raw video is huge, how codecs shrink it, what artefacts are, and why re-sharing a video makes it look worse.">
+<link rel="canonical" href="https://allvid.org/articles/video-compression-explained.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>How video compression works, in plain words</h1>
+<p class="meta">Published October 25, 2026 · 4 min read</p>
+<p class="lead">Every video you watch on your phone has been squeezed to a tiny fraction of its original size. Without compression, a single minute of video would fill a large chunk of your phone's storage, and streaming would be almost impossible. Understanding the basic idea helps you make sense of file sizes, blocky pictures and why some videos look worse every time they are shared.</p>
+
+<h2>Why raw video is so big</h2>
+<p>A video is a series of still pictures, called frames, shown quickly one after another, usually 30 or 60 per second. A single 1080p frame has about two million pixels, and each pixel needs information about its colour. Store every pixel of every frame without compression and a minute of 1080p video at 30 frames per second takes several gigabytes.</p>
+<p>A typical compressed 1080p video from a social site might be 20 to 50 MB for that same minute. That is a reduction of around a hundred times or more, and most people never notice.</p>
+
+<h2>Trick 1: Leave out what you cannot see</h2>
+<p>Our eyes are much more sensitive to brightness than to fine changes in colour. Compression takes advantage of this by storing colour detail at a lower resolution than brightness. It also simplifies fine textures and tiny details that are hard to notice when the picture is moving. Because information is thrown away for good, this is called <strong>lossy</strong> compression. Almost all everyday video is compressed this way.</p>
+
+<h2>Trick 2: Do not repeat yourself</h2>
+<p>From one frame to the next, most of the picture usually stays the same. In a video of someone talking, the background barely changes; only their face and hands move. Instead of storing every frame in full, compression stores an occasional complete frame, called a keyframe, and for the frames in between records only what changed and how things moved.</p>
+<p>This is why the amount of movement matters so much. A calm interview compresses very well. A confetti-filled dance floor, fast sports or rippling water is much harder, because so much changes every frame.</p>
+
+<h2>Codecs: the methods that do the work</h2>
+<p>A <strong>codec</strong> (short for coder-decoder) is the method used to compress video and later decode it for playback. Common ones include:</p>
+<ul>
+<li><strong>H.264 (AVC):</strong> the long-standing standard, playable almost everywhere.</li>
+<li><strong>H.265 (HEVC):</strong> around the same quality at a smaller size, used by many recent phones.</li>
+<li><strong>VP9 and AV1:</strong> efficient open codecs widely used for web streaming.</li>
+</ul>
+<p>Newer codecs squeeze more quality into fewer bits, but older devices may not be able to play them. Our article on <a href="/articles/video-formats-mp4-webm-mov.html">video formats</a> explains how codecs relate to file types like MP4 and WebM.</p>
+
+<h2>Bitrate: the quality budget</h2>
+<p>The <strong>bitrate</strong> is how much data the video is allowed to use per second. Think of it as a budget. A higher budget lets the codec keep more detail; a lower budget forces it to throw more away. When the budget is too small for what is happening on screen, you start to see problems. Our guide to <a href="/articles/resolution-vs-bitrate.html">resolution vs bitrate</a> goes deeper.</p>
+
+<h2>What compression artefacts look like</h2>
+<ul>
+<li><strong>Blockiness:</strong> square patches, especially in fast motion or dark scenes.</li>
+<li><strong>Banding:</strong> smooth gradients, such as a sunset sky, turning into visible stripes.</li>
+<li><strong>Smearing or blur:</strong> fine textures like grass or hair turning into mush.</li>
+<li><strong>Mosquito noise:</strong> fuzzy speckles around sharp edges and text.</li>
+</ul>
+<p>These are signs that the video did not have enough bitrate for the detail and motion it contained.</p>
+
+<h2>Why re-sharing makes videos worse</h2>
+<p>Each time a video is uploaded to a platform or sent through a chat app, it is usually compressed again to save space and bandwidth. Because lossy compression throws information away, each round loses a little more. A clip that has been forwarded many times, or downloaded and re-uploaded repeatedly, can end up noticeably blurry and blocky. It is a bit like photocopying a photocopy.</p>
+<p>This is also why saving a video from a social site will never give you better quality than the version the platform stored. If you made the video yourself, the original file from your camera is always the best copy to keep. For tips on sending videos with less quality loss, see <a href="/articles/share-videos-whatsapp.html">sharing videos with family on WhatsApp</a>.</p>
+
+<h2>Does converting a video improve it?</h2>
+<p>No. Converting to a different format, or to a higher resolution, cannot bring back detail that compression already removed. It usually adds another round of compression and makes the file bigger. Only convert when you need to, for example when a device cannot play the original.</p>
+
+<h2>What this means for you</h2>
+<ul>
+<li>Keep originals of your own videos whenever you can.</li>
+<li>Choose a higher size for keepsakes and big screens, and a smaller one for quick viewing on a phone.</li>
+<li>Avoid converting files back and forth.</li>
+<li>Share the original file, or a link, rather than a copy of a copy.</li>
+</ul>
+<p>Compression is what makes video on phones practical at all. Knowing how it works helps you keep the best version of the moments that matter.</p>
+<aside class="more" aria-label="More articles">
+<h2>More articles</h2>
+<ul>
+<li><a href="/articles/resolution-vs-bitrate.html">Understanding video resolution vs bitrate</a></li>
+<li><a href="/articles/video-formats-mp4-webm-mov.html">Video file formats explained: MP4, WebM and MOV</a></li>
+<li><a href="/articles/share-videos-whatsapp.html">Sharing videos with family on WhatsApp without losing quality</a></li>
+</ul>
+<p><a href="/articles.html">See all articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html" aria-current="true">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

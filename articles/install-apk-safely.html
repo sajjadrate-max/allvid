@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installing an app from outside the Play Store safely (APK basics) · AllVid</title>
+<meta name="description" content="What an APK file is, how installing apps from outside Google Play works on Android, the risks, and a safety checklist before and after you install.">
+<link rel="canonical" href="https://allvid.org/articles/install-apk-safely.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>Installing an app from outside the Play Store safely (APK basics)</h1>
+<p class="meta">Published October 25, 2026 · 4 min read</p>
+<p class="lead">Most Android apps come from the Google Play Store, but Android also lets you install apps from other sources using an APK file. Developers sometimes offer their app this way, including the AllVid Android app, which you get from the "Get the AllVid Android app" button on our website. Installing from outside the Play Store is perfectly normal on Android, but it puts more responsibility on you. Here is what to know.</p>
+
+<h2>What is an APK?</h2>
+<p>APK stands for Android Package. It is the file format Android uses to install apps, a bit like an installer on a computer. When you install from the Play Store, your phone downloads and installs an app package for you behind the scenes. When you install from an APK file, you do the same steps yourself.</p>
+
+<h2>Why some apps are not on the Play Store</h2>
+<p>There are many reasons a developer might offer an APK directly: they want to publish updates on their own schedule, the app is still in testing, it is distributed within an organisation, or it does not fit an app store's policies. Some well-known open-source apps are distributed this way too. Not being on the Play Store does not automatically make an app unsafe, but it does mean you are relying on the source you download from.</p>
+
+<h2>The main risk: where the file comes from</h2>
+<p>An APK is only as trustworthy as the place you got it. Malicious copies of popular apps are sometimes posted on unofficial download sites, sometimes with harmful code added. The golden rule is simple:</p>
+<div class="note"><p><strong>Only install an APK from the developer's own official website or another source you trust.</strong> Avoid "mirror" sites, file-sharing links and pop-ups that offer apps you did not go looking for.</p></div>
+<p>For AllVid, that means the button on allvid.org. If another website offers an "AllVid" APK, or asks you to pay for it, it is not from us.</p>
+
+<h2>How installing an APK works</h2>
+<p>The exact wording differs between phone brands and Android versions, but the steps usually look like this:</p>
+<ol>
+<li><strong>Download the APK</strong> from the official website in your browser. Your browser may warn that this type of file can be harmful; that warning appears for all APKs.</li>
+<li><strong>Open the downloaded file</strong> from the browser's download notification or your Files app.</li>
+<li><strong>Allow installs from this source.</strong> Modern Android asks you to give permission to the specific app you are installing from (for example Chrome or Files) under a setting called "Install unknown apps". You can turn this permission off again afterwards.</li>
+<li><strong>Review and tap Install.</strong></li>
+<li><strong>Let Play Protect check it.</strong> Google Play Protect may scan the app. If it shows a strong warning, stop and think carefully before continuing.</li>
+</ol>
+
+<h2>Safety checklist before you install</h2>
+<ul>
+<li>Did you get the file from the developer's official site, reached by typing the address or from a bookmark rather than an ad?</li>
+<li>Is the site address spelled correctly and using HTTPS?</li>
+<li>Does the file name and size look sensible for the app?</li>
+<li>Is your phone's software up to date?</li>
+<li>Is Google Play Protect turned on? (Play Store, your profile icon, Play Protect.)</li>
+</ul>
+
+<h2>After you install</h2>
+<ul>
+<li><strong>Turn off "Install unknown apps"</strong> for your browser or Files app, so nothing else can be installed from that source without you noticing.</li>
+<li><strong>Check permissions.</strong> Go to Settings, Apps, choose the app, then Permissions. An app should only ask for what it obviously needs. A video saving app has no reason to read your SMS messages, contacts or call logs. Be very wary of any app that asks for accessibility access without a clear reason.</li>
+<li><strong>Delete the APK file</strong> from your Downloads folder once the app is installed; you do not need it any more.</li>
+</ul>
+
+<h2>Updates</h2>
+<p>Apps installed from an APK do not update automatically through the Play Store. When a new version is available, get it from the same official source and install it over the existing app. Android checks that the update is signed by the same developer as the version you already have; if it is not, the update will not install over the old app, which is a useful safety feature. Never install an "update" offered through a pop-up or an unknown website.</p>
+
+<h2>Warning signs after installing any app</h2>
+<ul>
+<li>Pop-up ads appearing outside the app, on your home screen or lock screen.</li>
+<li>Unexpected battery drain or data use.</li>
+<li>New apps or icons you did not install.</li>
+<li>Settings changing by themselves.</li>
+</ul>
+<p>If you notice these, uninstall recently added apps from Settings, Apps, and run a Play Protect scan. Our guide to <a href="/articles/spot-fake-download-buttons.html">spotting fake download buttons</a> explains how to avoid these situations in the first place.</p>
+
+<h2>Removing an app</h2>
+<p>Uninstalling an APK app is the same as any other: long-press its icon and choose Uninstall, or go to Settings, Apps. For AllVid, uninstalling also removes the app's stored data, such as your settings and downloads list; files already saved to your Downloads folder may stay until you delete them.</p>
+
+<h2>The bottom line</h2>
+<p>Installing from an APK is a normal Android feature. Stick to official sources, keep Play Protect on, check permissions and turn off unknown sources afterwards, and you will avoid almost all of the risks.</p>
+<aside class="more" aria-label="More articles">
+<h2>More articles</h2>
+<ul>
+<li><a href="/articles/spot-fake-download-buttons.html">Keep your phone safe: spotting fake download buttons and ad redirects</a></li>
+<li><a href="/articles/share-links-on-android.html">Using the Share button and copying links on Android</a></li>
+<li><a href="/articles/downloads-stop-resume.html">Why some downloads stop, and how to get them going again</a></li>
+</ul>
+<p><a href="/articles.html">See all articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/articles.html" aria-current="true">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>
