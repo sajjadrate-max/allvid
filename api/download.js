@@ -27,7 +27,7 @@ async function stream(req, res) {
   const range = req.headers && req.headers.range;
   if (range && /^bytes=\d+-\d*$/.test(range)) h.Range = range;
   const up = await fetch(file, { headers: h });
-  if (!up.ok || !up.body) { res.status(502).json({ error: 'fetch.fail' }); return; }
+  if (!up.ok || !up.body) { res.status(502).json({ error: 'fetch.fail', detail: 'up' + up.status }); return; }
   // A web page instead of a file (a converter's ad redirect, a login wall): don't pass it on as a video.
   if (/text\/html/i.test(up.headers.get('content-type') || '')) { res.status(502).json({ error: 'fetch.fail', detail: 'page' }); return; }
   const name = String(req.query.name || 'video.mp4');

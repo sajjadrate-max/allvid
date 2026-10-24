@@ -708,7 +708,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       let got=parts.reduce((n,p)=>n+(p.size!==undefined?p.size:p.byteLength),0);
       const ctl=new AbortController();r._ctl=ctl;
       const res=await fetch(url,{referrerPolicy:"no-referrer",headers:got?{Range:"bytes="+got+"-"}:{},signal:ctl.signal});
-      if(!res.ok||!res.body)throw new Error(tag+":http "+res.status);
+      if(!res.ok||!res.body){let d="";if(tag==="api")try{d=(await res.json()).detail||"";}catch(e){}throw new Error(tag+":http "+res.status+(d?" "+d:""));}
       if(/text\/html/i.test(res.headers.get("content-type")||""))throw new Error(tag+":page");   // an ad/redirect page, not the file
       if(got&&res.status!==206){if(tag!=="api"){ctl.abort();throw new Error(tag+":norange");}parts.length=0;got=0;}   // our API always continues; others: try it
       // Size: Content-Length, else the total in Content-Range, else our API's X-Size.
@@ -779,11 +779,16 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
         if(!blob)throw new Error(why.join(" "));
         r.blob=blob;r.partial=null;r._parts=null;
         if(r.type==="video"){const t=await frame(r.blob);if(t)r.thumb=t;}   // remote thumbnails expire
-        r.status="done";r.netTries=0;await put(r);draw();toPhone(r);toast(t("toastDone"));note("✓ "+(r.title||"AllVid"),t("toastDone"),true);
+        r.status="done";r.netTries=0;r.cvTries=0;await put(r);draw();toPhone(r);toast(t("toastDone"));note("✓ "+(r.title||"AllVid"),t("toastDone"),true);
       }catch(e){
         if(r._gone||r._handoff||r.status==="bg"){return;}
         if(r._pausing){   // keep what arrived; "resume" continues from here
           r._pausing=false;r.status="paused";if(r._parts&&r._parts.length)r.partial=new Blob(r._parts);r._parts=null;await put(r);draw();
+        }else if(r.conv&&r.jobSrc&&navigator.onLine&&/api:http/.test(String(e.message||""))&&(r.cvTries=(r.cvTries||0)+1)<=2){
+          // The converter's file link failed (expired, used up, or refused): have the converter make it again.
+          Object.assign(r,{src:r.jobSrc,prep:true,conv:false,job:"",direct:"",partial:null,got:0,size:0,via:"",status:"queued",why:"",retryAt:Date.now()+1500});r._parts=null;
+          await put(r);draw();
+          return;
         }else if(!NATIVE&&(!navigator.onLine||(r._parts&&r._parts.length&&(r.netTries=(r.netTries||0)+1)<=30))){
           // Internet gone, or the line broke mid-file: keep what arrived and carry on from there
           // by itself (when the internet is back, or in a few seconds), never from the start.
@@ -940,7 +945,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
         try{const f=new File([r.blob],nameOf(r),{type:r.blob.type||"video/mp4"});await navigator.share({files:[f],title:r.title||""});}
         catch(e){if(e&&e.name!=="AbortError")toast(t("cantShare"));}
       }
-      else if(act==="retry"){if(NATIVE)nativeStart(r);else{r.why="";resume(r);}}
+      else if(act==="retry"){if(NATIVE)nativeStart(r);else if(r.conv&&r.jobSrc){r.cvTries=0;again(r);}else{r.why="";resume(r);}}   // YouTube: a fresh converter link
       else if(act==="pause")pause(r);
       else if(act==="resume")resume(r);
       else if(act==="del"){r._gone=true;if(r._ctl)r._ctl.abort();if(r.status==="bg")bgStop(r);recs.delete(r.id);if(urls.has(r.id)){URL.revokeObjectURL(urls.get(r.id));urls.delete(r.id);}await tx("readwrite",s=>s.delete(r.id));draw();}
@@ -1440,7 +1445,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.24-a";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.24-b";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
