@@ -284,6 +284,12 @@ const STR={
 "ms": "Mencari video...",
 "zh": "正在查找视频..."
 },
+"ytNotHere": {
+"ur": "YouTube کے لنک یہاں نہیں چلتے۔ TikTok، Instagram، Facebook، X، Snapchat یا Pinterest کا لنک ڈالیں۔",
+"en": "YouTube links are not supported here. Paste a TikTok, Instagram, Facebook, X, Snapchat or Pinterest link.",
+"ar": "روابط YouTube غير مدعومة هنا. الصق رابطًا من TikTok أو Instagram أو Facebook أو X أو Snapchat أو Pinterest.",
+"hi": "YouTube लिंक यहाँ काम नहीं करते। TikTok, Instagram, Facebook, X, Snapchat या Pinterest का लिंक डालें।"
+},
 "ytAppOnly": {
 "ur": "YouTube ویڈیوز صرف AllVid اینڈرائیڈ ایپ میں ڈاؤن لوڈ ہوتی ہیں۔",
 "en": "YouTube videos can be saved in the AllVid Android app only.",

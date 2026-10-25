@@ -1069,7 +1069,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     }
     if(!platform(url)){msg.innerHTML='<div class="status err">'+ERR.unsupported+'</div>';return;}
     // The website saves links from the other sites; YouTube is only in the Android app.
-    if(!NATIVE&&platform(url)==="youtube"){msg.innerHTML='<div class="status err">'+esc(t("ytAppOnly"))+(/Android/i.test(navigator.userAgent)?' <a href="https://github.com/sajjadrate-max/allvid/releases/download/latest/AllVid.apk">'+esc(t("apkTitle"))+'</a>':'')+'</div>';return;}
+    if(!NATIVE&&platform(url)==="youtube"){msg.innerHTML='<div class="status err">'+esc(t("ytNotHere"))+'</div>';return;}
     last=url;busy=true;msg.innerHTML="";
     go.disabled=true;go.innerHTML='<span class="spin"></span>';
     try{
@@ -1491,7 +1491,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-i";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-j";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
