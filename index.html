@@ -607,7 +607,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       const meta=(site?site+" · ":"")+(NATIVE&&r.status==="done"&&r.local?(r.size?mb(r.size)+" · ":"")+"Downloads/AllVid":r.status==="phone"?(r.size?mb(r.size)+" · ":"")+t("inPhoneDl"):r.status==="done"?mb(r.blob&&r.blob.size||r.size)+" · "+(r.type==="photo"?t("photo"):(nameOf(r).split(".").pop()||"mp4").toUpperCase())
 :r.status==="fail"?t("stopped")+" "+(/only allowed for videos up to (\d+) hours?/i.test(r.why||"")?"— "+t("tooLong").replace("{h}",RegExp.$1):r.why?"("+r.why+")":"")
         :r.status==="queued"?t("queued")+(r.got?" · "+(total?pct+"% · ":"")+mb(r.got):"")
-        :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+mb(r.got)+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
+        :r.status==="paused"?t("paused")+" · "+(total?pct+"% · "+(mb(r.got)||"0 MB")+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||"0 MB")
         :r.prep?"⏳ "+t("preparing")+" "+(r.prepPct||0)+"%"
         :(r.dmWait?"⏸ "+t("dmWaiting")+" · ":"")+(total?pct+"% · "+(mb(r.got)||"0 MB")+" / "+(r.size?"":"≈ ")+mb(total):mb(r.got)||t("starting")));
       // When it was downloaded: "2 hours ago" today, else the date and time.
@@ -886,7 +886,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
       else if(r.status==="busy"){r._pausing=true;if(r._ctl)r._ctl.abort();}
       else if(r.status==="queued"){r.status="paused";put(r);draw();}
     }
-    function resume(r){r.status="queued";put(r);pump();}
+    function resume(r){r.status="queued";r._pausing=false;put(r);if(NATIVE)nativeStart(r);else pump();}
     // First frame of a video as a small JPEG, for files that came without a thumbnail.
     function frame(blob){return frameAt(URL.createObjectURL(blob),true);}
     function frameAt(u,revoke){
@@ -1471,7 +1471,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-f";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-g";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
