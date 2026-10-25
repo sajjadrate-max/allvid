@@ -1380,14 +1380,29 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     let d=e.data;try{if(typeof d==="string")d=JSON.parse(d);}catch(x){return;}
     const ended=d&&((d.event==="onStateChange"&&d.info===0)||(d.event==="infoDelivery"&&d.info&&d.info.playerState===0));
     if(ended&&ytNext&&!$("player").hidden&&!root.classList.contains("open")){const n=ytNext;ytNext=null;n();}
+    // The owner turned off playing on other sites (or YouTube refuses the embed): play the
+    // ready-made file instead, in our own player.
+    if(d&&d.event==="onError"&&[100,101,150,152,153].includes(+d.info))ytFallback();
   });
+  let ytCurId="",ytFbFor="";
+  function ytFallback(){
+    const id=ytCurId,f=$("ytf");if(!id||!f||ytFbFor===id)return;ytFbFor=id;
+    fetch(abs("/api/download?ytfast="+id)).then(x=>x.json()).then(j=>{
+      const v=((j&&j.items)||[]).find(i=>i.type==="video");
+      const fr=$("ytf");if(!v||!fr||ytCurId!==id)return;
+      const src=i=>i.sig?abs("/api/download?file="+encodeURIComponent(i.url)+"&sig="+i.sig+"&name=v.mp4"):i.url;
+      const m=document.createElement("video");m.controls=true;m.autoplay=true;m.playsInline=true;m.src=src(v);m.style.cssText="width:100%;height:100%;background:#000";
+      m.onended=()=>{if(ytNext&&!$("player").hidden&&!root.classList.contains("open")){const n=ytNext;ytNext=null;n();}};
+      fr.replaceWith(m);
+    }).catch(()=>{});
+  }
   const ytListen=()=>{const f=$("ytf");if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*");};
   window.watchYT=(v,mp3)=>watchYT(v,mp3);   // also used by "My files"
   function watchYT(v,mp3){
     // Start the converter for the usual size while the video plays: Download then starts at once.
     {let q="720";try{q=localStorage.getItem("vdlQ")||"best";}catch(e){}q=mp3||q==="mp3"?"mp3":/^(360|480|720|1080)$/.test(q)?q:"720";
      ytWarm(abs("/api/download?yt="+q+"&v="+v.id));}
-    const pl=$("player"),st=$("plStage");st.onscroll=null;
+    const pl=$("player"),st=$("plStage");st.onscroll=null;ytCurId=v.id;ytFbFor="";
     $("plTitle").textContent=v.title;pl.classList.add("yt");
     st.innerHTML='<div class="watch"><div class="wv"><iframe id="ytf" src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0&enablejsapi=1&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
       '<div class="winfo"><div class="wt" dir="auto">'+esc(v.title)+'</div><div class="ws" dir="auto">'+esc([v.ch,v.views,v.ago].filter(Boolean).join(" · "))+'</div>'+
@@ -1471,7 +1486,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-g";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-h";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
