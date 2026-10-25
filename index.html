@@ -863,7 +863,10 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     function parLimit(){let n=2;try{n=+localStorage.getItem("vdlPar")||2;}catch(e){}return n;}
     window.addEventListener("online",()=>setTimeout(pump,1000));   // internet back: continue at once
     function pump(){
-      if(NATIVE||!navigator.onLine)return;
+      if(!navigator.onLine)return;
+      // Android app: waiting ones (e.g. the app was closed while the converter worked) go on
+      // the usual way: get the file ready if needed, then hand it to the download manager.
+      if(NATIVE){[...recs.values()].filter(r=>r.status==="queued").forEach(nativeStart);return;}
       let active=[...recs.values()].filter(r=>r.status==="busy").length;
       const later=[...recs.values()].filter(r=>r.status==="queued"&&r.retryAt>Date.now());
       if(later.length)setTimeout(pump,Math.min(...later.map(r=>r.retryAt))-Date.now()+50);
@@ -909,7 +912,12 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
         const headers={"User-Agent":MEDIA_UA};
         if(/tikwm\.com/.test(url))headers.Referer="https://www.tikwm.com/";
         const res=await Downloader.enqueue({url,name:nameOf(r),headers});r.dlId=res.id;await put(r);poll(r);
-      }catch(e){r.status="fail";r.why=(r.prep?"":"dm:")+String(e&&e.message||e);await put(r);draw();}
+      }catch(e){
+        if(r._gone)return;
+        if(r._pausing){r._pausing=false;r.status="paused";}   // paused while the converter worked
+        else{r.status="fail";r.why=(r.prep?"":"dm:")+String(e&&e.message||e);}
+        await put(r);draw();
+      }
     }
     async function poll(r){
       if(!r.dlId||r.status!=="busy")return;
@@ -1463,7 +1471,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-e";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-f";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
