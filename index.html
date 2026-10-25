@@ -1189,6 +1189,16 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     if(name==="tiktok")TK.start();
     try{sessionStorage.setItem("vdlPane",name);}catch(e){}   // a refresh comes back here
   }
+  // Android app's back button (see app/native/MainActivity.java): from anywhere, back brings
+  // the YouTube home screen; only there does it leave the app (returns false).
+  window.allvidBack=()=>{
+    const tab=document.querySelector(".htabs [aria-selected=\"true\"]");
+    if(!$("homeView").hidden&&!root.classList.contains("open")&&$("player").hidden&&langPanel.hidden&&tab&&tab.dataset.h==="youtube")return false;
+    hideSheet();DL.hidePlayer();if(!langPanel.hidden)openLangs(false);
+    showView("home");hpane("youtube");
+    try{history.replaceState({vdl:"home"},"");}catch(e){}
+    return true;
+  };
   const DLI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
   const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
   // Sharp pictures: YouTube's 1280×720 one (hq720; older videos fall back to the 480 one).
@@ -1435,6 +1445,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   document.querySelectorAll("a.site[data-s]").forEach(a=>{const home=a.href;a.onclick=()=>{const q=siteQ.value.trim();a.href=q?a.dataset.s.replace("{q}",encodeURIComponent(q)):home;};});
   // Open on the tab that was in use (a shared or pasted link still shows its sizes on top).
   // Opening the app starts on YouTube; a refresh stays on the tab that was open; a shared link stays on Search.
+  if(location.hash==="#youtube"){try{sessionStorage.setItem("vdlPane","youtube");}catch(e){}history.replaceState(history.state,"",location.pathname+location.search);}   // the app's back button from another page
   try{const sp=sessionStorage.getItem("vdlPane")||"youtube";if(sp!=="search"&&!window.vdlShared&&!link.value)hpane(sp);}catch(e){}
   // Pull down at the top of YouTube / TikTok / Music for a fresh list (stays on the same tab).
   (function(){
@@ -1452,7 +1463,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-d";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-e";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

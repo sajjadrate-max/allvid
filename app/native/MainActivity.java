@@ -8,27 +8,30 @@ import androidx.activity.OnBackPressedCallback;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
-    private static final String HOME = "https://allvid.org/";
+    private static final String HOME = "https://allvid.org/#youtube";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(DownloaderPlugin.class);
         super.onCreate(savedInstanceState);
-        // Back button: step back inside the app (open sheet, My files, a page like Privacy);
-        // with nothing to go back to on another page, go to the home page; only home closes the app.
+        // Back button: from anywhere in the app, back returns to the YouTube home screen;
+        // only from there does it close the app.
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                WebView wv = getBridge() == null ? null : getBridge().getWebView();
-                if (wv != null && wv.canGoBack()) {
-                    wv.goBack();
-                    return;
-                }
-                String url = wv == null ? null : wv.getUrl();
-                if (wv != null && url != null && !url.matches("https://allvid\\.org/?(index\\.html)?([?#].*)?")) {
+                final WebView wv = getBridge() == null ? null : getBridge().getWebView();
+                if (wv == null) { leave(); return; }
+                // The page decides: anything open or another tab -> YouTube home ("true");
+                // already there -> leave ("false"); another page (Privacy, articles...) -> home.
+                wv.evaluateJavascript("window.allvidBack?String(window.allvidBack()):'none'", r -> {
+                    String v = r == null ? "" : r.replace("\"", "");
+                    if (v.equals("true")) return;
+                    if (v.equals("false")) { leave(); return; }
                     wv.loadUrl(HOME);
-                    return;
-                }
+                });
+            }
+
+            private void leave() {
                 setEnabled(false);
                 getOnBackPressedDispatcher().onBackPressed();
                 setEnabled(true);
