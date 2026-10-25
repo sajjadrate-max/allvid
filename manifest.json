@@ -1,7 +1,7 @@
 {
   "name": "AllVid",
   "short_name": "AllVid",
-  "description": "Download videos from TikTok, Facebook, Instagram, X and YouTube.",
+  "description": "Save videos from TikTok, Facebook, Instagram, X, Snapchat and Pinterest to your phone.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

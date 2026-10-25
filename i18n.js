@@ -284,6 +284,18 @@ const STR={
 "ms": "Mencari video...",
 "zh": "正在查找视频..."
 },
+"ytAppOnly": {
+"ur": "YouTube ویڈیوز صرف AllVid اینڈرائیڈ ایپ میں ڈاؤن لوڈ ہوتی ہیں۔",
+"en": "YouTube videos can be saved in the AllVid Android app only.",
+"ar": "يمكن حفظ فيديوهات YouTube في تطبيق AllVid لأندرويد فقط.",
+"hi": "YouTube वीडियो केवल AllVid एंड्रॉइड ऐप में सेव होते हैं।"
+},
+"linkOnlyPh": {
+"ur": "ویڈیو کا لنک یہاں ڈالیں",
+"en": "Paste a video link",
+"ar": "الصق رابط الفيديو",
+"hi": "वीडियो का लिंक यहाँ डालें"
+},
 "needLink": {
 "ur": "پہلے ویڈیو کا لنک ڈالیں۔",
 "en": "Paste a video link first.",

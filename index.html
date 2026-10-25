@@ -67,7 +67,7 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 
 /* install banner */
 .apk-get{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--fg);text-decoration:none}
-.apk-get[hidden]{display:none}
+.apk-get[hidden],.htabs[hidden]{display:none}
 nav.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:10px 0 24px;font-size:.85rem}
 nav.legal a{color:var(--muted)}
 .apk-get .ai{font-size:1.6rem}.apk-get .tx{flex:1;display:flex;flex-direction:column;line-height:1.35}.apk-get small{opacity:.8}.apk-get .go2{font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:6px 12px}
@@ -1063,10 +1063,12 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
     const url=findUrl(link.value);
     if(!url){
       const q=link.value.trim();
-      if(q){msg.innerHTML="";link.blur();SEARCH.search(q);return;}
+      if(q&&NATIVE){msg.innerHTML="";link.blur();SEARCH.search(q);return;}
       msg.innerHTML='<div class="status err">'+esc(t("needLink"))+'</div>';link.focus();return;
     }
     if(!platform(url)){msg.innerHTML='<div class="status err">'+ERR.unsupported+'</div>';return;}
+    // The website saves links from the other sites; YouTube is only in the Android app.
+    if(!NATIVE&&platform(url)==="youtube"){msg.innerHTML='<div class="status err">'+esc(t("ytAppOnly"))+(/Android/i.test(navigator.userAgent)?' <a href="https://github.com/sajjadrate-max/allvid/releases/download/latest/AllVid.apk">'+esc(t("apkTitle"))+'</a>':'')+'</div>';return;}
     last=url;busy=true;msg.innerHTML="";
     go.disabled=true;go.innerHTML='<span class="spin"></span>';
     try{
@@ -1469,7 +1471,9 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   // Open on the tab that was in use (a shared or pasted link still shows its sizes on top).
   // Opening the app starts on YouTube; a refresh stays on the tab that was open; a shared link stays on Search.
   if(location.hash==="#youtube"){try{sessionStorage.setItem("vdlPane","youtube");}catch(e){}history.replaceState(history.state,"",location.pathname+location.search);}   // the app's back button from another page
-  try{const sp=sessionStorage.getItem("vdlPane")||"youtube";if(sp!=="search"&&!window.vdlShared&&!link.value)hpane(sp);}catch(e){}
+  // Website: only the link box (no YouTube/TikTok lists); the app has every tab.
+  if(!NATIVE){document.querySelector(".htabs").hidden=true;link.dataset.i18nPh="linkOnlyPh";link.placeholder=t("linkOnlyPh");}
+  else try{const sp=sessionStorage.getItem("vdlPane")||"youtube";if(sp!=="search"&&!window.vdlShared&&!link.value)hpane(sp);}catch(e){}
   // Pull down at the top of YouTube / TikTok / Music for a fresh list (stays on the same tab).
   (function(){
     const ind=document.createElement("div");ind.className="ptr";ind.textContent="↻";document.body.appendChild(ind);
@@ -1486,7 +1490,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-h";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-i";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
