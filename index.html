@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="google-adsense-account" content="ca-pub-9829612219556114">
-<script>/* AdSense on the website only: never inside the AllVid Android app (Google doesn't allow it there) */
-if(!window.Capacitor&&!/AllVidApp/.test(navigator.userAgent)){var a=document.createElement("script");a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9829612219556114";document.head.appendChild(a);}</script>
+<script>/* AdSense and Google Analytics on the website only: never inside the AllVid Android app (Google doesn't allow it there) */
+if(!window.Capacitor&&!/AllVidApp/.test(navigator.userAgent)){var a=document.createElement("script");a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9829612219556114";document.head.appendChild(a);var g=document.createElement("script");g.async=true;g.src="https://www.googletagmanager.com/gtag/js?id=G-DFT29S521Z";document.head.appendChild(g);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments);};gtag("js",new Date());gtag("config","G-DFT29S521Z");}</script>
 <title>AllVid – Video Downloader for TikTok, Facebook, Instagram, X</title>
 <meta name="description" content="AllVid: free online video downloader for TikTok (no watermark), Facebook, Instagram reels, X/Twitter, Snapchat and Pinterest. Paste a link and save HD video or MP3 to your phone. ویڈیو ڈاؤن لوڈر">
 <meta name="keywords" content="allvid, video downloader, all video downloader, tiktok downloader, facebook video downloader, instagram reels downloader, twitter video downloader, mp3 downloader, ویڈیو ڈاؤن لوڈ">
@@ -1503,7 +1503,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-m";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-n";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
