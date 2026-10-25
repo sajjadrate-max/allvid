@@ -284,6 +284,18 @@ const STR={
 "ms": "Mencari video...",
 "zh": "正在查找视频..."
 },
+"supOk": {
+"ur": "✅ چلتے ہیں: TikTok · Instagram · Facebook · X · Snapchat · Pinterest",
+"en": "✅ Works with: TikTok · Instagram · Facebook · X · Snapchat · Pinterest",
+"ar": "✅ يعمل مع: TikTok · Instagram · Facebook · X · Snapchat · Pinterest",
+"hi": "✅ चलते हैं: TikTok · Instagram · Facebook · X · Snapchat · Pinterest"
+},
+"supNo": {
+"ur": "❌ نہیں چلتے: YouTube، پرائیویٹ پوسٹ، لائیو ویڈیو",
+"en": "❌ Not supported: YouTube, private posts, live streams",
+"ar": "❌ غير مدعوم: YouTube، المنشورات الخاصة، البث المباشر",
+"hi": "❌ नहीं चलते: YouTube, प्राइवेट पोस्ट, लाइव वीडियो"
+},
 "ytNotHere": {
 "ur": "YouTube کے لنک یہاں نہیں چلتے۔ TikTok، Instagram، Facebook، X، Snapchat یا Pinterest کا لنک ڈالیں۔",
 "en": "YouTube links are not supported here. Paste a TikTok, Instagram, Facebook, X, Snapchat or Pinterest link.",

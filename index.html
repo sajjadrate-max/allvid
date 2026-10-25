@@ -68,7 +68,8 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 
 /* install banner */
 .apk-get{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--fg);text-decoration:none}
-.apk-get[hidden],.htabs[hidden]{display:none}
+.apk-get[hidden],.htabs[hidden],.sup[hidden]{display:none}
+.sup{margin:10px 4px 0;text-align:center;font-size:.86rem;line-height:1.7;color:var(--muted)}
 nav.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:10px 0 24px;font-size:.85rem}
 nav.legal a{color:var(--muted)}
 .apk-get .ai{font-size:1.6rem}.apk-get .tx{flex:1;display:flex;flex-direction:column;line-height:1.35}.apk-get small{opacity:.8}.apk-get .go2{font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:6px 12px}
@@ -324,7 +325,7 @@ html{overscroll-behavior-y:contain}
 
   <section class="hpane" data-pane="search">
     <div class="hero">
-      <div class="deco" aria-hidden="true"><i style="background:#1877F2;top:6%;left:6%">f</i><i style="background:#FF0000;top:2%;left:42%">▶</i><i style="background:#111;top:10%;right:4%">♪</i><i style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF);top:46%;left:18%">◎</i><i style="background:#25D366;top:40%;right:22%">✆</i><i style="background:#000;top:58%;right:-2%">𝕏</i></div>
+      <div class="deco" aria-hidden="true"><i style="background:#1877F2;top:6%;left:6%">f</i><i style="background:#E60023;top:2%;left:42%">P</i><i style="background:#111;top:10%;right:4%">♪</i><i style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF);top:46%;left:18%">◎</i><i style="background:#25D366;top:40%;right:22%">✆</i><i style="background:#000;top:58%;right:-2%">𝕏</i></div>
       <div class="lang-wrap">
         <button type="button" class="lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false">🌐 <span id="langName">اردو</span></button>
         <div class="lang-panel" id="langPanel" hidden>
@@ -343,6 +344,7 @@ html{overscroll-behavior-y:contain}
       <button class="sbtn" id="go" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></button>
     </form>
     <div id="msg" aria-live="polite"></div>
+    <p class="sup" id="supNote" hidden><span data-i18n="supOk">✅ TikTok · Instagram · Facebook · X · Snapchat · Pinterest</span><br><span data-i18n="supNo">❌ Not supported: YouTube, private posts, live streams</span></p>
 
     <button type="button" class="share-pill" id="shareBtn">🔗 <span data-i18n="share">Share</span></button>
 
@@ -1473,7 +1475,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   // Opening the app starts on YouTube; a refresh stays on the tab that was open; a shared link stays on Search.
   if(location.hash==="#youtube"){try{sessionStorage.setItem("vdlPane","youtube");}catch(e){}history.replaceState(history.state,"",location.pathname+location.search);}   // the app's back button from another page
   // Website: only the link box (no YouTube/TikTok lists); the app has every tab.
-  if(!NATIVE){document.querySelector(".htabs").hidden=true;link.dataset.i18nPh="linkOnlyPh";link.placeholder=t("linkOnlyPh");}
+  if(!NATIVE){document.querySelector(".htabs").hidden=true;$("supNote").hidden=false;link.dataset.i18nPh="linkOnlyPh";link.placeholder=t("linkOnlyPh");}
   else try{const sp=sessionStorage.getItem("vdlPane")||"youtube";if(sp!=="search"&&!window.vdlShared&&!link.value)hpane(sp);}catch(e){}
   // Pull down at the top of YouTube / TikTok / Music for a fresh list (stays on the same tab).
   (function(){
@@ -1491,7 +1493,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-j";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-k";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
