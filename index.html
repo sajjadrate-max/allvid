@@ -359,7 +359,7 @@ html{overscroll-behavior-y:contain}
 
     <p class="note" data-i18n-html="note">Instagram، Facebook، TikTok یا X میں ویڈیو پر <b>شیئر</b> دبائیں، <b>Copy link</b> چنیں، پھر یہاں <b>پیسٹ</b> دبائیں۔</p>
     <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
-    <nav class="legal" dir="ltr"><a href="about.html">About</a><a href="articles.html">Articles</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="copyright.html">Copyright</a><a href="cookies.html">Cookies</a></nav>
+    <nav class="legal" dir="ltr"><a href="about.html">About</a><a href="downloaders.html">Downloaders</a><a href="articles.html">Articles</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="copyright.html">Copyright</a><a href="cookies.html">Cookies</a></nav>
   </section>
 
   <section class="hpane yt" data-pane="youtube" id="yt" hidden>
@@ -433,7 +433,7 @@ html{overscroll-behavior-y:contain}
     <div class="row"><span>Version</span><span class="val" id="appVer" dir="ltr"></span></div>
   </div>
   <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
-  <nav class="legal" dir="ltr"><a href="about.html">About</a><a href="articles.html">Articles</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="copyright.html">Copyright</a><a href="cookies.html">Cookies</a></nav>
+  <nav class="legal" dir="ltr"><a href="about.html">About</a><a href="downloaders.html">Downloaders</a><a href="articles.html">Articles</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="copyright.html">Copyright</a><a href="cookies.html">Cookies</a></nav>
 </section>
 
 <button type="button" class="dlbar" id="dlbar" hidden>
@@ -1501,7 +1501,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.25-k";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.10.25-l";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));

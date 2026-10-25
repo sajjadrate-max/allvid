@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-9829612219556114">
+<title>TikTok Video Downloader · AllVid</title>
+<meta name="description" content="Save your own TikTok videos, or public TikToks you have permission to keep, to your phone as MP4 or audio. Free, no account, works in your browser and on Android.">
+<link rel="canonical" href="https://allvid.org/tiktok-video-downloader.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}.dl{display:flex;gap:8px;align-items:center;margin:18px 0 28px;padding:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.dl:focus-within{border-color:var(--accent)}
+.dl input{flex:1;min-width:0;border:0;background:transparent;color:var(--fg);font:inherit;font-size:1rem;padding:10px 14px;outline:none}
+.dl input::placeholder{color:var(--muted)}
+.dl button{flex:none;border:0;background:var(--accent);color:var(--on-accent);font:inherit;font-weight:700;font-size:1rem;padding:11px 22px;border-radius:999px;cursor:pointer}
+.dl button:hover{filter:brightness(1.08)}
+.dl button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:440px){.dl{flex-direction:column;align-items:stretch;border-radius:20px;padding:8px}.dl button{width:100%}}
+.plat{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:8px 0 14px}
+.plat a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.92rem;font-weight:600;text-decoration:none}</style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Is the AllVid TikTok downloader free?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. AllVid is free to use and does not require an account or sign-up."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can I save any TikTok I like?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Only save TikToks that you made or that the creator has allowed you to keep. Other people's videos are protected by copyright, so ask the creator first or share the link instead."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Where does the video go after I save it?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "It is saved on your own device, usually in the Downloads folder, and listed in AllVid under My files with the time it was downloaded. AllVid does not keep a copy."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Why does my TikTok link not work?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "The most common reasons are that the video is private or deleted, the link points to a profile instead of a video, or it is a LIVE stream. TikTok also changes things from time to time, so trying again later can help."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does it work on iPhone?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes, in Safari. After the download finishes, open the file and use the Share button to choose Save Video or Save to Files."
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>TikTok Video Downloader</h1>
+<p class="meta">Last updated: October 25, 2026</p>
+<p class="lead">Made a TikTok you are proud of and want a copy on your phone? AllVid lets you save your own TikTok videos, and public TikToks the creator has allowed you to keep, as a normal video or audio file. It is free, there is no account to create, and it works in your phone's browser or in the AllVid Android app.</p>
+<form class="dl" action="/" method="get"><input type="url" name="url" placeholder="Paste a TikTok link" aria-label="Paste a TikTok link" inputmode="url" autocomplete="off" required> <button type="submit">Download</button></form>
+
+<h2>How to copy a TikTok link</h2>
+<ol>
+<li>Open the TikTok app and find the video.</li>
+<li>Tap the <strong>Share</strong> arrow on the right side of the screen.</li>
+<li>Tap <strong>Copy link</strong>. TikTok usually shows a short "Copied" message.</li>
+</ol>
+<p>On a computer or in a mobile browser, you can also copy the address from the address bar while the video is open. Both short links and full video links are fine, as long as they point to a single video rather than a profile.</p>
+
+<h2>Save it with AllVid, step by step</h2>
+<ol>
+<li>Paste the link into the box above and tap <strong>Download</strong>, or open <a href="/">AllVid</a> and paste it there.</li>
+<li>Choose a format and size from the list that appears.</li>
+<li>Wait a moment while the file saves to your device. Sizes marked ⚡ are ready-made files that start right away; others may show a short "getting ready" step.</li>
+<li>Find the video under <strong>My files</strong>, where you can watch, share or remove it.</li>
+</ol>
+<p>On Android, the AllVid app lets you skip copy and paste: tap Share in TikTok, choose "More" or "Other apps", and pick AllVid.</p>
+
+<h2>Formats and sizes</h2>
+<p>AllVid shows the options available for each video. Typically that means <strong>MP4 video</strong> in one or more sizes, such as 360p, 720p or 1080p when the original was uploaded at that quality, and <strong>audio only</strong> as MP3 or M4A where available. Whether a TikTok watermark appears depends on the file TikTok provides for that video.</p>
+
+<h2>What works and what does not</h2>
+<ul>
+<li><strong>Works:</strong> public TikTok videos, including your own posts on a public account.</li>
+<li><strong>Does not work:</strong> private accounts and videos set to friends only, videos that need a login, deleted videos, TikTok LIVE streams, and links to profiles, sounds or hashtag pages instead of a single video.</li>
+</ul>
+<p>AllVid does not try to get around privacy settings. If your own account is private, the TikTok app's own save option, where enabled, may be the easier route.</p>
+
+<h2>Tips</h2>
+<ul>
+<li>For a keepsake of your own video, pick the highest size offered. For quick viewing on a phone, 720p is plenty.</li>
+<li>Save just the audio if you only want your voiceover or an original sound you recorded.</li>
+<li>Download on Wi-Fi when you can; longer TikToks at high quality can be large.</li>
+<li>If a download fails, try again after a minute or choose a ⚡ size.</li>
+</ul>
+
+<h2>Why keep copies of your own TikToks?</h2>
+<p>Many creators film and edit entirely inside the app, so the posted TikTok is often the only finished copy. If a draft is deleted, an account is locked, or you switch phones, that work can be hard to get back. Saving your own posts gives you a personal archive you can rewatch offline, reuse in a portfolio, or post to other platforms you run. Keep them organised with clear file names, and back the important ones up to a computer or cloud storage.</p>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+<details>
+<summary>Is the AllVid TikTok downloader free?</summary>
+<p>Yes. AllVid is free to use and does not require an account or sign-up.</p>
+</details>
+<details>
+<summary>Can I save any TikTok I like?</summary>
+<p>Only save TikToks that you made or that the creator has allowed you to keep. Other people's videos are protected by copyright, so ask the creator first or share the link instead.</p>
+</details>
+<details>
+<summary>Where does the video go after I save it?</summary>
+<p>It is saved on your own device, usually in the Downloads folder, and listed in AllVid under My files with the time it was downloaded. AllVid does not keep a copy.</p>
+</details>
+<details>
+<summary>Why does my TikTok link not work?</summary>
+<p>The most common reasons are that the video is private or deleted, the link points to a profile instead of a video, or it is a LIVE stream. TikTok also changes things from time to time, so trying again later can help.</p>
+</details>
+<details>
+<summary>Does it work on iPhone?</summary>
+<p>Yes, in Safari. After the download finishes, open the file and use the Share button to choose Save Video or Save to Files.</p>
+</details>
+</div>
+<aside class="more" aria-label="Related pages">
+<h2>Related reading</h2>
+<ul>
+<li><a href="/articles/save-your-own-videos.html">How to back up your own social media videos to your phone</a></li>
+<li><a href="/articles/share-links-on-android.html">Using the Share button and copying links on Android</a></li>
+</ul>
+<h2>Other downloaders</h2>
+<ul class="plat">
+<li><a href="/instagram-reels-downloader.html">Instagram downloader</a></li>
+<li><a href="/facebook-video-downloader.html">Facebook downloader</a></li>
+<li><a href="/twitter-x-video-downloader.html">X (Twitter) downloader</a></li>
+<li><a href="/snapchat-video-downloader.html">Snapchat downloader</a></li>
+<li><a href="/pinterest-video-downloader.html">Pinterest downloader</a></li>
+</ul>
+<p><a href="/downloaders.html">All downloaders</a> · <a href="/faq.html">FAQ</a> · <a href="/articles.html">Articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/downloaders.html">Downloaders</a></li>
+<li><a href="/articles.html">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+<li><a href="/cookies.html">Cookies</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>

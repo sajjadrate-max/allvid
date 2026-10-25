@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-9829612219556114">
+<title>Facebook Video Downloader · AllVid</title>
+<meta name="description" content="Save your own Facebook videos and Reels, or public videos you have permission to keep, to your phone as MP4 or audio. Free, no account, no Facebook login.">
+<link rel="canonical" href="https://allvid.org/facebook-video-downloader.html">
+<link rel="icon" href="/icon-192.png">
+<meta name="color-scheme" content="light dark">
+<style>:root{--bg:#EDF2EE;--surface:#FFFFFF;--fg:#14231D;--muted:#5A6B63;--line:#D3DDD7;--accent:#127456;--on-accent:#FFFFFF;--soft:rgba(18,116,86,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--surface:#17221d;--fg:#e6eee9;--muted:#9fb0a7;--line:#26342d;--accent:#3fbf8f;--on-accent:#06130e;--soft:rgba(63,191,143,.10)}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-wrap:break-word}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.brand{font-weight:800;font-size:1.5rem;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(90deg,#ff3b3b,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.open{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:600;font-size:.88rem;line-height:1;padding:10px 16px;border-radius:999px;white-space:nowrap}
+.open:hover{filter:brightness(1.08)}
+main{padding:8px 0 24px}
+h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.01em;margin:22px 0 6px}
+h2{font-size:1.28rem;line-height:1.3;margin:34px 0 8px}
+h3{font-size:1.07rem;line-height:1.35;margin:24px 0 6px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.3em}
+li{margin:4px 0}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 22px}
+.lead{font-size:1.06rem}
+.note{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media (min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 8px}
+.card h2,.card h3{margin-top:0;font-size:1.08rem}
+.card ul{font-size:.95rem}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;margin:6px 0 10px}
+.btn:hover{filter:brightness(1.08)}
+.center{text-align:center}
+.faq details{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;margin:10px 0}
+.faq summary{cursor:pointer;font-weight:650;padding:10px 0;list-style-position:outside}
+.faq details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.list{list-style:none;padding:0;margin:18px 0}
+.list li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.list h3{margin:0 0 4px;font-size:1.1rem}
+.list h3 a{text-decoration:none}
+.list h3 a:hover{text-decoration:underline}
+.toc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 8px}
+.toc a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;text-decoration:none}
+section[aria-labelledby] h2{scroll-margin-top:12px}
+.list p{margin:0 0 6px}
+.list .meta{margin:0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0 18px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface)}
+.more{border-top:1px solid var(--line);margin-top:34px;padding-top:6px}
+.more ul{padding-left:1.1em}
+footer.site{border-top:1px solid var(--line);margin-top:28px;padding:22px 0 36px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pills a{display:inline-block;background:var(--surface);border:1.5px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.3;padding:8px 14px;border-radius:999px}
+.pills a:hover{border-color:var(--accent)}
+.pills a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.copy{color:var(--muted);font-size:.85rem;margin:0}.dl{display:flex;gap:8px;align-items:center;margin:18px 0 28px;padding:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.dl:focus-within{border-color:var(--accent)}
+.dl input{flex:1;min-width:0;border:0;background:transparent;color:var(--fg);font:inherit;font-size:1rem;padding:10px 14px;outline:none}
+.dl input::placeholder{color:var(--muted)}
+.dl button{flex:none;border:0;background:var(--accent);color:var(--on-accent);font:inherit;font-weight:700;font-size:1rem;padding:11px 22px;border-radius:999px;cursor:pointer}
+.dl button:hover{filter:brightness(1.08)}
+.dl button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:440px){.dl{flex-direction:column;align-items:stretch;border-radius:20px;padding:8px}.dl button{width:100%}}
+.plat{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:8px 0 14px}
+.plat a{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.92rem;font-weight:600;text-decoration:none}</style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Do I need a Facebook account to use AllVid?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. AllVid works with public video links and never asks you to log in to Facebook."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Why does my Facebook link not work?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "The video may be shared with friends only, posted in a private group, deleted, or still live. Check that it is public and that you copied the video's own link."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can I save videos from a Facebook page I follow?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Only if you have the page owner's permission or the video is offered for download. Following a page does not give you the right to copy its videos."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does AllVid keep a copy of the video?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. The file is saved to your device, and your list of downloads stays on your device too."
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<a class="brand" href="/" aria-label="AllVid home">AllVid</a>
+<a class="open" href="/">Open AllVid</a>
+</header>
+<main>
+<h1>Facebook Video Downloader</h1>
+<p class="meta">Last updated: October 25, 2026</p>
+<p class="lead">Years of family moments, events and clips for small businesses live on Facebook. AllVid helps you save a copy of your own Facebook videos and Reels, and public videos the owner has allowed you to keep, to your phone. It is free, needs no account, and never asks for your Facebook login.</p>
+<form class="dl" action="/" method="get"><input type="url" name="url" placeholder="Paste a Facebook video link" aria-label="Paste a Facebook video link" inputmode="url" autocomplete="off" required> <button type="submit">Download</button></form>
+
+<h2>How to copy a Facebook video link</h2>
+<ol>
+<li>Open the video or Reel in the Facebook app.</li>
+<li>Tap <strong>Share</strong> under the post.</li>
+<li>Tap <strong>Copy link</strong>. On some videos this option is in the three-dot menu instead.</li>
+</ol>
+<p>In a browser, open the video on its own and copy the address from the address bar. The link should point to the video or Reel, not to a whole page or profile.</p>
+
+<h2>Save it with AllVid, step by step</h2>
+<ol>
+<li>Paste the link into the box above and tap <strong>Download</strong>, or open <a href="/">AllVid</a> and paste it there.</li>
+<li>Choose from the formats and sizes AllVid finds.</li>
+<li>Wait for the file to save. ⚡ sizes start straight away; others may take a short "getting ready" step.</li>
+<li>Go to <strong>My files</strong> to watch, share or remove it.</li>
+</ol>
+<p>Using the AllVid Android app? Tap Share on the Facebook post, choose to share to another app, and select AllVid.</p>
+
+<h2>Formats and sizes</h2>
+<p>Facebook often provides a standard and a higher quality version of each video. AllVid lists what is available, usually as <strong>MP4 video</strong> in sizes such as 360p or 720p and sometimes higher, plus <strong>MP3 or M4A audio</strong> where available. Longer videos and higher sizes make bigger files.</p>
+
+<h2>What works and what does not</h2>
+<ul>
+<li><strong>Works:</strong> public videos and public Reels, including your own posts shared publicly.</li>
+<li><strong>Does not work:</strong> videos shared only with friends, posts in private groups, anything that needs a login, expired stories, live videos while they are live, deleted videos, and links to pages or profiles.</li>
+</ul>
+<p>For your own videos that are not public, Facebook's "Download your information" tool in its settings can export a copy of your content.</p>
+
+<h2>Tips</h2>
+<ul>
+<li>Pick 720p for watching on a phone, and the highest size offered for keepsakes.</li>
+<li>Download long videos on Wi-Fi with the browser tab open, or use the Android app so the download keeps going with the screen off.</li>
+<li>Save audio only for talks, sermons or speeches you recorded or have permission to keep.</li>
+<li>Back up important family videos to a computer or cloud storage as well.</li>
+</ul>
+
+<h2>Keeping family and event videos safe</h2>
+<p>Facebook is often where families share birthdays, weddings and holidays, and where local groups and businesses post event videos. If you filmed and posted those videos yourself, saving a copy means you still have them if an account is closed or a post is removed. When relatives or friends posted the video, ask them before saving it, or ask them to send you the original file, which will be better quality than the version Facebook stores. For videos that include children, be thoughtful about where copies end up.</p>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+<details>
+<summary>Do I need a Facebook account to use AllVid?</summary>
+<p>No. AllVid works with public video links and never asks you to log in to Facebook.</p>
+</details>
+<details>
+<summary>Why does my Facebook link not work?</summary>
+<p>The video may be shared with friends only, posted in a private group, deleted, or still live. Check that it is public and that you copied the video's own link.</p>
+</details>
+<details>
+<summary>Can I save videos from a Facebook page I follow?</summary>
+<p>Only if you have the page owner's permission or the video is offered for download. Following a page does not give you the right to copy its videos.</p>
+</details>
+<details>
+<summary>Does AllVid keep a copy of the video?</summary>
+<p>No. The file is saved to your device, and your list of downloads stays on your device too.</p>
+</details>
+</div>
+<aside class="more" aria-label="Related pages">
+<h2>Related reading</h2>
+<ul>
+<li><a href="/articles/save-your-own-videos.html">How to back up your own social media videos to your phone</a></li>
+<li><a href="/articles/share-videos-whatsapp.html">Sharing videos with family on WhatsApp without losing quality</a></li>
+</ul>
+<h2>Other downloaders</h2>
+<ul class="plat">
+<li><a href="/tiktok-video-downloader.html">TikTok downloader</a></li>
+<li><a href="/instagram-reels-downloader.html">Instagram downloader</a></li>
+<li><a href="/twitter-x-video-downloader.html">X (Twitter) downloader</a></li>
+<li><a href="/snapchat-video-downloader.html">Snapchat downloader</a></li>
+<li><a href="/pinterest-video-downloader.html">Pinterest downloader</a></li>
+</ul>
+<p><a href="/downloaders.html">All downloaders</a> · <a href="/faq.html">FAQ</a> · <a href="/articles.html">Articles</a></p>
+</aside>
+</main>
+<footer class="site">
+<nav aria-label="Site pages">
+<ul class="pills">
+<li><a href="/">Home</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/downloaders.html">Downloaders</a></li>
+<li><a href="/articles.html">Articles</a></li>
+<li><a href="/faq.html">FAQ</a></li>
+<li><a href="/contact.html">Contact</a></li>
+<li><a href="/privacy.html">Privacy Policy</a></li>
+<li><a href="/terms.html">Terms of Use</a></li>
+<li><a href="/disclaimer.html">Disclaimer</a></li>
+<li><a href="/copyright.html">Copyright</a></li>
+<li><a href="/cookies.html">Cookies</a></li>
+</ul>
+</nav>
+<p class="copy">© 2026 AllVid. Not affiliated with YouTube, TikTok, Meta, X, Snap or Pinterest.</p>
+</footer>
+</div>
+</body>
+</html>
