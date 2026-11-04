@@ -80,6 +80,16 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 .apk-get{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--fg);text-decoration:none}
 .apk-get[hidden],.htabs[hidden],.sup[hidden]{display:none}
 .sup{margin:10px 4px 0;text-align:center;font-size:.86rem;line-height:1.7;color:var(--muted)}
+.homeinfo{margin:28px 0 8px;text-align:left;line-height:1.7}
+.homeinfo[hidden]{display:none}
+.homeinfo h2{font-size:1.15rem;margin:22px 0 8px}
+.homeinfo h3{font-size:1rem;margin:14px 0 4px}
+.homeinfo p,.homeinfo li{color:var(--fg);font-size:.95rem}
+.homeinfo ol,.homeinfo ul{padding-inline-start:20px;margin:6px 0}
+.homeinfo li{margin:6px 0}
+.homeinfo a{color:var(--accent)}
+.homeinfo .sitegrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;list-style:none;padding:0}
+.homeinfo .more{font-weight:600}
 nav.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:10px 0 24px;font-size:.85rem}
 nav.legal a{color:var(--muted)}
 .apk-get .ai{font-size:1.6rem}.apk-get .tx{flex:1;display:flex;flex-direction:column;line-height:1.35}.apk-get small{opacity:.8}.apk-get .go2{font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:6px 12px}
@@ -360,6 +370,48 @@ html{overscroll-behavior-y:contain}
 
 
     <p class="note" data-i18n-html="note">Instagram، Facebook، TikTok یا X میں ویڈیو پر <b>شیئر</b> دبائیں، <b>Copy link</b> چنیں، پھر یہاں <b>پیسٹ</b> دبائیں۔</p>
+    <!-- Website home: real content under the tool (the app hides it) -->
+    <section class="homeinfo" id="homeInfo" dir="ltr" lang="en">
+      <h2>Save your own videos in three steps</h2>
+      <ol class="steps3">
+        <li><b>Copy the link.</b> In TikTok, Instagram, Facebook, X, Snapchat or Pinterest, open the post, tap <b>Share</b> and choose <b>Copy link</b>.</li>
+        <li><b>Paste it here.</b> Tap <b>Paste</b> in the box above. AllVid looks up the files the site offers for that post.</li>
+        <li><b>Pick a size and save.</b> Choose a video size or audio only. The file is saved on your phone and listed in <b>My files</b> with the time you saved it.</li>
+      </ol>
+
+      <h2>Why people use AllVid</h2>
+      <p>Creators often want a copy of what they posted: to keep a backup before deleting an account, to re-edit a clip, or to share it with family who do not use the same app. AllVid makes that simple on a phone. There is no sign-up, nothing to install for the website, and your files and settings stay on your own device. You can choose a smaller size to save mobile data and storage, or the best available size for a sharper picture.</p>
+      <p>AllVid only works with public posts. It does not get around privacy settings, logins or other protections, and it never keeps a copy of your files on our servers. Please save only videos you made or have permission to keep, and give credit to creators when you share their work.</p>
+
+      <h2>Guides by site</h2>
+      <ul class="sitegrid">
+        <li><a href="tiktok-video-downloader.html">TikTok video downloader</a></li>
+        <li><a href="instagram-reels-downloader.html">Instagram Reels downloader</a></li>
+        <li><a href="facebook-video-downloader.html">Facebook video downloader</a></li>
+        <li><a href="twitter-x-video-downloader.html">X (Twitter) video downloader</a></li>
+        <li><a href="snapchat-video-downloader.html">Snapchat video downloader</a></li>
+        <li><a href="pinterest-video-downloader.html">Pinterest video downloader</a></li>
+      </ul>
+
+      <h2>Helpful articles</h2>
+      <ul class="artlist">
+        <li><a href="articles/save-your-own-videos.html">How to back up your own social media videos</a> – a simple routine to keep copies of everything you post.</li>
+        <li><a href="articles/video-quality-explained.html">360p, 720p or 1080p: which size to choose</a> – picture, data use and storage compared.</li>
+        <li><a href="articles/mp3-vs-m4a.html">MP3 vs M4A audio explained</a> – which audio format suits lectures, music and podcasts.</li>
+        <li><a href="articles/free-up-phone-storage.html">Free up space on your phone for videos</a> – quick ways to make room without losing what matters.</li>
+        <li><a href="articles/spot-fake-download-buttons.html">Spotting fake download buttons and ad redirects</a> – stay safe on download sites.</li>
+        <li><a href="articles/respect-creators-copyright.html">Saving videos responsibly: copyright basics</a> – what everyday users should know.</li>
+      </ul>
+      <p class="more"><a href="articles.html">See all 20 articles</a> · <a href="faq.html">Read the FAQ</a> · <a href="about.html">About AllVid</a></p>
+
+      <h2>Common questions</h2>
+      <h3>Is AllVid free?</h3>
+      <p>Yes. AllVid is free to use, with no account and no paid plan.</p>
+      <h3>Where are my files saved?</h3>
+      <p>On your own phone. In the browser they go to your Downloads folder and are also listed in My files, so you can watch or share them later.</p>
+      <h3>Why does a link not work?</h3>
+      <p>Private, deleted or login-only posts, live streams and expired stories cannot be saved. YouTube links are not supported on this website. If a public link fails, try again in a few minutes; sites sometimes change how they deliver video.</p>
+    </section>
     <footer data-i18n="footer">صرف اپنی یا اجازت والی ویڈیوز ڈاؤن لوڈ کریں۔</footer>
     <nav class="legal" dir="ltr"><a href="about.html">About</a><a href="downloaders.html">Downloaders</a><a href="articles.html">Articles</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="copyright.html">Copyright</a><a href="cookies.html">Cookies</a></nav>
   </section>
@@ -1486,6 +1538,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   // Opening the app starts on YouTube; a refresh stays on the tab that was open; a shared link stays on Search.
   if(location.hash==="#youtube"){try{sessionStorage.setItem("vdlPane","youtube");}catch(e){}history.replaceState(history.state,"",location.pathname+location.search);}   // the app's back button from another page
   // Website: only the link box (no YouTube/TikTok lists); the app has every tab.
+  if(NATIVE)$("homeInfo").hidden=true;   // the app shows its tabs instead
   if(!NATIVE){document.querySelector(".htabs").hidden=true;$("supNote").hidden=false;link.dataset.i18nPh="linkOnlyPh";link.placeholder=t("linkOnlyPh");}
   else try{const sp=sessionStorage.getItem("vdlPane")||"youtube";if(sp!=="search"&&!window.vdlShared&&!link.value)hpane(sp);}catch(e){}
   // Pull down at the top of YouTube / TikTok / Music for a fresh list (stays on the same tab).
@@ -1504,7 +1557,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.10.26-a";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.11.04-a";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
