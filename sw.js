@@ -1,11 +1,14 @@
 // App shell cache for the video downloader. Only same-origin GETs inside this
 // app's folder are cached; API calls and downloads always go to the network.
-const CACHE = "video-dl-v111";
+const CACHE = "video-dl-v112";
 const BASE = new URL("./", self.location).pathname;
 const SHELL = [BASE, BASE + "i18n.js", BASE + "manifest.json", BASE + "icon-192.png", BASE + "icon-512.png"];
+// Every page of the site, so it all opens without internet (fetched once, kept fresh when online).
+const PAGES = ["about.html", "articles.html", "contact.html", "cookies.html", "copyright.html", "disclaimer.html", "downloaders.html", "facebook-video-downloader.html", "faq.html", "instagram-reels-downloader.html", "pinterest-video-downloader.html", "privacy.html", "snapchat-video-downloader.html", "terms.html", "tiktok-video-downloader.html", "twitter-x-video-downloader.html", "articles/back-up-videos-computer-cloud.html", "articles/battery-tips-long-downloads.html", "articles/creative-commons-guide.html", "articles/downloads-stop-resume.html", "articles/free-up-phone-storage.html", "articles/install-apk-safely.html", "articles/mobile-data-vs-wifi.html", "articles/mp3-vs-m4a.html", "articles/organize-downloads-folder.html", "articles/resolution-vs-bitrate.html", "articles/respect-creators-copyright.html", "articles/save-your-own-videos.html", "articles/share-links-on-android.html", "articles/share-videos-whatsapp.html", "articles/spot-fake-download-buttons.html", "articles/video-compression-explained.html", "articles/video-formats-mp4-webm-mov.html", "articles/video-quality-explained.html", "articles/video-to-audio-podcasts-lectures.html", "articles/watch-videos-offline-android.html"].map(p => BASE + p);
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: "reload" })))
+    .then(() => Promise.all(PAGES.map(u => c.add(new Request(u, { cache: "reload" })).catch(() => {}))))).then(() => self.skipWaiting()));   // a missing page never blocks the update
 });
 
 self.addEventListener("activate", e => {
@@ -28,7 +31,8 @@ self.addEventListener("fetch", e => {
     return r;
   });
   e.waitUntil(fresh.then(() => {}, () => {}));
-  e.respondWith(caches.match(key).then(hit => hit || fresh));
+  // Offline and not saved yet: a page falls back to the app's home page.
+  e.respondWith(caches.match(key).then(hit => hit || fresh.catch(() => req.mode === "navigate" ? caches.match(BASE) : Response.error())));
 });
 
 // Background downloads (started by the page when the app is closed mid-download).

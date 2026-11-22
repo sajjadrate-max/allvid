@@ -584,6 +584,24 @@ const STR={
 "ar": "متوقف، سيعيد الهاتف المحاولة تلقائيًا",
 "hi": "रुका हुआ, फ़ोन खुद दोबारा कोशिश कर रहा है"
 },
+"noNet": {
+"ur": "No internet 🛜 — انٹرنیٹ نہیں ہے۔ نیٹ آن کر کے دوبارہ کوشش کریں۔",
+"en": "No internet 🛜 — connect to the internet and try again.",
+"ar": "لا يوجد إنترنت 🛜 — اتصل بالإنترنت وحاول مرة أخرى.",
+"hi": "No internet 🛜 — इंटरनेट चालू करके फिर कोशिश करें।"
+},
+"noNetBar": {
+"ur": "No internet 🛜 — محفوظ فائلیں اور صفحات پھر بھی کھلیں گے",
+"en": "No internet 🛜 — your saved files and pages still open",
+"ar": "لا يوجد إنترنت 🛜 — ملفاتك المحفوظة والصفحات ما زالت تعمل",
+"hi": "No internet 🛜 — सेव की गई फ़ाइलें और पेज फिर भी खुलेंगे"
+},
+"backAgain": {
+"ur": "باہر جانے کے لیے دوبارہ واپس دبائیں",
+"en": "Press back again to exit",
+"ar": "اضغط رجوع مرة أخرى للخروج",
+"hi": "बाहर जाने के लिए फिर से वापस दबाएँ"
+},
 "keepOpen": {
 "ur": "ڈاؤن لوڈ کے دوران ایپ کھلی رکھیں۔ اگر آپ کسی اور ایپ پر چلے گئے یا سکرین بند ہو گئی تو ڈاؤن لوڈ وہیں رک جائے گا، اور واپس آتے ہی خودبخود وہیں سے دوبارہ شروع ہو جائے گا۔",
 "en": "Keep the app open while downloading. If you switch to another app or the screen turns off, the download pauses where it is and continues by itself from the same point when you come back.",

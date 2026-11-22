@@ -90,6 +90,8 @@ footer{font-size:.82rem;color:var(--muted);text-align:center}
 .homeinfo a{color:var(--accent)}
 .homeinfo .sitegrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;list-style:none;padding:0}
 .homeinfo .more{font-weight:600}
+.offbar{position:fixed;top:0;left:0;right:0;z-index:60;background:#B3261E;color:#fff;text-align:center;font-size:.9rem;padding:6px 12px calc(6px + env(safe-area-inset-top,0))}
+.offbar[hidden]{display:none}
 nav.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:10px 0 24px;font-size:.85rem}
 nav.legal a{color:var(--muted)}
 .apk-get .ai{font-size:1.6rem}.apk-get .tx{flex:1;display:flex;flex-direction:column;line-height:1.35}.apk-get small{opacity:.8}.apk-get .go2{font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:6px 12px}
@@ -331,6 +333,7 @@ html{overscroll-behavior-y:contain}
 </style>
 </head>
 <body>
+<div class="offbar" id="offBar" role="status" hidden></div>
 <div class="wrap home" data-view="home" id="homeView">
   <div class="htabs" role="tablist">
     <button type="button" role="tab" data-h="search" aria-selected="true">Search</button>
@@ -1088,6 +1091,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   $("dlbar").onclick=()=>show("files");
 
   function showErr(k,detail){
+    if(!navigator.onLine){msg.innerHTML='<div class="status err">'+esc(t("noNet"))+'</div>';return;}   // offline: say so plainly
     if(!$("player").hidden)toast(ERR[k]||ERR["fetch.fail"]);   // the error box is under the player
     hpane("search");   // errors show under the link box
     msg.innerHTML='<div class="status err">'+esc(ERR[k]||ERR["fetch.fail"])+(detail||k&&!ERR[k]?'<br><small dir="ltr" style="opacity:.75;font-family:var(--mono)">'+esc((ERR[k]?"":k+" ")+(detail||""))+'</small>':'')+'</div>';
@@ -1269,7 +1273,10 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   // the YouTube home screen; only there does it leave the app (returns false).
   window.allvidBack=()=>{
     const tab=document.querySelector(".htabs [aria-selected=\"true\"]");
-    if(!$("homeView").hidden&&!root.classList.contains("open")&&$("player").hidden&&langPanel.hidden&&tab&&tab.dataset.h==="youtube")return false;
+    if(!$("homeView").hidden&&!root.classList.contains("open")&&$("player").hidden&&langPanel.hidden&&tab&&tab.dataset.h==="youtube"){
+      if(Date.now()-backAt<2000)return false;   // second press: leave the app
+      backAt=Date.now();toast(t("backAgain"));return true;
+    }
     hideSheet();DL.hidePlayer();if(!langPanel.hidden)openLangs(false);
     showView("home");hpane("youtube");
     try{history.replaceState({vdl:"home"},"");}catch(e){}
@@ -1557,7 +1564,7 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   function theme(){try{return localStorage.getItem("vdlTheme")||"auto";}catch(e){return "auto";}}
   function applyTheme(){const th=theme();if(th==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=th;}
   applyTheme();
-  const APP_VERSION="2026.11.04-a";   // shown in Settings, to tell which version the phone runs
+  const APP_VERSION="2026.11.22-a";   // shown in Settings, to tell which version the phone runs
   function fillSettings(){
     $("appVer").textContent=APP_VERSION;
     $("themeOpts").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.th===theme())));
@@ -1580,12 +1587,24 @@ window.ytWarm=(()=>{const jobs=new Map();return url=>{
   $("shareApp").onclick=shareAllVid;
   $("shareBtn").onclick=shareAllVid;
 
+  // Back at the home screen: the first press only says "press back again to exit" (website
+  // installed as an app; the Android app asks allvidBack). Pages, sheets and lists step back as before.
+  let backAt=0;
+  const standaloneWeb=!NATIVE&&(matchMedia("(display-mode: standalone)").matches||navigator.standalone===true);
+  if(standaloneWeb)try{history.pushState({vdl:"guard"},"");}catch(e){}
   window.addEventListener("popstate",()=>{
+    if(standaloneWeb&&(history.state||{}).vdl==="home"&&root.classList.contains("open")===false&&$("player").hidden&&langPanel.hidden&&$("filesView").hidden&&$("settingsView").hidden){
+      if(Date.now()-backAt<2000){history.back();return;}
+      backAt=Date.now();toast(t("backAgain"));try{history.pushState({vdl:"guard"},"");}catch(e){}return;
+    }
     if(root.classList.contains("open")){hideSheet();return;}   // the sheet can sit over the player
     if(!$("player").hidden){DL.hidePlayer();return;}
     if(!langPanel.hidden){openLangs(false);return;}
     if(!$("filesView").hidden||!$("settingsView").hidden){showView("home");return;}
   });
+  const offBar=$("offBar");
+  const netState=()=>{offBar.textContent=t("noNetBar");offBar.hidden=navigator.onLine;};
+  addEventListener("online",netState);addEventListener("offline",netState);netState();
   applyLang();
 })();
 </script>
